@@ -2,7 +2,7 @@
 
 import { ProtectedImage } from "@/components/ProtectedImage";
 import { demoArtworks } from "@/lib/demo";
-import confetti from "canvas-confetti";
+import { create } from "canvas-confetti";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
@@ -28,7 +28,9 @@ export default function ArtDetailPage() {
     });
     const data = await res.json();
     if (res.ok) {
-      confetti({ particleCount: 80, spread: 50 });
+      const canvas = document.createElement('canvas');
+      document.body.appendChild(canvas);
+      create(canvas, { particleCount: 80, spread: 50 });
       setStatus("রেটিং সফল");
     } else {
       setStatus(data.message ?? "রেটিং ব্যর্থ");
