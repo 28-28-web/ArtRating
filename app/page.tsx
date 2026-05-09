@@ -78,6 +78,12 @@ export default function HomePage() {
             title={top.title}
             artist={top.artist}
             initialCount={top.ratings}
+            onShare={(artId, title, artist, imageUrl) => setShareModalArt({
+              artId,
+              title,
+              artist,
+              imageUrl
+            })}
           />
 
           <section className="rounded-3xl card-glow p-4 sm:p-5">

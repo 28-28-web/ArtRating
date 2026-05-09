@@ -9,9 +9,10 @@ type RatingClockProps = {
   title: string;
   artist: string;
   initialCount: number;
+  onShare?: (artId: string, title: string, artist: string, imageUrl: string) => void;
 };
 
-export function RatingClock({ artId, imageUrl, title, artist, initialCount }: RatingClockProps) {
+export function RatingClock({ artId, imageUrl, title, artist, initialCount, onShare }: RatingClockProps) {
   const [count, setCount] = useState(initialCount);
 
   useEffect(() => {
@@ -37,12 +38,22 @@ export function RatingClock({ artId, imageUrl, title, artist, initialCount }: Ra
           </p>
         </div>
 
-        <a
-          href={`/art/${artId}`}
-          className="mt-4 inline-flex rounded-xl bg-gradient-to-r from-emerald-500 to-green-500 px-4 py-2 text-sm font-extrabold text-black shadow-[0_0_22px_rgba(34,197,94,0.18)]"
-        >
-          রেটিং দিন
-        </a>
+        <div className="mt-4 flex gap-2">
+          <a
+            href={`/art/${artId}`}
+            className="flex-1 rounded-xl bg-gradient-to-r from-emerald-500 to-green-500 px-4 py-2 text-sm font-extrabold text-black shadow-[0_0_22px_rgba(34,197,94,0.18)]"
+          >
+            রেটিং দিন
+          </a>
+          {onShare && (
+            <button
+              onClick={() => onShare(artId, title, artist, imageUrl)}
+              className="flex-1 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-2 text-sm font-extrabold text-white shadow-[0_0_22px_rgba(59,130,246,0.18)]"
+            >
+              🔗 শেয়ার করুন
+            </button>
+          )}
+        </div>
       </div>
     </section>
   );
