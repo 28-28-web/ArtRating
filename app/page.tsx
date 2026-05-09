@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { FloatingArtEmojis } from "@/components/FloatingArtEmojis";
 import { ProtectedImage } from "@/components/ProtectedImage";

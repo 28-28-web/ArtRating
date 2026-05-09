@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ProtectedImage } from "@/components/ProtectedImage";
 import { ShareModal } from "@/components/ShareModal";
