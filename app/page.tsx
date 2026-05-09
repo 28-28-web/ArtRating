@@ -1,13 +1,21 @@
 import Link from "next/link";
 import { FloatingArtEmojis } from "@/components/FloatingArtEmojis";
 import { ProtectedImage } from "@/components/ProtectedImage";
+import { ShareModal } from "@/components/ShareModal";
 import { WeekCountdown } from "@/components/WeekCountdown";
 import { WaveDivider } from "@/components/WaveDivider";
 import { RatingClock } from "@/components/RatingClock";
 import { demoArtworks } from "@/lib/demo";
+import { useState } from "react";
 
 export default function HomePage() {
   const top = demoArtworks[0];
+  const [shareModalArt, setShareModalArt] = useState<{
+    artId: string;
+    title: string;
+    artist: string;
+    imageUrl: string;
+  } | null>(null);
   return (
     <main className="mx-auto w-full max-w-6xl p-4 sm:p-6">
       <section className="hero-splash card-glow relative mb-6 rounded-3xl p-5 sm:p-7">
@@ -81,9 +89,25 @@ export default function HomePage() {
                   <div className="mt-2 text-sm">
                     <div className="flex items-center justify-between gap-2">
                       <p className="font-extrabold">{art.title}</p>
-                      <Link href={`/art/${art.artId}`} className="rounded-lg bg-white/5 px-2 py-1 text-xs font-extrabold text-zinc-100">
-                        বিস্তারিত
-                      </Link>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => setShareModalArt({
+                            artId: art.artId,
+                            title: art.title,
+                            artist: art.artist,
+                            imageUrl: art.imageUrl
+                          })}
+                          className="rounded-lg bg-white/5 px-2 py-1 text-xs font-extrabold text-zinc-100 hover:bg-white/10 transition-colors"
+                          title="শেয়ার করুন"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a3 3 0 10-4.732 2.684m4.732-2.684a3 3 0 00-4.732-2.684M3 12a3 3 0 104.732 2.684M3 12a3 3 0 014.732-2.684" />
+                          </svg>
+                        </button>
+                        <Link href={`/art/${art.artId}`} className="rounded-lg bg-white/5 px-2 py-1 text-xs font-extrabold text-zinc-100 hover:bg-white/10 transition-colors">
+                          বিস্তারিত
+                        </Link>
+                      </div>
                     </div>
                     <p className="mt-1 text-zinc-300">ART ID: {art.artId}</p>
                     <p className="text-zinc-300">শিল্পী: {art.artist}</p>
@@ -133,6 +157,17 @@ export default function HomePage() {
           </div>
         </aside>
       </div>
+      
+      {shareModalArt && (
+        <ShareModal
+          isOpen={!!shareModalArt}
+          onClose={() => setShareModalArt(null)}
+          artId={shareModalArt.artId}
+          title={shareModalArt.title}
+          artist={shareModalArt.artist}
+          imageUrl={shareModalArt.imageUrl}
+        />
+      )}
     </main>
   );
 }
