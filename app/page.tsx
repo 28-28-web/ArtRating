@@ -89,25 +89,6 @@ export default function HomePage() {
                   <div className="mt-2 text-sm">
                     <div className="flex items-center justify-between gap-2">
                       <p className="font-extrabold">{art.title}</p>
-                      <div className="flex gap-1">
-                        <button
-                          onClick={() => setShareModalArt({
-                            artId: art.artId,
-                            title: art.title,
-                            artist: art.artist,
-                            imageUrl: art.imageUrl
-                          })}
-                          className="rounded-lg bg-white/5 px-2 py-1 text-xs font-extrabold text-zinc-100 hover:bg-white/10 transition-colors"
-                          title="শেয়ার করুন"
-                        >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a3 3 0 10-4.732 2.684m4.732-2.684a3 3 0 00-4.732-2.684M3 12a3 3 0 104.732 2.684M3 12a3 3 0 014.732-2.684" />
-                          </svg>
-                        </button>
-                        <Link href={`/art/${art.artId}`} className="rounded-lg bg-white/5 px-2 py-1 text-xs font-extrabold text-zinc-100 hover:bg-white/10 transition-colors">
-                          বিস্তারিত
-                        </Link>
-                      </div>
                     </div>
                     <p className="mt-1 text-zinc-300">ART ID: {art.artId}</p>
                     <p className="text-zinc-300">শিল্পী: {art.artist}</p>
@@ -117,6 +98,25 @@ export default function HomePage() {
                         {art.ratings}
                       </span>
                     </p>
+                  </div>
+                  <div className="mt-3 flex gap-2">
+                    <Link 
+                      href={`/art/${art.artId}`}
+                      className="flex-1 rounded-lg bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 px-3 py-2 text-xs font-extrabold text-white transition-all"
+                    >
+                      রেট দিন
+                    </Link>
+                    <button
+                      onClick={() => setShareModalArt({
+                        artId: art.artId,
+                        title: art.title,
+                        artist: art.artist,
+                        imageUrl: art.imageUrl
+                      })}
+                      className="flex-1 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 px-3 py-2 text-xs font-extrabold text-white transition-all"
+                    >
+                      🔗 শেয়ার করুন
+                    </button>
                   </div>
                 </article>
               ))}

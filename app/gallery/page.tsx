@@ -1,9 +1,18 @@
 import Link from "next/link";
 import { ProtectedImage } from "@/components/ProtectedImage";
+import { ShareModal } from "@/components/ShareModal";
 import { WaveDivider } from "@/components/WaveDivider";
 import { demoArtworks } from "@/lib/demo";
+import { useState } from "react";
 
 export default function GalleryPage() {
+  const [shareModalArt, setShareModalArt] = useState<{
+    artId: string;
+    title: string;
+    artist: string;
+    imageUrl: string;
+  } | null>(null);
+  
   return (
     <main className="mx-auto w-full max-w-6xl space-y-4 p-4 sm:p-6">
       <section className="card-glow rounded-3xl p-5 sm:p-7">
@@ -25,12 +34,6 @@ export default function GalleryPage() {
               <div className="mt-2 text-sm">
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-extrabold">{art.title}</p>
-                  <Link
-                    href={`/art/${art.artId}`}
-                    className="rounded-lg bg-white/5 px-2 py-1 text-xs font-extrabold text-zinc-100"
-                  >
-                    রেট দিন
-                  </Link>
                 </div>
                 <p className="mt-1 text-zinc-300">ART ID: {art.artId}</p>
                 <p className="text-zinc-300">শিল্পী: {art.artist}</p>
@@ -41,10 +44,40 @@ export default function GalleryPage() {
                   </span>
                 </p>
               </div>
+              <div className="mt-3 flex gap-2">
+                <Link 
+                  href={`/art/${art.artId}`}
+                  className="flex-1 rounded-lg bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 px-3 py-2 text-xs font-extrabold text-white transition-all"
+                >
+                  রেট দিন
+                </Link>
+                <button
+                  onClick={() => setShareModalArt({
+                    artId: art.artId,
+                    title: art.title,
+                    artist: art.artist,
+                    imageUrl: art.imageUrl
+                  })}
+                  className="flex-1 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 px-3 py-2 text-xs font-extrabold text-white transition-all"
+                >
+                  🔗 শেয়ার করুন
+                </button>
+              </div>
             </article>
           ))}
         </div>
       </section>
+      
+      {shareModalArt && (
+        <ShareModal
+          isOpen={!!shareModalArt}
+          onClose={() => setShareModalArt(null)}
+          artId={shareModalArt.artId}
+          title={shareModalArt.title}
+          artist={shareModalArt.artist}
+          imageUrl={shareModalArt.imageUrl}
+        />
+      )}
     </main>
   );
 }
