@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  phone        String    @unique
+  passwordHash String
+  isVerified   Boolean   @default(false)
+  role         String    @default("user")
+  createdAt    DateTime  @default(now())
+  artworks     Artwork[]
+  ratings      Rating[]
+  comments     Comment[]
+  payouts      Payout[]
+  fraudLogs    FraudLog[]
+}
+
+model Artwork {
+  id             String       @id @default(cuid())
+  artId          String       @unique
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+  title          String
+  description    String       @db.Text
+  imageUrl       String
+  imagePublicId  String
+  category       String
+  status         String       @default("pending")
+  moderationNote String?
+  isAIGenerated  Boolean      @default(false)
+  isFeatured     Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  ratings        Rating[]
+  comments       Comment[]
+  weeklyDraws    WeeklyDraw[]
+}
+
+model Rating {
+  id         String   @id @default(cuid())
+  artworkId  String
+  artwork    Artwork  @relation(fields: [artworkId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  stars      Int
+  createdAt  DateTime @default(now())
+  ipAddress  String
+  weekNumber Int
+  weekYear   Int
+  isPaid     Boolean  @default(false)
+
+  @@unique([artworkId, userId])
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  artworkId String
+  artwork   Artwork   @relation(fields: [artworkId], references: [id])
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  content   String    @db.Text
+  parentId  String?
+  parent    Comment?  @relation("Replies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("Replies")
+  createdAt DateTime  @default(now())
+}
+
+model Payout {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  amount        Float
+  ratingCount   Int
+  paymentMethod String
+  accountNumber String
+  status        String   @default("pending")
+  adminNote     String?
+  createdAt     DateTime @default(now())
+  paidAt        DateTime?
+  certUrl       String?
+}
+
+model WeeklyDraw {
+  id           String   @id @default(cuid())
+  weekStart    DateTime
+  weekEnd      DateTime
+  winnerId     String?
+  artworkId    String?
+  artwork      Artwork? @relation(fields: [artworkId], references: [id])
+  prizeAmount  Float
+  bonusAmount  Float    @default(200)
+  totalRatings Int
+  status       String   @default("pending")
+  createdAt    DateTime @default(now())
+}
+
+model FraudLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  actionType String
+  ipAddress  String
+  details    String
+  createdAt  DateTime @default(now())
+  resolved   Boolean  @default(false)
+}
+
+model OtpVerification {
+  id        String   @id @default(cuid())
+  phone     String
+  otp       String
+  purpose   String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
