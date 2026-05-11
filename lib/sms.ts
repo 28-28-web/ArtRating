@@ -12,7 +12,7 @@ export async function sendOtpSms({ phone, otp }: SendOtpInput) {
     return { success: true, skipped: true };
   }
 
-  const url = `https://sms.mimsms.com/api/sendsms?api_key=${apiKey}&api_secret=${username}&mobile=88${phone}&smstext=Your ArtRating OTP: ${otp}&sid=ArtRating&mtype=TEXT&jsonResponse=1`;
+  const url = `https://sms.mimsms.com/api/sendsms?api_key=${apiKey}&api_secret=${username}&mobile=88${phone}&smstext=Your ArtRating OTP: ${otp}&sid=01896050632&mtype=TEXT&jsonResponse=1`;
 
   const res = await fetch(url);
   const text = await res.text();
