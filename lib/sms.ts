@@ -15,7 +15,7 @@ export async function sendOtpSms({ phone, otp }: SendOtpInput) {
   const url = `https://sms.mimsms.com/api/sendsms?api_key=${apiKey}&api_secret=${username}&mobile=88${phone}&smstext=Your ArtRating OTP: ${otp}&sid=ArtRating&mtype=TEXT&jsonResponse=1`;
 
   const res = await fetch(url);
-  const data = await res.json();
-
-  return { success: res.ok, data };
+  const text = await res.text();
+  console.log('[MiMSMS Response]', text);
+  return { success: res.ok, data: text };
 }
