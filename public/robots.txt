@@ -1,0 +1,92 @@
+# ArtRating.art - Bangladesh Art Rating Platform
+# robots.txt for SEO optimization
+
+User-agent: *
+Allow: /
+
+# Prioritize important pages
+Allow: /gallery
+Allow: /competition
+Allow: /campaign
+Allow: /leaderboard
+Allow: /art/
+Allow: /upload
+Allow: /login
+Allow: /register
+
+# Allow CSS, JS, and images
+Allow: /_next/static/
+Allow: /images/
+Allow: /api/protected-image/
+
+# Disallow admin and sensitive areas
+Disallow: /admin/
+Disallow: /api/admin/
+Disallow: /api/otp/
+Disallow: /upload/processing
+Disallow: /payout/processing
+
+# Disallow temporary files and system directories
+Disallow: /temp/
+Disallow: /tmp/
+Disallow: /.well-known/
+Disallow: /_error
+
+# Block common bot paths
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Disallow: /xmlrpc.php
+Disallow: /cgi-bin/
+
+# Sitemap location
+Sitemap: https://artrating.art/sitemap.xml
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
+
+# Specific instructions for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0.5
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+# Block unwanted bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: Baiduspider
+Disallow: /
+
+# Allow social media crawlers for rich previews
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+# Allow image indexing bots
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot-Image
+Allow: /
+
+# Allow structured data testing
+User-agent: Googlebot-Structured-Data
+Allow: /

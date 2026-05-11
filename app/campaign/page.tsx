@@ -1,7 +1,14 @@
-"use client";
-
 import Link from "next/link";
 import { Certificate } from "@/components/Certificate";
+import { generateMetadata, generateBreadcrumbStructuredData } from "@/lib/seo";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = generateMetadata({
+  title: "সাপ্তাহিক আর্ট চ্যালেঞ্জ",
+  description: "প্রতি সপ্তাহে নতুন থিম, নতুন চ্যালেঞ্জ, এবং আকর্ষণীয় পুরস্কার জেতার সুযোগ। এখনই অংশ নিন!",
+  keywords: ["চ্যালেঞ্জ", "আর্ট চ্যালেঞ্জ", "সাপ্তাহিক প্রতিযোগিতা", "পুরস্কার", "থিম"],
+  url: "https://artrating.art/campaign"
+});
 
 export default function CampaignPage() {
   const weeklyTheme = {
@@ -48,8 +55,18 @@ export default function CampaignPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-purple-900/20 to-slate-900">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(generateBreadcrumbStructuredData([
+            { name: "হোম", url: "https://artrating.art" },
+            { name: "সাপ্তাহিক আর্ট চ্যালেঞ্জ", url: "https://artrating.art/campaign" }
+          ]))
+        }}
+      />
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-purple-900/20 to-slate-900">
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         
         {/* Header */}
         <div className="text-center mb-12">
@@ -217,6 +234,7 @@ export default function CampaignPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

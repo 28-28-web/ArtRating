@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { WeekCountdown } from "@/components/WeekCountdown";
 import { WaveDivider } from "@/components/WaveDivider";
+import { generateMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = generateMetadata({
+  title: "প্রতিযোগিতা",
+  description: "প্রতি রবিবার নির্দিষ্ট সময়ের মধ্যে সবচেয়ে বেশি রেটিং পাওয়া শিল্পী পাবেন পুরস্কার। আপনার ছবি আপলোড করুন এবং জিতুন!",
+  keywords: ["প্রতিযোগিতা", "আর্ট প্রতিযোগিতা", "পুরস্কার", "শিল্পী", "রেটিং"],
+  url: "https://artrating.art/competition"
+});
 
 export default function CompetitionPage() {
   return (

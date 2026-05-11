@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { ProtectedImage } from "@/components/ProtectedImage";
 import { ShareModal } from "@/components/ShareModal";
+import { JsonLd } from "@/components/JsonLd";
 import { WaveDivider } from "@/components/WaveDivider";
 import { demoArtworks } from "@/lib/demo";
+import { generateArtworkStructuredData, generateBreadcrumbStructuredData } from "@/lib/seo";
 import { useState } from "react";
 
 export default function GalleryPage() {
@@ -16,7 +18,31 @@ export default function GalleryPage() {
   } | null>(null);
   
   return (
-    <main className="mx-auto w-full max-w-6xl space-y-4 p-4 sm:p-6">
+    <>
+      <JsonLd data={generateBreadcrumbStructuredData([
+        { name: "হোম", url: "https://artrating.art" },
+        { name: "গ্যালারি", url: "https://artrating.art/gallery" }
+      ])} />
+      
+      {/* Generate structured data for first 3 artworks */}
+      {demoArtworks.slice(0, 3).map((art) => (
+        <JsonLd 
+          key={art.artId}
+          data={generateArtworkStructuredData({
+            id: art.artId,
+            title: art.title,
+            description: `${art.title} by ${art.artist} - বাংলাদেশের শিল্পীদের আর্টওয়ার্ক`,
+            imageUrl: art.imageUrl,
+            artist: art.artist,
+            artId: art.artId,
+            ratings: art.ratings,
+            category: "Digital Art",
+            createdAt: new Date().toISOString()
+          })}
+        />
+      ))}
+      
+      <main className="mx-auto w-full max-w-6xl space-y-4 p-4 sm:p-6">
       <section className="card-glow rounded-3xl p-5 sm:p-7">
         <h1 className="text-3xl font-extrabold">সব ছবি</h1>
         <p className="mt-2 text-sm font-bold text-zinc-300">
@@ -81,6 +107,6 @@ export default function GalleryPage() {
         />
       )}
     </main>
+    </>
   );
 }
-
