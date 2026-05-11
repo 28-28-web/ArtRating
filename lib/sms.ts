@@ -12,12 +12,26 @@ export async function sendOtpSms({ phone, otp }: SendOtpInput) {
     return { success: true, skipped: true };
   }
 
-  const message = encodeURIComponent(`Your ArtRating OTP: ${otp}`);
-  const url = `https://sms.mimsms.com/api/SendSMS?ApiKey=${apiKey}&ClientId=${username}&SenderId=01896050632&Message=${message}&MobileNumbers=88${phone}&Is_Unicode=false&Is_Flash=false`;
+  const res = await fetch('https://api.mimsms.com/api/SmsSending/SMS', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'bearer',
+    },
+    body: JSON.stringify({
+      UserName: username,
+      ApiKey: apiKey,
+      MobileNumber: `88${phone}`,
+      CampaignId: 'null',
+      SenderName: '01896050632',
+      TransactionType: 'T',
+      Message: `Your ArtRating OTP: ${otp}`,
+      SmsData: null,
+    }),
+  });
 
-  const res = await fetch(url);
-  const text = await res.text();
-  console.log('[MiMSMS Response]', text);
+  const data = await res.json();
+  console.log('[MiMSMS Response]', JSON.stringify(data));
 
-  return { success: res.ok, data: text };
+  return { success: data.statusCode === '200', data };
 }
