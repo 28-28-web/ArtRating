@@ -12,10 +12,12 @@ export async function sendOtpSms({ phone, otp }: SendOtpInput) {
     return { success: true, skipped: true };
   }
 
-  const url = `https://sms.mimsms.com/api/sendsms?api_key=${apiKey}&api_secret=${username}&mobile=88${phone}&smstext=Your ArtRating OTP: ${otp}&sid=01896050632&mtype=TEXT&jsonResponse=1`;
+  const message = encodeURIComponent(`Your ArtRating OTP: ${otp}`);
+  const url = `https://sms.mimsms.com/api/SendSMS?ApiKey=${apiKey}&ClientId=${username}&SenderId=01896050632&Message=${message}&MobileNumbers=88${phone}&Is_Unicode=false&Is_Flash=false`;
 
   const res = await fetch(url);
   const text = await res.text();
   console.log('[MiMSMS Response]', text);
+
   return { success: res.ok, data: text };
 }
