@@ -2,23 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
-import { LanguageToggle } from "./LanguageToggle";
+
+const menu = [
+  { href: "/", label: "হোম" },
+  { href: "/gallery", label: "সব ছবি" },
+  { href: "/forum", label: "ফোরাম" },
+  { href: "/leaderboard", label: "লিডারবোর্ড" },
+  { href: "/competition", label: "প্রতিযোগিতা" },
+  { href: "/campaign", label: "ক্যাম্পেইন" },
+];
 
 export function Navbar() {
   const pathname = usePathname();
-  const t = useTranslations('navigation');
   const [open, setOpen] = useState(false);
-
-  const menu = useMemo(() => [
-    { href: "/", label: t('home') },
-    { href: "/gallery", label: t('gallery') },
-    { href: "/forum", label: t('forum') },
-    { href: "/leaderboard", label: t('leaderboard') },
-    { href: "/competition", label: t('competition') },
-    { href: "/campaign", label: t('campaign') },
-  ], [t]);
 
   const active = useMemo(() => {
     return menu.find((m) => m.href === pathname)?.href;
@@ -54,18 +51,17 @@ export function Navbar() {
 
         {/* Right actions */}
         <div className="hidden items-center gap-2 md:flex">
-          <LanguageToggle />
           <Link
             href="/login"
             className="rounded-xl bg-gradient-to-r from-emerald-500 to-green-500 px-4 py-2 text-sm font-extrabold text-black shadow-[0_0_22px_rgba(34,197,94,0.18)]"
           >
-            {t('login')}
+            লগইন
           </Link>
           <Link
             href="/register"
             className="rounded-xl bg-gradient-to-r from-orange-400 to-rose-500 px-4 py-2 text-sm font-extrabold text-black shadow-[0_0_22px_rgba(249,115,22,0.18)]"
           >
-            {t('register')}
+            নিবন্ধন
           </Link>
         </div>
 
