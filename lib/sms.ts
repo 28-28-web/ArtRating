@@ -4,27 +4,18 @@ type SendOtpInput = {
 };
 
 export async function sendOtpSms({ phone, otp }: SendOtpInput) {
-  const apiKey = process.env.SSL_WIRELESS_API_KEY;
-  const sid = process.env.SSL_WIRELESS_SID;
-  
-  // If API key is not available, use console.log instead
-  if (!apiKey || !sid) {
+  const apiKey = process.env.MIMSMS_API_KEY;
+  const username = process.env.MIMSMS_USERNAME;
+
+  if (!apiKey || !username) {
     console.log(`OTP for ${phone}: ${otp}`);
     return { success: true, skipped: true };
   }
 
-  const params = new URLSearchParams({
-    api_token: apiKey,
-    sid,
-    msisdn: `88${phone}`,
-    sms: `আপনার ArtRating OTP: ${otp}`,
-    csms_id: `artrating-${Date.now()}`,
-  });
+  const url = `https://sms.mimsms.com/api/sendsms?api_key=${apiKey}&api_secret=${username}&mobile=88${phone}&smstext=Your ArtRating OTP: ${otp}&sid=ArtRating&mtype=TEXT&jsonResponse=1`;
 
-  const res = await fetch("https://smsplus.sslwireless.com/api/v3/send-sms", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: params.toString(),
-  });
-  return { success: res.ok };
+  const res = await fetch(url);
+  const data = await res.json();
+
+  return { success: res.ok, data };
 }
