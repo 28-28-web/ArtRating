@@ -1,0 +1,55 @@
+<svg width="1200" height="628" viewBox="0 0 1200 628" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="628" fill="url(#bg)"/>
+  
+  <!-- Art elements -->
+  <circle cx="200" cy="150" r="80" fill="#fbbf24" opacity="0.3"/>
+  <circle cx="1000" cy="480" r="60" fill="#34d399" opacity="0.3"/>
+  <rect x="950" y="100" width="120" height="120" rx="20" fill="#f87171" opacity="0.3" transform="rotate(45 1010 160)"/>
+  
+  <!-- Main content -->
+  <text x="600" y="250" font-family="Arial, sans-serif" font-size="72" font-weight="bold" text-anchor="middle" fill="white">
+    ArtRating.art
+  </text>
+  
+  <text x="600" y="320" font-family="Arial, sans-serif" font-size="36" text-anchor="middle" fill="white" opacity="0.9">
+    বাংলাদেশের শিল্পীদের রেটিং প্ল্যাটফর্ম
+  </text>
+  
+  <text x="600" y="380" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="white" opacity="0.8">
+    আপনার শিল্পকর্ম আপলোড করুন, রেটিং পান এবং পুরস্কার জিতুন
+  </text>
+  
+  <!-- Decorative elements -->
+  <path d="M 300 450 Q 400 400 500 450 T 700 450" stroke="white" stroke-width="3" fill="none" opacity="0.5"/>
+  <path d="M 500 500 Q 600 450 700 500 T 900 500" stroke="white" stroke-width="3" fill="none" opacity="0.5"/>
+  
+  <!-- Rating stars -->
+  <g transform="translate(450, 200)">
+    <path d="M 0 -15 L 4.5 -4.5 L 15 -3 L 7.5 4.5 L 9 15 L 0 9 L -9 15 L -7.5 4.5 L -15 -3 L -4.5 -4.5 Z" fill="#fbbf24"/>
+  </g>
+  <g transform="translate(500, 200)">
+    <path d="M 0 -15 L 4.5 -4.5 L 15 -3 L 7.5 4.5 L 9 15 L 0 9 L -9 15 L -7.5 4.5 L -15 -3 L -4.5 -4.5 Z" fill="#fbbf24"/>
+  </g>
+  <g transform="translate(550, 200)">
+    <path d="M 0 -15 L 4.5 -4.5 L 15 -3 L 7.5 4.5 L 9 15 L 0 9 L -9 15 L -7.5 4.5 L -15 -3 L -4.5 -4.5 Z" fill="#fbbf24"/>
+  </g>
+  <g transform="translate(600, 200)">
+    <path d="M 0 -15 L 4.5 -4.5 L 15 -3 L 7.5 4.5 L 9 15 L 0 9 L -9 15 L -7.5 4.5 L -15 -3 L -4.5 -4.5 Z" fill="#fbbf24"/>
+  </g>
+  <g transform="translate(650, 200)">
+    <path d="M 0 -15 L 4.5 -4.5 L 15 -3 L 7.5 4.5 L 9 15 L 0 9 L -9 15 L -7.5 4.5 L -15 -3 L -4.5 -4.5 Z" fill="#fbbf24"/>
+  </g>
+  
+  <!-- Bottom text -->
+  <text x="600" y="550" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="white" opacity="0.7">
+    🎨 প্রতি সপ্তাহে পুরস্কার 🏆 কমিউনিটি রেটিং ⭐
+  </text>
+</svg>

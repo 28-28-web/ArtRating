@@ -12,8 +12,14 @@ const hindSiliguri = Hind_Siliguri({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://artrating.art'),
   title: "ArtRating.art",
-  description: "বাংলাদেশি আর্ট রেটিং প্ল্যাটফর্ম",
+  description: "বাংলাদেশের শিল্পীদের জন্য একটি আর্ট রেটিং প্ল্যাটফর্ম। আপনার আঁকা ছবি আপলোড করুন, কমিউনিটি রেটিং পান এবং প্রতি সপ্তাহে পুরস্কার জিতুন।",
+  openGraph: {
+    images: ['/og-image.png'],
+    locale: 'bn_BD',
+    alternateLocale: 'en_US',
+  },
 };
 
 export default function RootLayout({

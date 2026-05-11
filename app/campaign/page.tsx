@@ -1,14 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { Certificate } from "@/components/Certificate";
-import { generateMetadata, generateBreadcrumbStructuredData } from "@/lib/seo";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = generateMetadata({
-  title: "সাপ্তাহিক আর্ট চ্যালেঞ্জ",
-  description: "প্রতি সপ্তাহে নতুন থিম, নতুন চ্যালেঞ্জ, এবং আকর্ষণীয় পুরস্কার জেতার সুযোগ। এখনই অংশ নিন!",
-  keywords: ["চ্যালেঞ্জ", "আর্ট চ্যালেঞ্জ", "সাপ্তাহিক প্রতিযোগিতা", "পুরস্কার", "থিম"],
-  url: "https://artrating.art/campaign"
-});
+import { generateBreadcrumbStructuredData } from "@/lib/seo";
 
 export default function CampaignPage() {
   const weeklyTheme = {
