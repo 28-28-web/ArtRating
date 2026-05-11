@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { FloatingArtEmojis } from "@/components/FloatingArtEmojis";
+import { JsonLd } from "@/components/JsonLd";
 import { ProtectedImage } from "@/components/ProtectedImage";
 import { ShareModal } from "@/components/ShareModal";
 import { WeekCountdown } from "@/components/WeekCountdown";
 import { WaveDivider } from "@/components/WaveDivider";
 import { RatingClock } from "@/components/RatingClock";
 import { demoArtworks } from "@/lib/demo";
+import { generateArtworkStructuredData, generateOrganizationStructuredData } from "@/lib/seo";
 import { useState } from "react";
 
 export default function HomePage() {
@@ -19,7 +21,25 @@ export default function HomePage() {
     imageUrl: string;
   } | null>(null);
   return (
-    <main className="mx-auto w-full max-w-6xl p-4 sm:p-6">
+    <>
+      <JsonLd data={generateOrganizationStructuredData()} />
+      
+      {/* Generate structured data for top rated artwork */}
+      <JsonLd 
+        data={generateArtworkStructuredData({
+          id: top.artId,
+          title: top.title,
+          description: `${top.title} by ${top.artist} - বাংলাদেশের শিল্পীদের আর্টওয়ার্ক`,
+          imageUrl: top.imageUrl,
+          artist: top.artist,
+          artId: top.artId,
+          ratings: top.ratings,
+          category: "Digital Art",
+          createdAt: new Date().toISOString()
+        })}
+      />
+      
+      <main className="mx-auto w-full max-w-6xl p-4 sm:p-6">
       <section className="hero-splash card-glow relative mb-6 rounded-3xl p-5 sm:p-7">
         <FloatingArtEmojis />
         <h1 className="relative z-10 text-3xl font-extrabold sm:text-5xl">
@@ -177,5 +197,6 @@ export default function HomePage() {
         />
       )}
     </main>
+    </>
   );
 }

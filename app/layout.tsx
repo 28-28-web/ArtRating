@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Hind_Siliguri } from "next/font/google";
 import "./globals.css";
+import { JsonLd } from "@/components/JsonLd";
 import { Providers } from "@/components/Providers";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { generateOrganizationStructuredData } from "@/lib/seo";
 
 const hindSiliguri = Hind_Siliguri({
   variable: "--font-hind-siliguri",
@@ -30,6 +32,7 @@ export default function RootLayout({
   return (
     <html lang="bn" className={`${hindSiliguri.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
+        <JsonLd data={generateOrganizationStructuredData()} />
         <Providers>
           <Navbar />
           <div className="flex min-h-0 flex-1 flex-col">{children}</div>
