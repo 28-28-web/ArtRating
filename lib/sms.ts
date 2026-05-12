@@ -12,16 +12,17 @@ export async function sendOtpSms({ phone, otp }: SendOtpInput) {
     return { success: true, skipped: true };
   }
 
+  const cleanPhone = phone.replace(/^\+?88|^0/, '');
+
   const res = await fetch('https://api.mimsms.com/api/SmsSending/SMS', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'bearer',
     },
     body: JSON.stringify({
       UserName: username,
       ApiKey: apiKey,
-      MobileNumber: `88${phone}`,
+      MobileNumber: `88${cleanPhone}`,
       CampaignId: 'null',
       SenderName: '01896050632',
       TransactionType: 'T',
