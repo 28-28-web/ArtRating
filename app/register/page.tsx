@@ -14,8 +14,9 @@ export default function RegisterPage() {
   const [registerType, setRegisterType] = useState<"google" | "phone">("google");
 
   async function onGoogleRegister() {
-    const res = await signIn("google", { redirect: false });
-    if (res?.ok) {
+    // This will redirect to Google's OAuth consent screen
+    const res = await signIn("google");
+    if (res !== undefined) {
       setStatus("Google রেজিস্ট্রেশন সফল");
       router.push("/");
     } else {
