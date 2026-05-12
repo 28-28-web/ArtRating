@@ -25,13 +25,12 @@ export async function sendOtpSms({ phone, otp }: SendOtpInput) {
       CampaignId: 'null',
       SenderName: '01896050632',
       TransactionType: 'T',
-      Message: `Your ArtRating OTP: ${otp}`,
+      Message: `Welcome to ArtRating. Your verification code is ${otp}. Valid for 5 minutes only.`,
       SmsData: null,
     }),
   });
 
   const data = await res.json();
   console.log('[MiMSMS Response]', JSON.stringify(data));
-
   return { success: data.statusCode === '200', data };
 }

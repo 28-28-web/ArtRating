@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
@@ -7,8 +8,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
   session: { strategy: "jwt" },
   providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
+    }),
     Credentials({
-      name: "ফোন লগইন",
+      name: "ফোন লগইন (আপলোডার)",
       credentials: {
         phone: { label: "ফোন", type: "text" },
         password: { label: "পাসওয়ার্ড", type: "password" },
@@ -38,6 +50,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.id = user.id;
         token.phone = (user as { phone?: string }).phone;
         token.role = (user as { role?: string }).role;
+        token.email = (user as { email?: string }).email;
+        token.image = (user as { image?: string }).image;
       }
       return token;
     },
@@ -46,6 +60,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id as string;
         session.user.phone = token.phone as string;
         session.user.role = token.role as string;
+        session.user.email = token.email as string;
+        session.user.image = token.image as string;
       }
       return session;
     },
