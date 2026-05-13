@@ -12,7 +12,7 @@ export async function sendOtpSms({ phone, otp }: SendOtpInput) {
     return { success: true, skipped: true };
   }
 
-  const cleanPhone = phone.replace(/^0/, '');
+  const mobileNumber = `880${phone.replace(/^0/, '')}`;
 
   const res = await fetch('https://api.mimsms.com/api/SmsSending/SMS', {
     method: 'POST',
@@ -23,11 +23,12 @@ export async function sendOtpSms({ phone, otp }: SendOtpInput) {
     body: JSON.stringify({
       UserName: username,
       Apikey: apiKey,
-      MobileNumber: `88${cleanPhone}`,
+      MobileNumber: mobileNumber,
       CampaignId: 'null',
       SenderName: 'iSMS',
       TransactionType: 'T',
       Message: `Welcome to ArtRating. Your verification code is ${otp}. Valid for 5 minutes only.`,
+      MessageId: '',
       SmsData: null,
     }),
   });
