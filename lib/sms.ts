@@ -24,12 +24,10 @@ export async function sendOtpSms({ phone, otp }: SendOtpInput) {
       UserName: username,
       Apikey: apiKey,
       MobileNumber: mobileNumber,
-      CampaignId: 'null',
+      CampaignId: '',
       SenderName: '01896050632',
       TransactionType: 'T',
       Message: `Welcome to ArtRating. Your verification code is ${otp}. Valid for 5 minutes only.`,
-      MessageId: '',
-      SmsData: null,
     }),
   });
 
