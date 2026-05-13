@@ -1,5 +1,14 @@
 import Link from "next/link";
 import { WaveDivider } from "@/components/WaveDivider";
+import { generateMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = generateMetadata({
+  title: "লিডারবোর্ড",
+  description: "সাপ্তাহিক শীর্ষ শিল্পীদের র‍্যাংকিং। ট্রফি ব্যাজ, রঙিন র‍্যাংকিং আর সবার চোখে থাকা টপ পারফরম্যান্স দেখুন। পুরস্কার ক্যালকুলেটর এবং গত সপ্তাহের বিজয়ী।",
+  keywords: ["লিডারবোর্ড", "র‍্যাংকিং", "শীর্ষ শিল্পী", "পুরস্কার", "ট্রফি", "রেটিং"],
+  url: "https://artrating.art/leaderboard"
+});
 
 export default function LeaderboardPage() {
   const rows = [

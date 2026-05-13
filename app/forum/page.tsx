@@ -1,5 +1,14 @@
 import Link from "next/link";
 import { WaveDivider } from "@/components/WaveDivider";
+import { generateMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = generateMetadata({
+  title: "ফোরাম",
+  description: "শিল্পীদের গল্প, প্রশ্ন-উত্তর এবং মতবিনিময়। বাংলাদেশের শিল্পীদের সম্প্রদায়ে যোগ দিন এবং আর্ট সম্পর্কে আলোচনা করুন।",
+  keywords: ["ফোরাম", "শিল্পী", "আলোচনা", "প্রশ্ন", "উত্তর", "কমিউনিটি"],
+  url: "https://artrating.art/forum"
+});
 
 const posts = [
   { id: "1", title: "এই সপ্তাহের আর্ট স্টোরি", author: "তানভীর", replies: 12 },
