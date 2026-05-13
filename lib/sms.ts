@@ -18,10 +18,11 @@ export async function sendOtpSms({ phone, otp }: SendOtpInput) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': 'bearer',
     },
     body: JSON.stringify({
       UserName: username,
-      ApiKey: apiKey,
+      Apikey: apiKey,
       MobileNumber: `88${cleanPhone}`,
       CampaignId: 'null',
       SenderName: '01896050632',
