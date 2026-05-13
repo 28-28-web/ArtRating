@@ -25,7 +25,7 @@ export async function sendOtpSms({ phone, otp }: SendOtpInput) {
       Apikey: apiKey,
       MobileNumber: mobileNumber,
       CampaignId: 'null',
-      SenderName: 'iSMS',
+      SenderName: '01896050632',
       TransactionType: 'T',
       Message: `Welcome to ArtRating. Your verification code is ${otp}. Valid for 5 minutes only.`,
       MessageId: '',
