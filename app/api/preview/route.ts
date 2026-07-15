@@ -10,6 +10,7 @@ const STYLE_PROMPTS: Record<string, string> = {
   anime: "anime style illustration, vibrant cel-shaded art, clean linework",
   "oil painting": "classic oil painting, thick brushstrokes, canvas texture",
   monet: "in the style of Monet, impressionist brushstrokes, soft light",
+  "pop art": "vibrant Pop Art style, bold flat colors, comic-book outlines, Warhol-inspired",
   portrait: "stylized AI portrait, digital art, dramatic lighting",
   avatar: "stylized AI avatar, digital art, dramatic lighting",
 };

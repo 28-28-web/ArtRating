@@ -11,6 +11,7 @@ const STYLE_KEYWORDS = [
   "oil painting",
   "anime",
   "monet",
+  "pop art",
   "portrait",
   "avatar",
 ];

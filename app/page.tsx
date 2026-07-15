@@ -1,5 +1,5 @@
 import Link from "next/link";
-import UploadChatSection from "@/app/components/UploadChatSection";
+import HomeInteractive from "@/app/components/HomeInteractive";
 import { SITE_NAME, SITE_URL } from "@/app/lib/site";
 
 const jsonLd = {
@@ -38,7 +38,7 @@ export default function Home() {
           </p>
         </section>
 
-        <UploadChatSection />
+        <HomeInteractive />
 
         <section className="flex w-full flex-col gap-4">
           <h2 className="text-xl font-semibold">Guides &amp; Comparisons</h2>
