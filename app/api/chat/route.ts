@@ -3,10 +3,9 @@ import { NextResponse } from "next/server";
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 const FREE_MODELS = [
-  "meta-llama/llama-3.2-3b-instruct:free",
   "meta-llama/llama-3.3-70b-instruct:free",
-  "google/gemma-3-27b-it:free",
-  "qwen/qwen3-coder:free",
+  "openai/gpt-oss-120b:free",
+  "openrouter/free",
 ];
 
 const SYSTEM_PROMPT = `You are a friendly art-style advisor on an AI photo-to-painting affiliate site.
@@ -54,9 +53,9 @@ export async function POST(request: Request) {
         }),
       });
 
-      if (res.status === 429) {
+      if (res.status === 429 || res.status === 404) {
         // TODO: remove this temporary debug logging once chat is confirmed stable
-        console.error("OpenRouter rate-limited on", model, "- trying next model");
+        console.error("OpenRouter", res.status, "on", model, "- trying next model");
         continue;
       }
 
@@ -81,7 +80,7 @@ export async function POST(request: Request) {
     }
 
     // TODO: remove this temporary debug logging once chat is confirmed stable
-    console.error("All OpenRouter free models rate-limited");
+    console.error("All OpenRouter free models rate-limited or unavailable");
     return NextResponse.json(
       { reply: "Sorry, the style advisor is unavailable right now. Please try again shortly." },
       { status: 200 }
