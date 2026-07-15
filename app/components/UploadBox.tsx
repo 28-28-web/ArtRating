@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { AFFILIATE_TOOLS } from "@/app/lib/affiliate";
+import { ART_STYLE_MODE, type PreviewMode } from "@/app/lib/previewModes";
 
 const WATERMARK_TEXT = "PAINTIFY PREVIEW";
 
@@ -31,8 +31,10 @@ function watermarkAndResize(srcDataUrl: string): Promise<string> {
 
 export default function UploadBox({
   selectedStyle,
+  mode = ART_STYLE_MODE,
 }: {
   selectedStyle?: string | null;
+  mode?: PreviewMode;
 }) {
   const [preview, setPreview] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -57,10 +59,10 @@ export default function UploadBox({
     setGenerating(true);
     setPreviewError(null);
     try {
-      const res = await fetch("/api/preview", {
+      const res = await fetch(mode.apiEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ style: selectedStyle ?? "stylized painting", image: preview }),
+        body: JSON.stringify({ style: selectedStyle ?? mode.fallbackStyle, image: preview }),
       });
       const data = await res.json();
       if (!res.ok || data.error || !data.image) {
@@ -114,6 +116,10 @@ export default function UploadBox({
         />
       </div>
 
+      {mode.disclaimer && (
+        <p className="mt-2 text-xs text-zinc-400">{mode.disclaimer}</p>
+      )}
+
       {preview && (
         <div className="mt-4 flex flex-col gap-3">
           <button
@@ -136,25 +142,21 @@ export default function UploadBox({
                 height={256}
                 className="rounded-lg"
               />
-              <p className="text-center text-sm text-zinc-500">
-                This is just a preview! Get the full HD, watermark-free version →
-              </p>
+              <p className="text-center text-sm text-zinc-500">{mode.resultCaption}</p>
               <a
-                href={AFFILIATE_TOOLS["deep-art-effects"].url}
+                href={mode.ctaTool.url}
                 target="_blank"
                 rel="noopener noreferrer sponsored"
                 className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90"
               >
-                Try {AFFILIATE_TOOLS["deep-art-effects"].name} →
+                Try {mode.ctaTool.name} →
               </a>
             </div>
           )}
 
-          <p className="text-sm text-zinc-500">
-            Nice photo! Turn it into a painting with one of our recommended tools:
-          </p>
+          <p className="text-sm text-zinc-500">{mode.bottomToolsCaption}</p>
           <div className="flex flex-wrap gap-2">
-            {Object.values(AFFILIATE_TOOLS).map((tool) => (
+            {mode.bottomTools.map((tool) => (
               <a
                 key={tool.id}
                 href={tool.url}

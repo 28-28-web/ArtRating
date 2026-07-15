@@ -2,19 +2,9 @@
 
 import { useState } from "react";
 import { AFFILIATE_TOOLS } from "@/app/lib/affiliate";
+import { ART_STYLE_MODE, type PreviewMode } from "@/app/lib/previewModes";
 
 type Message = { role: "user" | "assistant"; content: string };
-
-const STYLE_KEYWORDS = [
-  "van gogh",
-  "watercolor",
-  "oil painting",
-  "anime",
-  "monet",
-  "pop art",
-  "portrait",
-  "avatar",
-];
 
 function detectTool(text: string) {
   const lower = text.toLowerCase();
@@ -23,22 +13,20 @@ function detectTool(text: string) {
   return null;
 }
 
-function detectStyle(text: string): string | null {
+function detectStyle(text: string, keywords: string[]): string | null {
   const lower = text.toLowerCase();
-  return STYLE_KEYWORDS.find((keyword) => lower.includes(keyword)) ?? null;
+  return keywords.find((keyword) => lower.includes(keyword)) ?? null;
 }
 
 export default function ChatWidget({
   onStyleDetected,
+  mode = ART_STYLE_MODE,
 }: {
   onStyleDetected?: (style: string) => void;
+  mode?: PreviewMode;
 }) {
   const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content:
-        "Hi! What art style do you want for your photo — Van Gogh, oil painting, watercolor, anime, or a stylized AI portrait?",
-    },
+    { role: "assistant", content: mode.chatGreeting },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -52,14 +40,14 @@ export default function ChatWidget({
     setInput("");
     setLoading(true);
 
-    const style = detectStyle(text);
+    const style = detectStyle(text, mode.styleKeywords);
     if (style) onStyleDetected?.(style);
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next }),
+        body: JSON.stringify({ messages: next, mode: mode.chatMode }),
       });
       const data = await res.json();
       setMessages([...next, { role: "assistant", content: data.reply }]);
@@ -76,8 +64,8 @@ export default function ChatWidget({
   return (
     <div className="flex w-full max-w-md flex-col rounded-2xl border border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-zinc-900">
       <div className="border-b border-black/10 px-4 py-3 dark:border-white/10">
-        <h3 className="font-semibold">Art Style Advisor</h3>
-        <p className="text-xs text-zinc-500">Powered by AI · tells you which tool fits your style</p>
+        <h3 className="font-semibold">{mode.chatTitle}</h3>
+        <p className="text-xs text-zinc-500">{mode.chatSubtitle}</p>
       </div>
 
       <div className="flex max-h-80 flex-col gap-3 overflow-y-auto px-4 py-3">
@@ -115,7 +103,7 @@ export default function ChatWidget({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          placeholder="e.g. Van Gogh style"
+          placeholder={mode.chatPlaceholder}
           className="flex-1 rounded-full border border-black/10 bg-transparent px-4 py-2 text-sm outline-none dark:border-white/10"
         />
         <button

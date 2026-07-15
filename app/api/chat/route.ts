@@ -8,13 +8,22 @@ const FREE_MODELS = [
   "openrouter/free",
 ];
 
-const SYSTEM_PROMPT = `You are a friendly art-style advisor on an AI photo-to-painting affiliate site.
+const SYSTEM_PROMPTS: Record<"art" | "headshot", string> = {
+  art: `You are a friendly art-style advisor on an AI photo-to-painting affiliate site.
 Your only job: ask the visitor which art style they want for their photo (e.g. Van Gogh, oil painting,
 watercolor, anime, stylized portrait/avatar), then recommend ONE tool:
 - "Deep Art Effects" for classic painting styles (Van Gogh, Monet, oil, watercolor, batch processing).
 - "PhotoAI" for stylized AI portraits/avatars from selfies.
 Keep replies under 3 sentences. Once you know their style, clearly name the recommended tool by name
-in your reply so it can be linked automatically. Do not invent pricing or features you're unsure of.`;
+in your reply so it can be linked automatically. Do not invent pricing or features you're unsure of.`,
+  headshot: `You are a friendly headshot-style advisor on an AI photo tool site.
+Your only job: ask the visitor which professional headshot look they want — Corporate, LinkedIn,
+Studio Portrait, or Creative Professional — then recommend "PhotoAI" as the tool for a full-resolution,
+watermark-free AI headshot. Keep replies under 3 sentences. Once you know their preferred look,
+clearly name "PhotoAI" in your reply so it can be linked automatically. Do not invent pricing or
+features you're unsure of, and never claim this replaces a professional photographer or guarantees
+a job outcome.`,
+};
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -32,9 +41,11 @@ export async function POST(request: Request) {
   }
 
   let messages: ChatMessage[];
+  let mode: "art" | "headshot";
   try {
     const body = await request.json();
     messages = Array.isArray(body?.messages) ? body.messages : [];
+    mode = body?.mode === "headshot" ? "headshot" : "art";
   } catch {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
@@ -49,7 +60,7 @@ export async function POST(request: Request) {
         },
         body: JSON.stringify({
           model,
-          messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+          messages: [{ role: "system", content: SYSTEM_PROMPTS[mode] }, ...messages],
         }),
       });
 

@@ -45,6 +45,9 @@ export default function RootLayout({
               <Link href="/van-gogh-style-ai-filter-top-tools" className="hover:text-foreground">
                 Van Gogh Filters
               </Link>
+              <Link href="/professional-headshot-generator" className="hover:text-foreground">
+                Headshot Generator
+              </Link>
             </div>
           </nav>
         </header>

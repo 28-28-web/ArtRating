@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
+import { generateImg2Img } from "@/app/lib/cloudflareImg2Img";
 
-const CLOUDFLARE_MODEL = "@cf/runwayml/stable-diffusion-v1-5-img2img";
 const IMG2IMG_STRENGTH = 0.6;
-const REQUEST_TIMEOUT_MS = 25000;
 
 const STYLE_PROMPTS: Record<string, string> = {
   "van gogh": "in the style of Van Gogh, swirling post-impressionist brushstrokes, vibrant blues and yellows",
@@ -43,73 +42,24 @@ export async function POST(request: Request) {
     const body = await request.json();
     style = typeof body?.style === "string" && body.style.trim() ? body.style : "stylized painting";
     imageDataUrl = typeof body?.image === "string" ? body.image : "";
-    if (!imageDataUrl.startsWith("data:image/")) {
-      return NextResponse.json({ error: "Invalid image" }, { status: 400 });
-    }
   } catch {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const inputBytes = Array.from(
-    Buffer.from(imageDataUrl.slice(imageDataUrl.indexOf(",") + 1), "base64")
-  );
+  const result = await generateImg2Img({
+    accountId,
+    apiToken,
+    prompt: promptForStyle(style),
+    imageDataUrl,
+    strength: IMG2IMG_STRENGTH,
+  });
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-
-  try {
-    const res = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${CLOUDFLARE_MODEL}`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt: promptForStyle(style),
-          image: inputBytes,
-          strength: IMG2IMG_STRENGTH,
-        }),
-        signal: controller.signal,
-      }
-    );
-
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error("Cloudflare Workers AI error:", res.status, errText);
-      return unavailable();
-    }
-
-    const contentType = res.headers.get("content-type") ?? "";
-
-    // Beta img2img model: Cloudflare has changed response shape between raw
-    // binary and JSON-wrapped base64 across model versions, so handle both.
-    if (contentType.includes("application/json")) {
-      const data = await res.json();
-      const base64Out: string | undefined = data?.result?.image;
-      if (!data?.success || !base64Out) {
-        console.error("Cloudflare Workers AI: unexpected JSON response", data);
-        return unavailable();
-      }
-      return NextResponse.json({ image: `data:image/png;base64,${base64Out}` });
-    }
-
-    const arrayBuffer = await res.arrayBuffer();
-    if (arrayBuffer.byteLength === 0) {
-      console.error("Cloudflare Workers AI: empty binary response");
-      return unavailable();
-    }
-    const outBase64 = Buffer.from(arrayBuffer).toString("base64");
-    return NextResponse.json({ image: `data:image/png;base64,${outBase64}` });
-  } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") {
-      console.error("Cloudflare Workers AI: request timed out");
-    } else {
-      console.error(error);
+  if (!result.image) {
+    if (result.error === "Invalid image") {
+      return NextResponse.json({ error: "Invalid image" }, { status: 400 });
     }
     return unavailable();
-  } finally {
-    clearTimeout(timeout);
   }
+
+  return NextResponse.json({ image: result.image });
 }
