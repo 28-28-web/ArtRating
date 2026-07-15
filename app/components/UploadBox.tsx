@@ -137,7 +137,7 @@ export default function UploadBox({
                 className="rounded-lg"
               />
               <p className="text-center text-sm text-zinc-500">
-                এটা তো প্রিভিউ মাত্র! Full HD, watermark-ছাড়া ভার্সন পেতে →
+                This is just a preview! Get the full HD, watermark-free version →
               </p>
               <a
                 href={AFFILIATE_TOOLS["deep-art-effects"].url}
