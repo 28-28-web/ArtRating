@@ -34,29 +34,44 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const res = await fetch(OPENROUTER_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: process.env.OPENROUTER_MODEL || DEFAULT_MODEL,
-      messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
-    }),
-  });
+  try {
+    const res = await fetch(OPENROUTER_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: process.env.OPENROUTER_MODEL || DEFAULT_MODEL,
+        messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+      }),
+    });
 
-  if (!res.ok) {
+    if (!res.ok) {
+      const errText = await res.text();
+      // TODO: remove this temporary debug logging once chat is confirmed stable
+      console.error("OpenRouter error:", res.status, errText);
+      return NextResponse.json(
+        {
+          reply: `Sorry, the style advisor is unavailable right now. Please try again shortly. [debug: ${res.status} ${errText}]`,
+        },
+        { status: 200 }
+      );
+    }
+
+    const data = await res.json();
+    const reply: string =
+      data?.choices?.[0]?.message?.content?.trim() ||
+      "Sorry, I couldn't come up with a recommendation just now.";
+
+    return NextResponse.json({ reply });
+  } catch (error) {
+    // TODO: remove this temporary debug logging once chat is confirmed stable
+    console.error(error);
+    const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { reply: "Sorry, the style advisor is unavailable right now. Please try again shortly." },
+      { reply: `Sorry, the style advisor hit an error. [debug: ${message}]` },
       { status: 200 }
     );
   }
-
-  const data = await res.json();
-  const reply: string =
-    data?.choices?.[0]?.message?.content?.trim() ||
-    "Sorry, I couldn't come up with a recommendation just now.";
-
-  return NextResponse.json({ reply });
 }
