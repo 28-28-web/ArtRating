@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_MODEL = "meta-llama/llama-3.2-3b-instruct:free";
+const DEFAULT_MODEL = "openrouter/free";
 
 const SYSTEM_PROMPT = `You are a friendly art-style advisor on an AI photo-to-painting affiliate site.
 Your only job: ask the visitor which art style they want for their photo (e.g. Van Gogh, oil painting,
