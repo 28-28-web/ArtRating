@@ -5,6 +5,16 @@ import { AFFILIATE_TOOLS } from "@/app/lib/affiliate";
 
 type Message = { role: "user" | "assistant"; content: string };
 
+const STYLE_KEYWORDS = [
+  "van gogh",
+  "watercolor",
+  "oil painting",
+  "anime",
+  "monet",
+  "portrait",
+  "avatar",
+];
+
 function detectTool(text: string) {
   const lower = text.toLowerCase();
   if (lower.includes("photoai")) return AFFILIATE_TOOLS.photoai;
@@ -12,7 +22,16 @@ function detectTool(text: string) {
   return null;
 }
 
-export default function ChatWidget() {
+function detectStyle(text: string): string | null {
+  const lower = text.toLowerCase();
+  return STYLE_KEYWORDS.find((keyword) => lower.includes(keyword)) ?? null;
+}
+
+export default function ChatWidget({
+  onStyleDetected,
+}: {
+  onStyleDetected?: (style: string) => void;
+}) {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
@@ -31,6 +50,9 @@ export default function ChatWidget() {
     setMessages(next);
     setInput("");
     setLoading(true);
+
+    const style = detectStyle(text);
+    if (style) onStyleDetected?.(style);
 
     try {
       const res = await fetch("/api/chat", {
