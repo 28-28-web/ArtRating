@@ -44,6 +44,26 @@ const STYLES: Record<StyleId, StyleInfo> = {
   },
 };
 
+// Cycled by option/style index so a chip's color on the question screen and
+// its result-card border color come from the same palette consistently.
+const PALETTE = [
+  { chip: "chip-cobalt", accent: "var(--cobalt)" },
+  { chip: "chip-jade", accent: "var(--jade)" },
+  { chip: "chip-saffron", accent: "var(--saffron)" },
+  { chip: "chip-magenta", accent: "var(--magenta)" },
+  { chip: "chip-teal-muted", accent: "var(--teal-muted)" },
+];
+
+const STYLE_ORDER: StyleId[] = ["van-gogh", "watercolor", "anime", "oil-painting", "monet", "pop-art"];
+
+function paletteFor(index: number) {
+  return PALETTE[index % PALETTE.length];
+}
+
+function paletteForStyle(style: StyleId) {
+  return paletteFor(STYLE_ORDER.indexOf(style));
+}
+
 type Option = { label: string; style: StyleId };
 type Question = { question: string; options: Option[] };
 
@@ -110,6 +130,46 @@ function computeResult(answers: StyleId[]): StyleId {
   );
 }
 
+const CONFETTI_COLORS = ["var(--cobalt)", "var(--jade)", "var(--saffron)", "var(--magenta)", "var(--teal-muted)"];
+
+function ConfettiBurst() {
+  const dots = Array.from({ length: 12 }, (_, i) => {
+    const angle = (i / 12) * Math.PI * 2;
+    const distance = 40 + (i % 3) * 12;
+    const dx = Math.cos(angle) * distance;
+    const dy = Math.sin(angle) * distance;
+    return {
+      dx: `${dx}px`,
+      dy: `${dy}px`,
+      color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+      delay: `${(i % 4) * 40}ms`,
+      left: "50%",
+      top: "50%",
+    };
+  });
+
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-visible" aria-hidden="true">
+      {dots.map((dot, i) => (
+        <span
+          key={i}
+          className="confetti-dot"
+          style={
+            {
+              left: dot.left,
+              top: dot.top,
+              background: dot.color,
+              animationDelay: dot.delay,
+              "--dx": dot.dx,
+              "--dy": dot.dy,
+            } as React.CSSProperties
+          }
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function StyleQuiz({
   onSelectStyle,
 }: {
@@ -154,19 +214,21 @@ export default function StyleQuiz({
   }
 
   return (
-    <div className="w-full max-w-md rounded-2xl border-2 border-dashed border-border-soft p-6">
+    <div className="quiz-card w-full max-w-md rounded-2xl border border-border-soft p-6">
       {!isComplete && (
         <div className="flex flex-col gap-4">
           <p className="text-sm text-ink-soft">
             Question {currentIndex + 1} of {QUESTIONS.length}
           </p>
-          <p className="font-medium text-ink">{QUESTIONS[currentIndex].question}</p>
-          <div className="flex flex-col gap-2">
-            {QUESTIONS[currentIndex].options.map((option) => (
+          <p className="font-display text-lg font-semibold text-ink">
+            {QUESTIONS[currentIndex].question}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {QUESTIONS[currentIndex].options.map((option, i) => (
               <button
                 key={option.label}
                 onClick={() => handleAnswer(option.style)}
-                className="w-full rounded-xl border border-border-soft p-4 text-left text-sm font-medium text-ink hover:border-accent"
+                className={`quiz-chip rounded-full px-4 py-2 text-left text-sm font-medium ${paletteFor(i).chip}`}
               >
                 {option.label}
               </button>
@@ -176,31 +238,37 @@ export default function StyleQuiz({
       )}
 
       {isComplete && result && (
-        <div className="flex flex-col items-center gap-3 text-center">
-          <h3 className="font-display text-xl font-semibold text-ink">
-            You&apos;re a {STYLES[result].name} type!
-          </h3>
-          <p className="text-sm text-ink-soft">{STYLES[result].description}</p>
+        <div
+          className="tool-card relative flex flex-col items-center gap-3 text-center"
+          style={{ borderColor: paletteForStyle(result).accent, borderWidth: 2 }}
+        >
+          <ConfettiBurst />
+          <div className="tool-card-content flex flex-col items-center gap-3">
+            <h3 className="font-display text-xl font-semibold text-ink">
+              You&apos;re a {STYLES[result].name} type!
+            </h3>
+            <p className="text-sm text-ink-soft">{STYLES[result].description}</p>
 
-          <div className="mt-2 flex flex-col items-center gap-2">
-            <button
-              onClick={() => onSelectStyle(STYLES[result].keyword)}
-              className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas hover:opacity-90"
-            >
-              Try this style on your photo →
-            </button>
-            <button
-              onClick={handleShare}
-              className="rounded-full border border-border-soft px-4 py-2 text-sm font-medium text-ink hover:border-accent hover:text-accent-text"
-            >
-              {copied ? "Copied!" : "Share your result"}
-            </button>
-            <button
-              onClick={handleRetake}
-              className="text-sm text-ink-soft underline underline-offset-2 hover:text-accent-text"
-            >
-              Retake quiz
-            </button>
+            <div className="mt-2 flex flex-col items-center gap-2">
+              <button
+                onClick={() => onSelectStyle(STYLES[result].keyword)}
+                className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas hover:opacity-90"
+              >
+                Try this style on your photo →
+              </button>
+              <button
+                onClick={handleShare}
+                className="rounded-full border border-border-soft px-4 py-2 text-sm font-medium text-ink hover:border-accent hover:text-accent-text"
+              >
+                {copied ? "Copied!" : "Share your result"}
+              </button>
+              <button
+                onClick={handleRetake}
+                className="text-sm text-ink-soft underline underline-offset-2 hover:text-accent-text"
+              >
+                Retake quiz
+              </button>
+            </div>
           </div>
         </div>
       )}

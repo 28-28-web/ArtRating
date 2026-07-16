@@ -25,10 +25,14 @@ export type PreviewMode = {
   // Two-image blend tools (photo-mix) instead of the single-upload flow.
   requiresTwoImages?: boolean;
   consentCheckboxLabel?: string;
+  // Handwritten Caveat-font tagline shown next to the paint-dab on this
+  // tool's polaroid cards (upload card and chat card).
+  cardTagline: string;
 };
 
 export const ART_STYLE_MODE: PreviewMode = {
   accent: "cobalt",
+  cardTagline: "find your inner artist",
   apiEndpoint: "/api/preview",
   fallbackStyle: "stylized painting",
   resultCaption: "This is just a preview! Get a dedicated painting tool for even more styles →",
@@ -55,6 +59,7 @@ export const ART_STYLE_MODE: PreviewMode = {
 
 export const HEADSHOT_MODE: PreviewMode = {
   accent: "teal-muted",
+  cardTagline: "let's make it official",
   apiEndpoint: "/api/headshot-preview",
   fallbackStyle: "corporate",
   disclaimer:
@@ -76,6 +81,7 @@ export const HEADSHOT_MODE: PreviewMode = {
 export const PET_TO_HUMAN_MODE: PreviewMode = {
   id: "pet-to-human",
   accent: "jade",
+  cardTagline: "a fun little transformation",
   apiEndpoint: "/api/pet-human-preview",
   fallbackStyle: "human",
   // High strength — full species transformation, not an identity-preserving retouch.
@@ -101,6 +107,7 @@ export const PET_TO_HUMAN_MODE: PreviewMode = {
 export const TOY_MODE: PreviewMode = {
   id: "toy-ification",
   accent: "saffron",
+  cardTagline: "collectible you, incoming",
   apiEndpoint: "/api/toy-preview",
   fallbackStyle: "toy",
   // Moderate strength — keep recognizable likeness while stylizing heavily into toy form.
@@ -126,6 +133,7 @@ export const TOY_MODE: PreviewMode = {
 export const PHOTO_MIX_MODE: PreviewMode = {
   id: "photo-mix",
   accent: "magenta",
+  cardTagline: "two photos, one story",
   apiEndpoint: "/api/photo-mix",
   fallbackStyle: "photo-mix", // unused (no style picker for this tool)
   disclaimer: "AI-generated composite — lighting and likeness are approximate, not a real photo.",

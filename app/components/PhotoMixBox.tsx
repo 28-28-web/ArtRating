@@ -134,112 +134,115 @@ export default function PhotoMixBox({ mode }: { mode: PreviewMode }) {
   const canGenerate = Boolean(previewA && previewB && consent);
 
   return (
-    <div className="w-full max-w-md">
-      <div className="flex flex-col gap-4 sm:flex-row">
-        <PhotoPanel
-          label="Your photo"
-          hint="JPG or PNG · stays on your device"
-          preview={previewA}
-          onFile={(file) => readFile(file, setPreviewA)}
-        />
-        <PhotoPanel
-          label="Your pet or favorite thing"
-          hint="JPG or PNG · stays on your device"
-          preview={previewB}
-          onFile={(file) => readFile(file, setPreviewB)}
-        />
+    <div className="tool-card w-full max-w-md">
+      <div className="mb-3 flex items-center gap-2">
+        <PaintDab />
+        <span className="font-flourish text-lg text-ink-soft">{mode.cardTagline}</span>
       </div>
 
-      {mode.disclaimer && <p className="mt-2 text-xs text-ink-soft">{mode.disclaimer}</p>}
-
-      {previewB && (
-        <label className="mt-3 flex items-start gap-2 text-sm text-ink">
-          <input
-            type="checkbox"
-            checked={consent}
-            onChange={(e) => setConsent(e.target.checked)}
-            className="mt-0.5"
+      <div className="tool-card-content">
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <PhotoPanel
+            label="Your photo"
+            hint="JPG or PNG · stays on your device"
+            preview={previewA}
+            onFile={(file) => readFile(file, setPreviewA)}
           />
-          <span>{mode.consentCheckboxLabel}</span>
-        </label>
-      )}
-
-      {(previewA || previewB) && (
-        <div className="mt-4 flex flex-col gap-3">
-          <button
-            onClick={generatePreview}
-            disabled={!canGenerate || generating}
-            className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas disabled:opacity-50"
-          >
-            {generating ? "Generating…" : "Generate Free Preview"}
-          </button>
-
-          {previewError && <p className="text-sm text-red-600">{previewError}</p>}
-
-          {gate && <GenerationGateNotice kind={gate} onAuthenticated={generatePreview} />}
-
-          {aiPreview && (
-            <div className="tool-card flex flex-col items-center gap-2">
-              <div className="flex w-full items-center gap-2">
-                <PaintDab />
-                <span className="font-flourish text-lg text-ink-soft">two photos, one scene</span>
-              </div>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={aiPreview}
-                alt="AI-generated photo mix preview"
-                className="max-h-96 w-full rounded-lg object-contain"
-              />
-              <p className="text-center text-sm text-ink-soft">{mode.resultCaption}</p>
-
-              {mode.bottomActions?.includes("download") && (
-                <a
-                  href={aiPreview}
-                  download={`${mode.id ?? "paintify"}-preview.jpg`}
-                  className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas hover:opacity-90"
-                >
-                  Download
-                </a>
-              )}
-
-              {mode.bottomActions?.includes("share") && (
-                <div className="flex flex-col items-center gap-2">
-                  <button
-                    onClick={handleShare}
-                    className="rounded-full border border-border-soft px-4 py-2 text-sm font-medium text-ink hover:border-accent hover:text-accent-text"
-                  >
-                    Share
-                  </button>
-                  {showShareLinks && (
-                    <div className="flex gap-2 text-sm">
-                      <a
-                        href={`https://wa.me/?text=${encodeURIComponent(
-                          `Check out my AI photo mix! ${typeof window !== "undefined" ? window.location.href : ""}`
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-ink-soft hover:text-accent-text"
-                      >
-                        WhatsApp
-                      </a>
-                      <a
-                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                          typeof window !== "undefined" ? window.location.href : ""
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-ink-soft hover:text-accent-text"
-                      >
-                        Facebook
-                      </a>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
+          <PhotoPanel
+            label="Your pet or favorite thing"
+            hint="JPG or PNG · stays on your device"
+            preview={previewB}
+            onFile={(file) => readFile(file, setPreviewB)}
+          />
         </div>
-      )}
+
+        {mode.disclaimer && <p className="mt-2 text-xs text-ink-soft">{mode.disclaimer}</p>}
+
+        {previewB && (
+          <label className="mt-3 flex items-start gap-2 text-sm text-ink">
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              className="mt-0.5"
+            />
+            <span>{mode.consentCheckboxLabel}</span>
+          </label>
+        )}
+
+        {(previewA || previewB) && (
+          <div className="mt-4 flex flex-col gap-3">
+            <button
+              onClick={generatePreview}
+              disabled={!canGenerate || generating}
+              className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas disabled:opacity-50"
+            >
+              {generating ? "Generating…" : "Generate Free Preview"}
+            </button>
+
+            {previewError && <p className="text-sm text-red-600">{previewError}</p>}
+
+            {gate && <GenerationGateNotice kind={gate} onAuthenticated={generatePreview} />}
+
+            {aiPreview && (
+              <div className="flex flex-col items-center gap-2 border-t border-border-soft pt-4">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={aiPreview}
+                  alt="AI-generated photo mix preview"
+                  className="max-h-96 w-full rounded-lg object-contain"
+                />
+                <p className="text-center text-sm text-ink-soft">{mode.resultCaption}</p>
+
+                {mode.bottomActions?.includes("download") && (
+                  <a
+                    href={aiPreview}
+                    download={`${mode.id ?? "paintify"}-preview.jpg`}
+                    className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas hover:opacity-90"
+                  >
+                    Download
+                  </a>
+                )}
+
+                {mode.bottomActions?.includes("share") && (
+                  <div className="flex flex-col items-center gap-2">
+                    <button
+                      onClick={handleShare}
+                      className="rounded-full border border-border-soft px-4 py-2 text-sm font-medium text-ink hover:border-accent hover:text-accent-text"
+                    >
+                      Share
+                    </button>
+                    {showShareLinks && (
+                      <div className="flex gap-2 text-sm">
+                        <a
+                          href={`https://wa.me/?text=${encodeURIComponent(
+                            `Check out my AI photo mix! ${typeof window !== "undefined" ? window.location.href : ""}`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-ink-soft hover:text-accent-text"
+                        >
+                          WhatsApp
+                        </a>
+                        <a
+                          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                            typeof window !== "undefined" ? window.location.href : ""
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-ink-soft hover:text-accent-text"
+                        >
+                          Facebook
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

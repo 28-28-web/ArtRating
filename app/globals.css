@@ -75,18 +75,31 @@ body {
   }
 }
 
-/* Pinned-Polaroid result card — alternating tilt, never applied to
-   functional controls (buttons/inputs/dropzones), only to result photos. */
+/* Pinned-Polaroid card — the outer frame (border/shadow/paint-dab/tagline)
+   tilts; interactive content inside stays level via the counter-rotated
+   .tool-card-content wrapper so buttons/inputs/chat bubbles are never
+   harder to click. */
 .tool-card {
   background: var(--canvas);
   border: 1px solid var(--border-soft);
   border-radius: 6px;
   padding: 14px 14px 18px;
-  transform: rotate(-2deg);
+  transform: rotate(-1.5deg);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
 }
 .tool-card.tilt-alt {
+  transform: rotate(1deg);
+}
+.tool-card.accent-border {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+
+.tool-card-content {
   transform: rotate(1.5deg);
+}
+.tool-card.tilt-alt .tool-card-content {
+  transform: rotate(-1deg);
 }
 
 .paint-dab {
@@ -96,4 +109,59 @@ body {
   border-radius: 9999px;
   background: var(--accent);
   flex-shrink: 0;
+}
+
+/* Quiz card — diagonal low-opacity wash across three accents, the most
+   visually fun surface on the site since it's the shareable entry point. */
+.quiz-card {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--cobalt) 10%, var(--canvas)) 0%,
+    color-mix(in srgb, var(--magenta) 10%, var(--canvas)) 55%,
+    color-mix(in srgb, var(--saffron) 10%, var(--canvas)) 100%
+  );
+}
+
+/* Answer chips — cycle the tool accent palette; saffron gets dark text,
+   the rest get white, per the contrast rule (measured, not assumed). */
+.chip-cobalt { background: var(--cobalt); color: #fff; }
+.chip-jade { background: var(--jade); color: #fff; }
+.chip-saffron { background: var(--saffron); color: var(--ink); }
+.chip-magenta { background: var(--magenta); color: #fff; }
+.chip-teal-muted { background: var(--teal-muted); color: #fff; }
+
+.quiz-chip {
+  transition: transform 0.15s ease-out;
+}
+.quiz-chip:hover {
+  transform: scale(1.05);
+}
+.quiz-chip:active {
+  transform: scale(0.95);
+}
+
+/* Confetti burst on the quiz result reveal — pure CSS, skipped entirely
+   under prefers-reduced-motion (result still shows, just no animation). */
+.confetti-dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  opacity: 0;
+  animation: confetti-burst 0.6s ease-out forwards;
+}
+@keyframes confetti-burst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(0.4);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .confetti-dot {
+    display: none;
+  }
 }
