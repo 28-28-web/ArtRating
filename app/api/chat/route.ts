@@ -8,7 +8,10 @@ const FREE_MODELS = [
   "openrouter/free",
 ];
 
-const SYSTEM_PROMPTS: Record<"art" | "headshot" | "pet-to-human" | "toy-ification", string> = {
+const SYSTEM_PROMPTS: Record<
+  "art" | "headshot" | "pet-to-human" | "toy-ification" | "photo-mix",
+  string
+> = {
   art: `You are a friendly art-style advisor on an AI photo-to-painting affiliate site.
 Your only job: ask the visitor which art style they want for their photo (e.g. Van Gogh, oil painting,
 watercolor, anime, stylized portrait/avatar), then recommend ONE tool:
@@ -32,6 +35,11 @@ turns photos into collectible action figures. Answer questions about the toy-ifi
 feature. Keep replies under 3 sentences and lighthearted. Never claim the result is a real product
 photo or a real toy — it's just a fun stylized AI preview. Do not recommend or name any paid tool or
 product.`,
+  "photo-mix": `You are a friendly assistant on a fun AI photo-mix tool that blends a person's photo
+with a photo of their pet or favorite object into one scene. Answer questions about the photo-mix
+preview feature. Keep replies under 3 sentences. Remind users that mixing in a photo of another real
+person requires that person's consent — recommend pets or objects as the primary use case. Never
+claim the result is a real photograph. Do not recommend or name any paid tool or product.`,
 };
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
@@ -50,12 +58,15 @@ export async function POST(request: Request) {
   }
 
   let messages: ChatMessage[];
-  let mode: "art" | "headshot" | "pet-to-human" | "toy-ification";
+  let mode: "art" | "headshot" | "pet-to-human" | "toy-ification" | "photo-mix";
   try {
     const body = await request.json();
     messages = Array.isArray(body?.messages) ? body.messages : [];
     mode =
-      body?.mode === "headshot" || body?.mode === "pet-to-human" || body?.mode === "toy-ification"
+      body?.mode === "headshot" ||
+      body?.mode === "pet-to-human" ||
+      body?.mode === "toy-ification" ||
+      body?.mode === "photo-mix"
         ? body.mode
         : "art";
   } catch {

@@ -57,6 +57,9 @@ export default function RootLayout({
                 <Link href="/toy-ification" className="hover:text-foreground">
                   Toy-ify Yourself
                 </Link>
+                <Link href="/photo-mix" className="hover:text-foreground">
+                  Photo Mix
+                </Link>
                 <NavAuthStatus />
               </div>
             </nav>

@@ -10,7 +10,7 @@ export type PreviewMode = {
   bottomToolsCaption?: string;
   bottomTools?: AffiliateTool[];
   bottomActions?: Array<"download" | "share">;
-  chatMode: "art" | "headshot" | "pet-to-human" | "toy-ification";
+  chatMode: "art" | "headshot" | "pet-to-human" | "toy-ification" | "photo-mix";
   chatTitle: string;
   chatSubtitle: string;
   chatGreeting: string;
@@ -20,6 +20,9 @@ export type PreviewMode = {
   promptTemplate?: string;
   negativePrompt?: string;
   strength?: number;
+  // Two-image blend tools (photo-mix) instead of the single-upload flow.
+  requiresTwoImages?: boolean;
+  consentCheckboxLabel?: string;
 };
 
 export const ART_STYLE_MODE: PreviewMode = {
@@ -112,4 +115,23 @@ export const TOY_MODE: PreviewMode = {
   chatGreeting: "Upload your photo — see yourself as a collectible action figure!",
   chatPlaceholder: "e.g. What accessories would suit me?",
   styleKeywords: ["toy", "figure", "action figure"],
+};
+
+export const PHOTO_MIX_MODE: PreviewMode = {
+  id: "photo-mix",
+  apiEndpoint: "/api/photo-mix",
+  fallbackStyle: "photo-mix", // unused (no style picker for this tool)
+  disclaimer: "AI-generated composite — lighting and likeness are approximate, not a real photo.",
+  resultCaption: "AI-generated preview, not a real photo.",
+  ctaTool: null, // TODO: add once Deep Art Effects / PhotoAI.me approved
+  bottomActions: ["download", "share"],
+  requiresTwoImages: true,
+  consentCheckboxLabel: "I have the right to use this second photo",
+  chatMode: "photo-mix",
+  chatTitle: "Photo Mix Advisor",
+  chatSubtitle: "Powered by AI · ask me about mixing your photos",
+  chatGreeting:
+    "Upload your photo and a photo of your pet (or favorite thing) — I'll put you together in one scene!",
+  chatPlaceholder: "e.g. Will the lighting match?",
+  styleKeywords: [],
 };
