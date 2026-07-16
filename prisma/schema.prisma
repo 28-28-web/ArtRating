@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id                    String                 @id @default(cuid())
+  email                 String                 @unique
+  passwordHash          String
+  role                  String                 @default("user")
+  createdAt             DateTime               @default(now())
+  generations           Generation[]
+  credit                UserCredit?
+  creditPurchaseRequests CreditPurchaseRequest[]
+}
+
+model AnonymousUsage {
+  id        String   @id // signed random id stored in an httpOnly cookie
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Generation {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  anonId     String? // set when userId is null, links back to AnonymousUsage
+  toolId     String // 'art-style' | 'headshot' | 'pet-to-human' | 'toy-ification'
+  usedCredit Boolean  @default(false)
+  status     String   @default("pending")
+  imageUrl   String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([anonId])
+}
+
+model UserCredit {
+  userId    String   @id
+  user      User     @relation(fields: [userId], references: [id])
+  balance   Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model CreditPurchaseRequest {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  method        String // 'bkash' | 'nagad'
+  transactionRef String
+  credits       Int
+  status        String    @default("pending") // 'pending' | 'approved' | 'rejected'
+  adminNote     String?
+  createdAt     DateTime  @default(now())
+  reviewedAt    DateTime?
+
+  @@index([userId])
+  @@index([status])
+}

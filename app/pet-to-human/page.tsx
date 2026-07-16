@@ -17,7 +17,7 @@ const faqs = [
   {
     question: "Is this free?",
     answer:
-      "Yes, the preview above is free and comes with a watermark.",
+      "Your first-ever generation on the site is free, full quality, no login needed. After that, one more free generation once you log in — after those two, you'll need credits to keep generating.",
   },
   {
     question: "Can I use this on any pet photo?",

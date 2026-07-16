@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { generateImg2Img } from "@/app/lib/cloudflareImg2Img";
 import { PET_TO_HUMAN_MODE } from "@/app/lib/previewModes";
+import { auth } from "@/auth";
+import { ANON_ID_COOKIE, readCookie, verifyAnonId } from "@/app/lib/anonId";
+import { checkGenerationEligibility, recordSuccessfulGeneration } from "@/app/lib/generationGate";
+import { uploadResultImage } from "@/app/lib/cloudinaryUpload";
+
+const TOOL_ID = "pet-to-human";
 
 function unavailable() {
   return NextResponse.json(
@@ -10,6 +16,15 @@ function unavailable() {
 }
 
 export async function POST(request: Request) {
+  const session = await auth();
+  const userId = session?.user?.id ?? null;
+  const anonId = await verifyAnonId(readCookie(request.headers.get("cookie"), ANON_ID_COOKIE));
+
+  const gate = await checkGenerationEligibility({ anonId, userId });
+  if (!gate.allowed) {
+    return NextResponse.json({ reason: gate.reason }, { status: gate.reason === "needs-login" ? 401 : 402 });
+  }
+
   const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
   const apiToken = process.env.CLOUDFLARE_API_TOKEN;
 
@@ -41,5 +56,14 @@ export async function POST(request: Request) {
     return unavailable();
   }
 
-  return NextResponse.json({ image: result.image });
+  const hostedUrl = await uploadResultImage(result.image, TOOL_ID);
+  await recordSuccessfulGeneration({
+    toolId: TOOL_ID,
+    imageUrl: hostedUrl,
+    userId,
+    anonId,
+    deductCredit: gate.deductCredit,
+  });
+
+  return NextResponse.json({ image: hostedUrl ?? result.image });
 }

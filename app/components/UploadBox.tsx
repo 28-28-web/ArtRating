@@ -2,32 +2,7 @@
 
 import { useRef, useState } from "react";
 import { ART_STYLE_MODE, type PreviewMode } from "@/app/lib/previewModes";
-
-const WATERMARK_TEXT = "PAINTIFY PREVIEW";
-
-function watermarkAndResize(srcDataUrl: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = 256;
-      canvas.height = 256;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        reject(new Error("Canvas not supported"));
-        return;
-      }
-      ctx.drawImage(img, 0, 0, 256, 256);
-      ctx.font = "bold 14px sans-serif";
-      ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-      ctx.textAlign = "center";
-      ctx.fillText(WATERMARK_TEXT, 128, 240);
-      resolve(canvas.toDataURL("image/jpeg", 0.9));
-    };
-    img.onerror = () => reject(new Error("Failed to load generated image"));
-    img.src = srcDataUrl;
-  });
-}
+import GenerationGateNotice from "@/app/components/GenerationGateNotice";
 
 export default function UploadBox({
   selectedStyle,
@@ -41,6 +16,7 @@ export default function UploadBox({
   const [aiPreview, setAiPreview] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
+  const [gate, setGate] = useState<"needs-login" | "needs-payment" | null>(null);
   const [showShareLinks, setShowShareLinks] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -67,6 +43,7 @@ export default function UploadBox({
       setPreview(reader.result as string);
       setAiPreview(null);
       setPreviewError(null);
+      setGate(null);
     };
     reader.readAsDataURL(file);
   }
@@ -75,19 +52,29 @@ export default function UploadBox({
     if (!preview) return;
     setGenerating(true);
     setPreviewError(null);
+    setGate(null);
     try {
       const res = await fetch(mode.apiEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ style: selectedStyle ?? mode.fallbackStyle, image: preview }),
       });
+
+      if (res.status === 401) {
+        setGate("needs-login");
+        return;
+      }
+      if (res.status === 402) {
+        setGate("needs-payment");
+        return;
+      }
+
       const data = await res.json();
       if (!res.ok || data.error || !data.image) {
         setPreviewError(data.error || "Preview generation temporarily unavailable");
         return;
       }
-      const watermarked = await watermarkAndResize(data.image);
-      setAiPreview(watermarked);
+      setAiPreview(data.image);
     } catch {
       setPreviewError("Preview generation temporarily unavailable");
     } finally {
@@ -149,15 +136,15 @@ export default function UploadBox({
 
           {previewError && <p className="text-sm text-red-500">{previewError}</p>}
 
+          {gate && <GenerationGateNotice kind={gate} onAuthenticated={generatePreview} />}
+
           {aiPreview && (
             <div className="flex flex-col items-center gap-2 rounded-xl border border-black/10 p-3 dark:border-white/10">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={aiPreview}
                 alt="AI-generated style preview"
-                width={256}
-                height={256}
-                className="rounded-lg"
+                className="max-h-96 w-full rounded-lg object-contain"
               />
               <p className="text-center text-sm text-zinc-500">{mode.resultCaption}</p>
 

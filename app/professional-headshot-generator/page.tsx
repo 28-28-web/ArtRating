@@ -17,7 +17,7 @@ const faqs = [
   {
     question: "Is this free?",
     answer:
-      "The preview above is free and comes with a watermark. For a full-resolution, watermark-free version, we point you to a dedicated AI headshot tool.",
+      "Your first-ever generation on the site is free, full quality, no login needed. After that, one more free generation once you log in — after those two, you'll need credits to keep generating.",
   },
   {
     question: "How is this different from Deep Art Effects or PhotoAI?",

@@ -25,7 +25,7 @@ export type PreviewMode = {
 export const ART_STYLE_MODE: PreviewMode = {
   apiEndpoint: "/api/preview",
   fallbackStyle: "stylized painting",
-  resultCaption: "This is just a preview! Get the full HD, watermark-free version →",
+  resultCaption: "This is just a preview! Get a dedicated painting tool for even more styles →",
   ctaTool: AFFILIATE_TOOLS["deep-art-effects"],
   bottomToolsCaption: "Nice photo! Turn it into a painting with one of our recommended tools:",
   bottomTools: Object.values(AFFILIATE_TOOLS),
@@ -53,7 +53,7 @@ export const HEADSHOT_MODE: PreviewMode = {
   disclaimer:
     "AI preview — may not perfectly match a real photoshoot. Best for casual profile use.",
   resultCaption:
-    "This is an AI-generated preview, not a real photoshoot. Get a polished, watermark-free version →",
+    "This is an AI-generated preview, not a real photoshoot. Get a dedicated headshot tool for a more polished result →",
   ctaTool: AFFILIATE_TOOLS.photoai,
   bottomToolsCaption: "Want a polished headshot? Try our recommended AI photo tool:",
   bottomTools: [AFFILIATE_TOOLS.photoai],
