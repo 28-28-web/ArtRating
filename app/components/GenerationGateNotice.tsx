@@ -19,12 +19,12 @@ export default function GenerationGateNotice({
 
   if (kind === "needs-payment") {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-xl border border-black/10 p-4 text-center dark:border-white/10">
-        <p className="text-sm font-medium">You&apos;ve used both free generations.</p>
-        <p className="text-sm text-zinc-500">Add credits to keep going.</p>
+      <div className="flex flex-col items-center gap-2 rounded-xl border border-border-soft p-4 text-center">
+        <p className="text-sm font-medium text-ink">You&apos;ve used both free generations.</p>
+        <p className="text-sm text-ink-soft">Add credits to keep going.</p>
         <Link
           href="/credits"
-          className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90"
+          className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas hover:opacity-90"
         >
           Get credits →
         </Link>
@@ -64,8 +64,8 @@ export default function GenerationGateNotice({
   }
 
   return (
-    <div className="flex flex-col items-center gap-3 rounded-xl border border-black/10 p-4 text-center dark:border-white/10">
-      <p className="text-sm font-medium">
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-border-soft p-4 text-center">
+      <p className="text-sm font-medium text-ink">
         Log in to generate another image — your first one&apos;s on us!
       </p>
       <form onSubmit={handleSubmit} className="flex w-full max-w-xs flex-col gap-2">
@@ -75,7 +75,7 @@ export default function GenerationGateNotice({
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded-full border border-black/10 bg-transparent px-4 py-2 text-sm outline-none dark:border-white/10"
+          className="rounded-full border border-border-soft bg-transparent px-4 py-2 text-sm text-ink outline-none focus:border-accent"
         />
         <input
           type="password"
@@ -84,20 +84,20 @@ export default function GenerationGateNotice({
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded-full border border-black/10 bg-transparent px-4 py-2 text-sm outline-none dark:border-white/10"
+          className="rounded-full border border-border-soft bg-transparent px-4 py-2 text-sm text-ink outline-none focus:border-accent"
         />
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        {error && <p className="text-xs text-red-600">{error}</p>}
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-50"
+          className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas disabled:opacity-50"
         >
           {submitting ? "…" : formMode === "login" ? "Log in" : "Create account"}
         </button>
       </form>
       <button
         onClick={() => setFormMode(formMode === "login" ? "signup" : "login")}
-        className="text-xs text-zinc-500 underline"
+        className="text-xs text-ink-soft underline hover:text-accent-text"
       >
         {formMode === "login" ? "New here? Create account" : "Already have an account? Log in"}
       </button>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AFFILIATE_TOOLS } from "@/app/lib/affiliate";
 import { ART_STYLE_MODE, type PreviewMode } from "@/app/lib/previewModes";
+import BrushDivider from "@/app/components/BrushDivider";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -62,10 +63,11 @@ export default function ChatWidget({
   }
 
   return (
-    <div className="flex w-full max-w-md flex-col rounded-2xl border border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-zinc-900">
-      <div className="border-b border-black/10 px-4 py-3 dark:border-white/10">
-        <h3 className="font-semibold">{mode.chatTitle}</h3>
-        <p className="text-xs text-zinc-500">{mode.chatSubtitle}</p>
+    <div className="flex w-full max-w-md flex-col rounded-2xl border border-accent bg-canvas shadow-sm">
+      <div className="border-b border-border-soft px-4 py-3">
+        <h3 className="font-display text-base font-semibold text-ink">{mode.chatTitle}</h3>
+        <BrushDivider className="mt-1 mb-1" />
+        <p className="text-xs text-ink-soft">{mode.chatSubtitle}</p>
       </div>
 
       <div className="flex max-h-80 flex-col gap-3 overflow-y-auto px-4 py-3">
@@ -75,9 +77,7 @@ export default function ChatWidget({
             <div key={i} className={m.role === "user" ? "self-end" : "self-start"}>
               <div
                 className={`rounded-xl px-3 py-2 text-sm ${
-                  m.role === "user"
-                    ? "bg-foreground text-background"
-                    : "bg-zinc-100 dark:bg-zinc-800"
+                  m.role === "user" ? "bg-ink text-canvas" : "bg-[var(--border-soft)]/40 text-ink"
                 }`}
               >
                 {m.content}
@@ -87,7 +87,7 @@ export default function ChatWidget({
                   href={tool.url}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
-                  className="mt-2 inline-block rounded-full bg-foreground px-4 py-1.5 text-xs font-medium text-background hover:opacity-90"
+                  className="mt-2 inline-block rounded-full bg-ink px-4 py-1.5 text-xs font-medium text-canvas hover:opacity-90"
                 >
                   Try {tool.name} →
                 </a>
@@ -95,21 +95,21 @@ export default function ChatWidget({
             </div>
           );
         })}
-        {loading && <div className="self-start text-sm text-zinc-500">Thinking…</div>}
+        {loading && <div className="self-start text-sm text-ink-soft">Thinking…</div>}
       </div>
 
-      <div className="flex gap-2 border-t border-black/10 p-3 dark:border-white/10">
+      <div className="flex gap-2 border-t border-border-soft p-3">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           placeholder={mode.chatPlaceholder}
-          className="flex-1 rounded-full border border-black/10 bg-transparent px-4 py-2 text-sm outline-none dark:border-white/10"
+          className="flex-1 rounded-full border border-border-soft bg-transparent px-4 py-2 text-sm text-ink outline-none focus:border-accent"
         />
         <button
           onClick={sendMessage}
           disabled={loading}
-          className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-50"
+          className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas disabled:opacity-50"
         >
           Send
         </button>

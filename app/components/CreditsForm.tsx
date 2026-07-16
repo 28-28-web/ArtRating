@@ -54,30 +54,28 @@ export default function CreditsForm({
             type="button"
             onClick={() => setPackId(pack.id)}
             className={`rounded-xl border p-4 text-center ${
-              packId === pack.id
-                ? "border-foreground bg-black/5 dark:bg-white/5"
-                : "border-black/10 dark:border-white/10"
+              packId === pack.id ? "border-accent bg-[var(--border-soft)]/30" : "border-border-soft"
             }`}
           >
-            <p className="text-lg font-semibold">{pack.credits} credits</p>
-            <p className="text-sm text-zinc-500">{pack.priceLabel}</p>
+            <p className="text-lg font-semibold text-ink">{pack.credits} credits</p>
+            <p className="text-sm text-ink-soft">{pack.priceLabel}</p>
           </button>
         ))}
       </div>
 
-      <div className="rounded-xl border border-black/10 p-4 text-sm dark:border-white/10">
-        <p className="font-medium">Pay via bKash or Nagad (Send Money):</p>
-        <p className="mt-1 text-zinc-500">
+      <div className="rounded-xl border border-border-soft p-4 text-sm">
+        <p className="font-medium text-ink">Pay via bKash or Nagad (Send Money):</p>
+        <p className="mt-1 text-ink-soft">
           bKash: {bkashNumber} · Nagad: {nagadNumber}
         </p>
-        <p className="mt-1 text-xs text-zinc-400">
+        <p className="mt-1 text-xs text-ink-soft/70">
           Placeholder numbers until the site owner adds real merchant numbers.
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div className="flex gap-4">
-          <label className="flex items-center gap-2 text-sm">
+          <label className="flex items-center gap-2 text-sm text-ink">
             <input
               type="radio"
               name="method"
@@ -86,7 +84,7 @@ export default function CreditsForm({
             />
             bKash
           </label>
-          <label className="flex items-center gap-2 text-sm">
+          <label className="flex items-center gap-2 text-sm text-ink">
             <input
               type="radio"
               name="method"
@@ -101,14 +99,14 @@ export default function CreditsForm({
           placeholder="Transaction reference / TrxID"
           value={transactionRef}
           onChange={(e) => setTransactionRef(e.target.value)}
-          className="rounded-full border border-black/10 bg-transparent px-4 py-2 text-sm outline-none dark:border-white/10"
+          className="rounded-full border border-border-soft bg-transparent px-4 py-2 text-sm text-ink outline-none focus:border-accent"
         />
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        {message && <p className="text-sm text-green-600">{message}</p>}
+        {error && <p className="text-sm text-red-600">{error}</p>}
+        {message && <p className="text-sm text-jade">{message}</p>}
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-50"
+          className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas disabled:opacity-50"
         >
           {submitting ? "Submitting…" : "Submit for review"}
         </button>

@@ -10,18 +10,18 @@ export default function NavAuthStatus() {
 
   return (
     <div className="flex items-center gap-4">
-      <Link href="/credits" className="hover:text-foreground">
+      <Link href="/credits" className="hover:text-ink">
         Credits
       </Link>
       {session?.user ? (
         <>
-          <span className="text-xs text-zinc-400">{session.user.email}</span>
-          <button onClick={() => signOut()} className="hover:text-foreground">
+          <span className="text-xs text-ink-soft">{session.user.email}</span>
+          <button onClick={() => signOut()} className="hover:text-ink">
             Log out
           </button>
         </>
       ) : (
-        <Link href="/login" className="hover:text-foreground">
+        <Link href="/login" className="hover:text-ink">
           Log in
         </Link>
       )}

@@ -154,19 +154,19 @@ export default function StyleQuiz({
   }
 
   return (
-    <div className="w-full max-w-md rounded-2xl border-2 border-dashed border-black/15 p-6 dark:border-white/15">
+    <div className="w-full max-w-md rounded-2xl border-2 border-dashed border-border-soft p-6">
       {!isComplete && (
         <div className="flex flex-col gap-4">
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-ink-soft">
             Question {currentIndex + 1} of {QUESTIONS.length}
           </p>
-          <p className="font-medium">{QUESTIONS[currentIndex].question}</p>
+          <p className="font-medium text-ink">{QUESTIONS[currentIndex].question}</p>
           <div className="flex flex-col gap-2">
             {QUESTIONS[currentIndex].options.map((option) => (
               <button
                 key={option.label}
                 onClick={() => handleAnswer(option.style)}
-                className="w-full rounded-xl border border-black/10 p-4 text-left text-sm font-medium hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
+                className="w-full rounded-xl border border-border-soft p-4 text-left text-sm font-medium text-ink hover:border-accent"
               >
                 {option.label}
               </button>
@@ -177,25 +177,27 @@ export default function StyleQuiz({
 
       {isComplete && result && (
         <div className="flex flex-col items-center gap-3 text-center">
-          <h3 className="text-xl font-semibold">You&apos;re a {STYLES[result].name} type!</h3>
-          <p className="text-sm text-zinc-500">{STYLES[result].description}</p>
+          <h3 className="font-display text-xl font-semibold text-ink">
+            You&apos;re a {STYLES[result].name} type!
+          </h3>
+          <p className="text-sm text-ink-soft">{STYLES[result].description}</p>
 
           <div className="mt-2 flex flex-col items-center gap-2">
             <button
               onClick={() => onSelectStyle(STYLES[result].keyword)}
-              className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90"
+              className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas hover:opacity-90"
             >
               Try this style on your photo →
             </button>
             <button
               onClick={handleShare}
-              className="rounded-full border border-black/10 px-4 py-2 text-sm font-medium hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
+              className="rounded-full border border-border-soft px-4 py-2 text-sm font-medium text-ink hover:border-accent hover:text-accent-text"
             >
               {copied ? "Copied!" : "Share your result"}
             </button>
             <button
               onClick={handleRetake}
-              className="text-sm text-zinc-500 underline underline-offset-2 hover:text-foreground"
+              className="text-sm text-ink-soft underline underline-offset-2 hover:text-accent-text"
             >
               Retake quiz
             </button>

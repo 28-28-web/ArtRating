@@ -1,26 +1,99 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --canvas: #FDFBF7;       /* page background — warm primed-canvas white */
+  --ink: #2B2A28;          /* body text — warm charcoal, not pure black */
+  --ink-soft: #5C5B56;     /* secondary text */
+  --border-soft: #E8E4DA;  /* card borders, dividers */
+
+  --cobalt: #2F5FD1;       /* art-style tool */
+  --jade: #1F9E75;         /* pet-to-human tool */
+  --saffron: #F2A623;      /* toy-ification tool */
+  --magenta: #D1367F;      /* photo-mix tool */
+  --teal-muted: #0F6E56;   /* headshot tool */
+
+  /* Darkened, text-safe reading of each accent — used wherever the accent
+     appears as small text on --canvas (links, hover states), since the raw
+     hues above are tuned for dabs/strokes, not always AA-safe as text. */
+  --cobalt-text: #2F5FD1;
+  --jade-text: #157A5A;
+  --saffron-text: #8A5800;
+  --magenta-text: #B02A6A;
+  --teal-muted-text: #0F6E56;
+
+  /* Default site accent (art-style / homepage). Tool pages override this
+     locally by setting --accent/--accent-text on a wrapping element. */
+  --accent: var(--cobalt);
+  --accent-text: var(--cobalt-text);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-canvas: var(--canvas);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-border-soft: var(--border-soft);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-cobalt: var(--cobalt);
+  --color-jade: var(--jade);
+  --color-saffron: var(--saffron);
+  --color-magenta: var(--magenta);
+  --color-teal-muted: var(--teal-muted);
+
+  --color-accent: var(--accent);
+  --color-accent-text: var(--accent-text);
+
+  /* Kept so any leftover foreground/background utility classes still resolve
+     sanely instead of erroring during the styling migration. */
+  --color-background: var(--canvas);
+  --color-foreground: var(--ink);
+
+  --font-display: var(--font-fraunces);
+  --font-body: var(--font-inter);
+  --font-flourish: var(--font-caveat);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Brushstroke divider — draws itself in on scroll-into-view, colored per
+   page via --accent. Respects prefers-reduced-motion. */
+.brush-divider path {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset 0.6s ease-out;
+}
+.brush-divider.is-drawn path {
+  stroke-dashoffset: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .brush-divider path {
+    transition: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Pinned-Polaroid result card — alternating tilt, never applied to
+   functional controls (buttons/inputs/dropzones), only to result photos. */
+.tool-card {
+  background: var(--canvas);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  padding: 14px 14px 18px;
+  transform: rotate(-2deg);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+}
+.tool-card.tilt-alt {
+  transform: rotate(1.5deg);
+}
+
+.paint-dab {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: var(--accent);
+  flex-shrink: 0;
 }

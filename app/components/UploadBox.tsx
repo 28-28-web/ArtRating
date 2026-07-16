@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { ART_STYLE_MODE, type PreviewMode } from "@/app/lib/previewModes";
 import GenerationGateNotice from "@/app/components/GenerationGateNotice";
+import PaintDab from "@/app/components/PaintDab";
 
 export default function UploadBox({
   selectedStyle,
@@ -97,9 +98,7 @@ export default function UploadBox({
           handleFile(e.dataTransfer.files?.[0]);
         }}
         className={`flex min-h-52 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-6 text-center transition-colors ${
-          dragOver
-            ? "border-foreground bg-black/5 dark:bg-white/5"
-            : "border-black/15 dark:border-white/15"
+          dragOver ? "border-accent bg-[var(--border-soft)]/30" : "border-border-soft"
         }`}
       >
         {preview ? (
@@ -107,8 +106,8 @@ export default function UploadBox({
           <img src={preview} alt="Your uploaded photo" className="max-h-48 rounded-lg object-contain" />
         ) : (
           <>
-            <p className="font-medium">Drop a photo here or click to upload</p>
-            <p className="text-sm text-zinc-500">JPG or PNG · stays on your device</p>
+            <p className="font-medium text-ink">Drop a photo here or click to upload</p>
+            <p className="text-sm text-ink-soft">JPG or PNG · stays on your device</p>
           </>
         )}
         <input
@@ -121,7 +120,7 @@ export default function UploadBox({
       </div>
 
       {mode.disclaimer && (
-        <p className="mt-2 text-xs text-zinc-400">{mode.disclaimer}</p>
+        <p className="mt-2 text-xs text-ink-soft">{mode.disclaimer}</p>
       )}
 
       {preview && (
@@ -129,31 +128,35 @@ export default function UploadBox({
           <button
             onClick={generatePreview}
             disabled={generating}
-            className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-50"
+            className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas disabled:opacity-50"
           >
             {generating ? "Generating…" : "Generate Free Preview"}
           </button>
 
-          {previewError && <p className="text-sm text-red-500">{previewError}</p>}
+          {previewError && <p className="text-sm text-red-600">{previewError}</p>}
 
           {gate && <GenerationGateNotice kind={gate} onAuthenticated={generatePreview} />}
 
           {aiPreview && (
-            <div className="flex flex-col items-center gap-2 rounded-xl border border-black/10 p-3 dark:border-white/10">
+            <div className="tool-card flex flex-col items-center gap-2">
+              <div className="flex w-full items-center gap-2">
+                <PaintDab />
+                <span className="font-flourish text-lg text-ink-soft">a fun little transformation</span>
+              </div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={aiPreview}
                 alt="AI-generated style preview"
                 className="max-h-96 w-full rounded-lg object-contain"
               />
-              <p className="text-center text-sm text-zinc-500">{mode.resultCaption}</p>
+              <p className="text-center text-sm text-ink-soft">{mode.resultCaption}</p>
 
               {mode.ctaTool && (
                 <a
                   href={mode.ctaTool.url}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
-                  className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90"
+                  className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas hover:opacity-90"
                 >
                   Try {mode.ctaTool.name} →
                 </a>
@@ -163,7 +166,7 @@ export default function UploadBox({
                 <a
                   href={aiPreview}
                   download={`${mode.id ?? "paintify"}-preview.jpg`}
-                  className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90"
+                  className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas hover:opacity-90"
                 >
                   Download
                 </a>
@@ -173,7 +176,7 @@ export default function UploadBox({
                 <div className="flex flex-col items-center gap-2">
                   <button
                     onClick={handleShare}
-                    className="rounded-full border border-black/10 px-4 py-2 text-sm font-medium hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
+                    className="rounded-full border border-border-soft px-4 py-2 text-sm font-medium text-ink hover:border-accent hover:text-accent-text"
                   >
                     Share
                   </button>
@@ -185,7 +188,7 @@ export default function UploadBox({
                         )}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-zinc-500 hover:text-foreground"
+                        className="text-ink-soft hover:text-accent-text"
                       >
                         WhatsApp
                       </a>
@@ -195,7 +198,7 @@ export default function UploadBox({
                         )}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-zinc-500 hover:text-foreground"
+                        className="text-ink-soft hover:text-accent-text"
                       >
                         Facebook
                       </a>
@@ -208,7 +211,7 @@ export default function UploadBox({
 
           {mode.bottomToolsCaption && mode.bottomTools && mode.bottomTools.length > 0 && (
             <>
-              <p className="text-sm text-zinc-500">{mode.bottomToolsCaption}</p>
+              <p className="text-sm text-ink-soft">{mode.bottomToolsCaption}</p>
               <div className="flex flex-wrap gap-2">
                 {mode.bottomTools.map((tool) => (
                   <a
@@ -216,7 +219,7 @@ export default function UploadBox({
                     href={tool.url}
                     target="_blank"
                     rel="noopener noreferrer sponsored"
-                    className="rounded-full border border-black/10 px-4 py-2 text-sm font-medium hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
+                    className="rounded-full border border-border-soft px-4 py-2 text-sm font-medium text-ink hover:border-accent hover:text-accent-text"
                   >
                     {tool.name} →
                   </a>

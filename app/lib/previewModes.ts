@@ -1,7 +1,9 @@
 import { AFFILIATE_TOOLS, type AffiliateTool } from "@/app/lib/affiliate";
+import type { AccentName } from "@/app/lib/accent";
 
 export type PreviewMode = {
   id?: string;
+  accent: AccentName;
   apiEndpoint: string;
   fallbackStyle: string;
   disclaimer?: string;
@@ -26,6 +28,7 @@ export type PreviewMode = {
 };
 
 export const ART_STYLE_MODE: PreviewMode = {
+  accent: "cobalt",
   apiEndpoint: "/api/preview",
   fallbackStyle: "stylized painting",
   resultCaption: "This is just a preview! Get a dedicated painting tool for even more styles →",
@@ -51,6 +54,7 @@ export const ART_STYLE_MODE: PreviewMode = {
 };
 
 export const HEADSHOT_MODE: PreviewMode = {
+  accent: "teal-muted",
   apiEndpoint: "/api/headshot-preview",
   fallbackStyle: "corporate",
   disclaimer:
@@ -71,6 +75,7 @@ export const HEADSHOT_MODE: PreviewMode = {
 
 export const PET_TO_HUMAN_MODE: PreviewMode = {
   id: "pet-to-human",
+  accent: "jade",
   apiEndpoint: "/api/pet-human-preview",
   fallbackStyle: "human",
   // High strength — full species transformation, not an identity-preserving retouch.
@@ -95,6 +100,7 @@ export const PET_TO_HUMAN_MODE: PreviewMode = {
 
 export const TOY_MODE: PreviewMode = {
   id: "toy-ification",
+  accent: "saffron",
   apiEndpoint: "/api/toy-preview",
   fallbackStyle: "toy",
   // Moderate strength — keep recognizable likeness while stylizing heavily into toy form.
@@ -119,6 +125,7 @@ export const TOY_MODE: PreviewMode = {
 
 export const PHOTO_MIX_MODE: PreviewMode = {
   id: "photo-mix",
+  accent: "magenta",
   apiEndpoint: "/api/photo-mix",
   fallbackStyle: "photo-mix", // unused (no style picker for this tool)
   disclaimer: "AI-generated composite — lighting and likeness are approximate, not a real photo.",

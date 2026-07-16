@@ -48,7 +48,7 @@ export default function LoginForm() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold">
+      <h1 className="font-display text-2xl font-semibold text-ink">
         {formMode === "login" ? "Log in" : "Create account"}
       </h1>
       <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3">
@@ -58,7 +58,7 @@ export default function LoginForm() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded-full border border-black/10 bg-transparent px-4 py-2 text-sm outline-none dark:border-white/10"
+          className="rounded-full border border-border-soft bg-transparent px-4 py-2 text-sm text-ink outline-none focus:border-accent"
         />
         <input
           type="password"
@@ -67,20 +67,20 @@ export default function LoginForm() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded-full border border-black/10 bg-transparent px-4 py-2 text-sm outline-none dark:border-white/10"
+          className="rounded-full border border-border-soft bg-transparent px-4 py-2 text-sm text-ink outline-none focus:border-accent"
         />
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        {error && <p className="text-xs text-red-600">{error}</p>}
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-50"
+          className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas disabled:opacity-50"
         >
           {submitting ? "…" : formMode === "login" ? "Log in" : "Create account"}
         </button>
       </form>
       <button
         onClick={() => setFormMode(formMode === "login" ? "signup" : "login")}
-        className="text-xs text-zinc-500 underline"
+        className="text-xs text-ink-soft underline hover:text-accent-text"
       >
         {formMode === "login" ? "New here? Create account" : "Already have an account? Log in"}
       </button>

@@ -33,24 +33,24 @@ export default function AdminCreditRequestRow({
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-black/10 p-4 dark:border-white/10">
-      <p className="text-sm font-medium">
+    <div className="flex flex-col gap-2 rounded-xl border border-border-soft p-4">
+      <p className="text-sm font-medium text-ink">
         {request.email} — {request.credits} credits ({request.method})
       </p>
-      <p className="text-xs text-zinc-500">Ref: {request.transactionRef}</p>
-      <p className="text-xs text-zinc-400">{new Date(request.createdAt).toLocaleString()}</p>
+      <p className="text-xs text-ink-soft">Ref: {request.transactionRef}</p>
+      <p className="text-xs text-ink-soft/70">{new Date(request.createdAt).toLocaleString()}</p>
       <div className="flex gap-2">
         <button
           disabled={busy}
           onClick={() => act("approve")}
-          className="rounded-full bg-foreground px-4 py-1.5 text-xs font-medium text-background disabled:opacity-50"
+          className="rounded-full bg-ink px-4 py-1.5 text-xs font-medium text-canvas disabled:opacity-50"
         >
           Approve
         </button>
         <button
           disabled={busy}
           onClick={() => act("reject")}
-          className="rounded-full border border-black/10 px-4 py-1.5 text-xs font-medium disabled:opacity-50 dark:border-white/10"
+          className="rounded-full border border-border-soft px-4 py-1.5 text-xs font-medium text-ink disabled:opacity-50"
         >
           Reject
         </button>
