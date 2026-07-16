@@ -48,6 +48,12 @@ export default function RootLayout({
               <Link href="/professional-headshot-generator" className="hover:text-foreground">
                 Headshot Generator
               </Link>
+              <Link href="/pet-to-human" className="hover:text-foreground">
+                Pet to Human
+              </Link>
+              <Link href="/toy-ification" className="hover:text-foreground">
+                Toy-ify Yourself
+              </Link>
             </div>
           </nav>
         </header>

@@ -5,12 +5,14 @@ export async function generateImg2Img({
   accountId,
   apiToken,
   prompt,
+  negativePrompt,
   imageDataUrl,
   strength,
 }: {
   accountId: string;
   apiToken: string;
   prompt: string;
+  negativePrompt?: string;
   imageDataUrl: string;
   strength: number;
 }): Promise<{ image?: string; error?: string }> {
@@ -34,7 +36,12 @@ export async function generateImg2Img({
           Authorization: `Bearer ${apiToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt, image: inputBytes, strength }),
+        body: JSON.stringify({
+          prompt,
+          image: inputBytes,
+          strength,
+          ...(negativePrompt ? { negative_prompt: negativePrompt } : {}),
+        }),
         signal: controller.signal,
       }
     );

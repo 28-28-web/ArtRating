@@ -1,28 +1,28 @@
 import type { Metadata } from "next";
 import ToolInteractive from "@/app/components/ToolInteractive";
-import { HEADSHOT_MODE } from "@/app/lib/previewModes";
+import { PET_TO_HUMAN_MODE } from "@/app/lib/previewModes";
 
 export const metadata: Metadata = {
-  title: "Professional Headshot Generator — Free AI Preview | Paintify",
+  title: "Pet to Human Generator — Free AI Preview | Paintify",
   description:
-    "Upload a photo and get a free AI-generated professional headshot preview — Corporate, LinkedIn, Studio Portrait, or Creative Professional styles.",
+    "Upload a photo of your pet and get a free AI-generated preview of what they might look like as a human.",
 };
 
 const faqs = [
   {
-    question: "Can AI generate a professional headshot from a selfie?",
+    question: "Is this an accurate prediction of anything?",
     answer:
-      "AI can restyle your photo's background, lighting, and attire to look more professional, but it works from your existing photo — it can't fix poor image quality or awkward angles, and it isn't a substitute for a real photoshoot. Treat it as a quick, casual preview rather than a finished product.",
+      "No — this is a fun AI interpretation, not a scientific or accurate prediction. It's meant for entertainment, not to reveal any real fact about your pet.",
   },
   {
     question: "Is this free?",
     answer:
-      "The preview above is free and comes with a watermark. For a full-resolution, watermark-free version, we point you to a dedicated AI headshot tool.",
+      "Yes, the preview above is free and comes with a watermark.",
   },
   {
-    question: "How is this different from Deep Art Effects or PhotoAI?",
+    question: "Can I use this on any pet photo?",
     answer:
-      "Deep Art Effects turns photos into painterly art styles like Van Gogh or watercolor — not headshots. PhotoAI generates stylized AI portraits and avatars from your selfies, which is closer to a polished headshot, so that's what we recommend for the full version.",
+      "You can try it on any clear photo of your pet. Results vary — a well-lit, front-facing photo tends to give the most recognizable result.",
   },
 ];
 
@@ -36,7 +36,7 @@ const faqJsonLd = {
   })),
 };
 
-export default function ProfessionalHeadshotGeneratorPage() {
+export default function PetToHumanPage() {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center gap-12 px-6 py-16">
       <script
@@ -46,15 +46,15 @@ export default function ProfessionalHeadshotGeneratorPage() {
 
       <div className="flex flex-col items-center gap-4 text-center">
         <h1 className="max-w-2xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-          Professional Headshot Generator — Free AI Preview
+          Pet to Human Generator — Free AI Preview
         </h1>
         <p className="max-w-xl text-lg text-zinc-600 dark:text-zinc-400">
-          Upload a photo and see an instant AI preview of a professional headshot — pick a Corporate,
-          LinkedIn, Studio Portrait, or Creative Professional look.
+          Upload a photo of your pet and see an instant AI preview of what they might look like as a
+          human.
         </p>
       </div>
 
-      <ToolInteractive mode={HEADSHOT_MODE} />
+      <ToolInteractive mode={PET_TO_HUMAN_MODE} />
 
       <section className="flex w-full flex-col gap-4">
         <h2 className="text-xl font-semibold">FAQ</h2>

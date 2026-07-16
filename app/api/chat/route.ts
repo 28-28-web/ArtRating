@@ -8,7 +8,7 @@ const FREE_MODELS = [
   "openrouter/free",
 ];
 
-const SYSTEM_PROMPTS: Record<"art" | "headshot", string> = {
+const SYSTEM_PROMPTS: Record<"art" | "headshot" | "pet-to-human" | "toy-ification", string> = {
   art: `You are a friendly art-style advisor on an AI photo-to-painting affiliate site.
 Your only job: ask the visitor which art style they want for their photo (e.g. Van Gogh, oil painting,
 watercolor, anime, stylized portrait/avatar), then recommend ONE tool:
@@ -23,6 +23,15 @@ watermark-free AI headshot. Keep replies under 3 sentences. Once you know their 
 clearly name "PhotoAI" in your reply so it can be linked automatically. Do not invent pricing or
 features you're unsure of, and never claim this replaces a professional photographer or guarantees
 a job outcome.`,
+  "pet-to-human": `You are a friendly, playful assistant on a fun AI pet-to-human preview tool.
+Answer questions about the pet-to-human photo preview feature. Keep replies under 3 sentences and
+lighthearted. Never claim this is a scientific or accurate prediction of anything — it's just a fun
+AI interpretation. Do not recommend or name any paid tool or product.`,
+  "toy-ification": `You are a friendly, playful assistant on a fun AI toy-ification preview tool that
+turns photos into collectible action figures. Answer questions about the toy-ification preview
+feature. Keep replies under 3 sentences and lighthearted. Never claim the result is a real product
+photo or a real toy — it's just a fun stylized AI preview. Do not recommend or name any paid tool or
+product.`,
 };
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
@@ -41,11 +50,14 @@ export async function POST(request: Request) {
   }
 
   let messages: ChatMessage[];
-  let mode: "art" | "headshot";
+  let mode: "art" | "headshot" | "pet-to-human" | "toy-ification";
   try {
     const body = await request.json();
     messages = Array.isArray(body?.messages) ? body.messages : [];
-    mode = body?.mode === "headshot" ? "headshot" : "art";
+    mode =
+      body?.mode === "headshot" || body?.mode === "pet-to-human" || body?.mode === "toy-ification"
+        ? body.mode
+        : "art";
   } catch {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }

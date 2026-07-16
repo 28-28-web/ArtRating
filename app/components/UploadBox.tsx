@@ -41,7 +41,24 @@ export default function UploadBox({
   const [aiPreview, setAiPreview] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
+  const [showShareLinks, setShowShareLinks] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  async function handleShare() {
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title: "My AI preview",
+          text: mode.resultCaption,
+          url: window.location.href,
+        });
+        return;
+      } catch {
+        // fall through to manual share links
+      }
+    }
+    setShowShareLinks((v) => !v);
+  }
 
   function handleFile(file: File | undefined) {
     if (!file || !file.type.startsWith("image/")) return;
@@ -143,31 +160,83 @@ export default function UploadBox({
                 className="rounded-lg"
               />
               <p className="text-center text-sm text-zinc-500">{mode.resultCaption}</p>
-              <a
-                href={mode.ctaTool.url}
-                target="_blank"
-                rel="noopener noreferrer sponsored"
-                className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90"
-              >
-                Try {mode.ctaTool.name} →
-              </a>
+
+              {mode.ctaTool && (
+                <a
+                  href={mode.ctaTool.url}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90"
+                >
+                  Try {mode.ctaTool.name} →
+                </a>
+              )}
+
+              {mode.bottomActions?.includes("download") && (
+                <a
+                  href={aiPreview}
+                  download={`${mode.id ?? "paintify"}-preview.jpg`}
+                  className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90"
+                >
+                  Download
+                </a>
+              )}
+
+              {mode.bottomActions?.includes("share") && (
+                <div className="flex flex-col items-center gap-2">
+                  <button
+                    onClick={handleShare}
+                    className="rounded-full border border-black/10 px-4 py-2 text-sm font-medium hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
+                  >
+                    Share
+                  </button>
+                  {showShareLinks && (
+                    <div className="flex gap-2 text-sm">
+                      <a
+                        href={`https://wa.me/?text=${encodeURIComponent(
+                          `Check out my AI preview! ${typeof window !== "undefined" ? window.location.href : ""}`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-zinc-500 hover:text-foreground"
+                      >
+                        WhatsApp
+                      </a>
+                      <a
+                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                          typeof window !== "undefined" ? window.location.href : ""
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-zinc-500 hover:text-foreground"
+                      >
+                        Facebook
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
-          <p className="text-sm text-zinc-500">{mode.bottomToolsCaption}</p>
-          <div className="flex flex-wrap gap-2">
-            {mode.bottomTools.map((tool) => (
-              <a
-                key={tool.id}
-                href={tool.url}
-                target="_blank"
-                rel="noopener noreferrer sponsored"
-                className="rounded-full border border-black/10 px-4 py-2 text-sm font-medium hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
-              >
-                {tool.name} →
-              </a>
-            ))}
-          </div>
+          {mode.bottomToolsCaption && mode.bottomTools && mode.bottomTools.length > 0 && (
+            <>
+              <p className="text-sm text-zinc-500">{mode.bottomToolsCaption}</p>
+              <div className="flex flex-wrap gap-2">
+                {mode.bottomTools.map((tool) => (
+                  <a
+                    key={tool.id}
+                    href={tool.url}
+                    target="_blank"
+                    rel="noopener noreferrer sponsored"
+                    className="rounded-full border border-black/10 px-4 py-2 text-sm font-medium hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
+                  >
+                    {tool.name} →
+                  </a>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
