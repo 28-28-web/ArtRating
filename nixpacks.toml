@@ -1,0 +1,11 @@
+# Alternative to the Dockerfile — only relevant if Coolify's build pack for
+# this resource is set to "Nixpacks" instead of "Dockerfile". Pick ONE build
+# strategy in Coolify; having both present doesn't mean both run.
+[phases.setup]
+nixPkgs = ["nodejs_24", "openssl"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "npx prisma migrate deploy && npm start"
