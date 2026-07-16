@@ -8,23 +8,26 @@ export default function NavAuthStatus() {
 
   if (status === "loading") return null;
 
+  if (session?.user) {
+    return (
+      <div className="flex items-center gap-3">
+        <span className="text-xs text-ink-soft">{session.user.email}</span>
+        <button
+          onClick={() => signOut()}
+          className="rounded-full border border-border-soft px-3 py-1.5 text-sm font-medium text-ink hover:border-accent"
+        >
+          Log out
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex items-center gap-4">
-      <Link href="/credits" className="hover:text-ink">
-        Credits
-      </Link>
-      {session?.user ? (
-        <>
-          <span className="text-xs text-ink-soft">{session.user.email}</span>
-          <button onClick={() => signOut()} className="hover:text-ink">
-            Log out
-          </button>
-        </>
-      ) : (
-        <Link href="/login" className="hover:text-ink">
-          Log in
-        </Link>
-      )}
-    </div>
+    <Link
+      href="/login"
+      className="rounded-full bg-ink px-4 py-1.5 text-sm font-medium text-canvas hover:opacity-90"
+    >
+      Log in
+    </Link>
   );
 }
