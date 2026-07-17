@@ -1,4 +1,4 @@
-import { AFFILIATE_TOOLS, type AffiliateTool } from "@/app/lib/affiliate";
+import type { AffiliateTool } from "@/app/lib/affiliate";
 import type { AccentName } from "@/app/lib/accent";
 
 export type PreviewMode = {
@@ -36,9 +36,7 @@ export const ART_STYLE_MODE: PreviewMode = {
   apiEndpoint: "/api/preview",
   fallbackStyle: "stylized painting",
   resultCaption: "This is just a preview! Get a dedicated painting tool for even more styles →",
-  ctaTool: AFFILIATE_TOOLS["deep-art-effects"],
-  bottomToolsCaption: "Nice photo! Turn it into a painting with one of our recommended tools:",
-  bottomTools: Object.values(AFFILIATE_TOOLS),
+  ctaTool: null, // TODO: add once Deep Art Effects / PhotoAI.me approved
   chatMode: "art",
   chatTitle: "Art Style Advisor",
   chatSubtitle: "Powered by AI · tells you which tool fits your style",
@@ -66,9 +64,7 @@ export const HEADSHOT_MODE: PreviewMode = {
     "AI preview — may not perfectly match a real photoshoot. Best for casual profile use.",
   resultCaption:
     "This is an AI-generated preview, not a real photoshoot. Get a dedicated headshot tool for a more polished result →",
-  ctaTool: AFFILIATE_TOOLS.photoai,
-  bottomToolsCaption: "Want a polished headshot? Try our recommended AI photo tool:",
-  bottomTools: [AFFILIATE_TOOLS.photoai],
+  ctaTool: null, // TODO: add once Deep Art Effects / PhotoAI.me approved
   chatMode: "headshot",
   chatTitle: "Headshot Style Advisor",
   chatSubtitle: "Powered by AI · tells you which headshot look fits you",

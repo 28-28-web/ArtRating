@@ -6,23 +6,27 @@ import { checkGenerationEligibility, recordSuccessfulGeneration } from "@/app/li
 import { uploadResultImage } from "@/app/lib/cloudinaryUpload";
 
 const TOOL_ID = "headshot";
+const DEBUG_GENERATION = process.env.DEBUG_GENERATION === "true";
 
-// Kept low relative to the art-style preview's 0.6 so identity (face shape,
-// proportions, skin tone) stays close to the source photo — only
-// background/attire/lighting should shift. See PR notes for the 0.25/0.45
-// tradeoff: lower drifts less from the source but also restyles less;
-// this needs a real Cloudflare account to tune with actual output.
-const HEADSHOT_STRENGTH = 0.35;
+// 0.35 was too conservative — at that strength SD 1.5 img2img barely touched
+// attire/background (large image regions get preserved heavily at low
+// strength), so "Corporate style" looked almost identical to the source
+// photo. Raised to 0.55 and the prompt now explicitly says "replace" instead
+// of just describing the target look, since softer phrasing wasn't enough to
+// override the source image at moderate strength either. If identity drifts
+// too much at 0.55, dial back toward 0.45 rather than lower — going back to
+// 0.35 reproduces the original bug.
+const HEADSHOT_STRENGTH = 0.55;
 
 const HEADSHOT_STYLE_PROMPTS: Record<string, string> = {
   corporate:
-    "professional business attire, neutral studio lighting, plain grey backdrop, corporate headshot photography",
+    "replace the person's outfit with a dark business suit or blazer over a collared shirt, replace the background entirely with a plain neutral grey studio backdrop, even studio lighting, corporate headshot photography",
   linkedin:
-    "professional business attire, warm soft studio lighting, neutral blurred background, LinkedIn profile headshot photography",
+    "replace the person's outfit with smart business attire such as a blazer or button-down shirt, replace the background entirely with a softly blurred neutral backdrop, warm soft studio lighting, LinkedIn profile headshot photography",
   "studio portrait":
-    "professional attire, clean studio lighting, seamless grey backdrop, classic studio portrait photography",
+    "replace the person's outfit with formal studio attire, replace the background entirely with a seamless grey studio backdrop, clean directional studio lighting, classic studio portrait photography",
   "creative professional":
-    "smart casual professional attire, soft directional lighting, softly blurred neutral background, creative industry headshot photography",
+    "replace the person's outfit with smart-casual professional attire such as an open-collar shirt or stylish blazer with no tie, replace the background entirely with a softly blurred neutral or muted-color backdrop, soft directional lighting, creative industry headshot photography",
 };
 
 function promptForHeadshotStyle(style: string) {
@@ -66,10 +70,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
+  const prompt = promptForHeadshotStyle(style);
+
+  if (DEBUG_GENERATION) {
+    console.log("[headshot-preview] requested style:", style);
+    console.log("[headshot-preview] resolved prompt:", prompt);
+    console.log("[headshot-preview] strength:", HEADSHOT_STRENGTH);
+  }
+
   const result = await generateImg2Img({
     accountId,
     apiToken,
-    prompt: promptForHeadshotStyle(style),
+    prompt,
     imageDataUrl,
     strength: HEADSHOT_STRENGTH,
   });
