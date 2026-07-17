@@ -239,6 +239,9 @@ export default function StyleQuiz({
 
       {isComplete && result && (
         <div
+          // Inline border color/width instead of the .accent-border class: this
+          // border is keyed to the quiz *result* (one of 5 palette accents),
+          // not the page's --accent token, so the CSS-var-based class doesn't apply here.
           className="tool-card relative flex flex-col items-center gap-3 text-center"
           style={{ borderColor: paletteForStyle(result).accent, borderWidth: 2 }}
         >

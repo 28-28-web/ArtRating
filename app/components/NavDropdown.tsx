@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import PaintDab from "@/app/components/PaintDab";
 
 type DropdownItem = { href: string; label: string; color?: string };
 
@@ -64,9 +65,7 @@ export default function NavDropdown({ label, items }: { label: string; items: Dr
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-ink hover:bg-[var(--border-soft)]/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
             >
-              {item.color && (
-                <span className="paint-dab !h-2.5 !w-2.5" style={{ background: item.color }} />
-              )}
+              {item.color && <PaintDab color={item.color} size={10} />}
               {item.label}
             </Link>
           ))}

@@ -83,7 +83,7 @@ export default function ChatWidget({
             return (
               <div key={i} className={m.role === "user" ? "self-end" : "self-start"}>
                 <div
-                  className={`rounded-xl px-3 py-2 text-sm ${
+                  className={`break-words rounded-xl px-3 py-2 text-sm ${
                     m.role === "user" ? "bg-ink text-canvas" : "bg-[var(--border-soft)]/40 text-ink"
                   }`}
                 >

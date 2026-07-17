@@ -3,6 +3,8 @@ import { Fraunces, Inter, Caveat } from "next/font/google";
 import Link from "next/link";
 import SessionProviderWrapper from "@/app/components/SessionProviderWrapper";
 import SiteNav from "@/app/components/SiteNav";
+import Logo from "@/app/components/Logo";
+import BrushDivider from "@/app/components/BrushDivider";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -41,13 +43,18 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col font-body">
         <SessionProviderWrapper>
-          <header className="border-b border-border-soft">
+          <header className="chrome-wash border-b border-border-soft">
             <SiteNav />
           </header>
 
           {children}
 
-          <footer className="flex flex-col items-center gap-3 border-t border-border-soft px-6 py-6 text-center text-xs text-ink-soft">
+          <footer className="chrome-wash flex flex-col items-center gap-3 border-t border-border-soft px-6 py-10 text-center text-xs text-ink-soft">
+            <Logo />
+            <p className="max-w-xs text-ink-soft">
+              Turn your photos into paintings with AI — upload, pick a style, download.
+            </p>
+            <BrushDivider className="my-1" />
             <nav className="flex gap-4">
               <Link href="/privacy" className="hover:text-accent-text">
                 Privacy

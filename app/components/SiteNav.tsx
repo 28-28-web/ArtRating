@@ -5,6 +5,7 @@ import Link from "next/link";
 import Logo from "@/app/components/Logo";
 import NavDropdown from "@/app/components/NavDropdown";
 import NavAuthStatus from "@/app/components/NavAuthStatus";
+import PaintDab from "@/app/components/PaintDab";
 
 const TOOLS = [
   { href: "/professional-headshot-generator", label: "Headshot Generator", color: "var(--teal-muted)" },
@@ -65,7 +66,7 @@ export default function SiteNav() {
               onClick={() => setMobileOpen(false)}
               className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm text-ink hover:bg-[var(--border-soft)]/40"
             >
-              <span className="paint-dab !h-2.5 !w-2.5" style={{ background: tool.color }} />
+              <PaintDab color={tool.color} size={10} />
               {tool.label}
             </Link>
           ))}

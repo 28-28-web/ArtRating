@@ -1,50 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { useAuthForm } from "@/app/lib/useAuthForm";
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
-  const [formMode, setFormMode] = useState<"login" | "signup">("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSubmitting(true);
-    setError(null);
-    try {
-      if (formMode === "signup") {
-        const res = await fetch("/api/auth/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          setError(data.error || "Could not create account");
-          return;
-        }
-      }
-
-      const result = await signIn("credentials", { redirect: false, email, password });
-      if (result?.error) {
-        setError("Incorrect email or password");
-        return;
-      }
-      router.push(callbackUrl);
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
+  const { formMode, email, setEmail, password, setPassword, error, submitting, handleSubmit, toggleMode } =
+    useAuthForm(() => router.push(callbackUrl));
 
   return (
     <>
@@ -78,10 +43,7 @@ export default function LoginForm() {
           {submitting ? "…" : formMode === "login" ? "Log in" : "Create account"}
         </button>
       </form>
-      <button
-        onClick={() => setFormMode(formMode === "login" ? "signup" : "login")}
-        className="text-xs text-ink-soft underline hover:text-accent-text"
-      >
+      <button onClick={toggleMode} className="text-xs text-ink-soft underline hover:text-accent-text">
         {formMode === "login" ? "New here? Create account" : "Already have an account? Log in"}
       </button>
     </>

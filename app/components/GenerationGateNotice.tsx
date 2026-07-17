@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import PaintDab from "@/app/components/PaintDab";
+import { useAuthForm } from "@/app/lib/useAuthForm";
 
 export default function GenerationGateNotice({
   kind,
@@ -11,16 +11,16 @@ export default function GenerationGateNotice({
   kind: "needs-login" | "needs-payment";
   onAuthenticated?: () => void;
 }) {
-  const [formMode, setFormMode] = useState<"login" | "signup">("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const { formMode, email, setEmail, password, setPassword, error, submitting, handleSubmit, toggleMode } =
+    useAuthForm(() => onAuthenticated?.());
 
   if (kind === "needs-payment") {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-xl border border-border-soft p-4 text-center">
-        <p className="text-sm font-medium text-ink">You&apos;ve used both free generations.</p>
+      <div className="gate-notice flex flex-col items-center gap-2 p-4 text-center">
+        <PaintDab size={14} />
+        <p className="font-display text-sm font-semibold text-ink">
+          You&apos;ve used both free generations.
+        </p>
         <p className="text-sm text-ink-soft">Add credits to keep going.</p>
         <Link
           href="/credits"
@@ -32,40 +32,10 @@ export default function GenerationGateNotice({
     );
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSubmitting(true);
-    setError(null);
-    try {
-      if (formMode === "signup") {
-        const res = await fetch("/api/auth/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          setError(data.error || "Could not create account");
-          return;
-        }
-      }
-
-      const result = await signIn("credentials", { redirect: false, email, password });
-      if (result?.error) {
-        setError("Incorrect email or password");
-        return;
-      }
-      onAuthenticated?.();
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
   return (
-    <div className="flex flex-col items-center gap-3 rounded-xl border border-border-soft p-4 text-center">
-      <p className="text-sm font-medium text-ink">
+    <div className="gate-notice flex flex-col items-center gap-3 p-4 text-center">
+      <PaintDab size={14} />
+      <p className="font-display text-sm font-semibold text-ink">
         Log in to generate another image — your first one&apos;s on us!
       </p>
       <form onSubmit={handleSubmit} className="flex w-full max-w-xs flex-col gap-2">
@@ -95,10 +65,7 @@ export default function GenerationGateNotice({
           {submitting ? "…" : formMode === "login" ? "Log in" : "Create account"}
         </button>
       </form>
-      <button
-        onClick={() => setFormMode(formMode === "login" ? "signup" : "login")}
-        className="text-xs text-ink-soft underline hover:text-accent-text"
-      >
+      <button onClick={toggleMode} className="text-xs text-ink-soft underline hover:text-accent-text">
         {formMode === "login" ? "New here? Create account" : "Already have an account? Log in"}
       </button>
     </div>

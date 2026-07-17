@@ -165,3 +165,24 @@ body {
     display: none;
   }
 }
+
+/* Site chrome (header/footer) wash — a faint diagonal tint so the shell
+   reads as branded surface rather than a bare 1px-bordered box. Uses the
+   default --accent (cobalt) since chrome sits outside any page's
+   accentVars() scope. */
+.chrome-wash {
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--accent) 5%, var(--canvas)) 0%,
+    var(--canvas) 60%
+  );
+}
+
+/* Generation-gate notice — nests inside an already-tilted .tool-card, so it
+   stays flat (no tilt of its own) but picks up the page's --accent instead
+   of reading as a plain bootstrap-style alert box. */
+.gate-notice {
+  background: color-mix(in srgb, var(--accent) 8%, var(--canvas));
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border-soft));
+  border-radius: 14px;
+}
