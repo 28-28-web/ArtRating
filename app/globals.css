@@ -206,3 +206,84 @@ body {
   border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border-soft));
   border-radius: 14px;
 }
+
+/* Homepage hero gallery — one example per tool, bordered in that tool's
+   accent instead of one uniform color. No background wash behind the grid
+   on purpose (canvas stays canvas) — the colored borders + photos carry the
+   visual interest. Column counts are explicit per breakpoint below rather
+   than relying purely on auto-fit, since auto-fit with a 160px minimum would
+   pack 5-6 columns at desktop widths instead of the requested 4. */
+.hero-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+@media (min-width: 640px) {
+  .hero-gallery {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+}
+@media (min-width: 1024px) {
+  .hero-gallery {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.hero-gallery-item {
+  position: relative;
+  display: block;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.hero-gallery-item img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+  transition: transform 150ms ease-out;
+}
+.hero-gallery-item:hover img,
+.hero-gallery-item:focus-visible img {
+  transform: scale(1.03);
+}
+
+.hero-gallery-item.from-art-style { border: 3px solid var(--cobalt); }
+.hero-gallery-item.from-headshot { border: 3px solid var(--teal-muted); }
+.hero-gallery-item.from-pet-human { border: 3px solid var(--jade); }
+.hero-gallery-item.from-toy { border: 3px solid var(--saffron); }
+.hero-gallery-item.from-photo-mix { border: 3px solid var(--magenta); }
+
+.hero-gallery-label {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 150ms ease-out, transform 150ms ease-out;
+  pointer-events: none;
+}
+.hero-gallery-item:hover .hero-gallery-label,
+.hero-gallery-item:focus-visible .hero-gallery-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-gallery-item img,
+  .hero-gallery-label {
+    transition: none;
+  }
+}
+
+/* Dark-mode glow so photos don't float borderless against a dark canvas.
+   No [data-theme="dark"] toggle exists in this codebase yet — this rule is
+   forward-compatible and stays inert until one is added. */
+[data-theme="dark"] .hero-gallery-item img {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+}

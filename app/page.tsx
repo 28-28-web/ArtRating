@@ -1,5 +1,6 @@
 import Link from "next/link";
 import HomeInteractive from "@/app/components/HomeInteractive";
+import HeroGallery from "@/app/components/HeroGallery";
 import BrushDivider from "@/app/components/BrushDivider";
 import { SITE_NAME, SITE_URL } from "@/app/lib/site";
 
@@ -39,6 +40,8 @@ export default function Home() {
             the best AI photo-to-painting tool for the job.
           </p>
         </section>
+
+        <HeroGallery />
 
         <HomeInteractive />
 

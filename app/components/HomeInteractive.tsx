@@ -16,7 +16,7 @@ export default function HomeInteractive() {
 
   return (
     <>
-      <div ref={uploadRef} className="w-full">
+      <div ref={uploadRef} id="try-it" className="w-full">
         <UploadChatSection selectedStyle={selectedStyle} onStyleChange={setSelectedStyle} />
       </div>
 
