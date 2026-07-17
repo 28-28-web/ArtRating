@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { SITE_URL } from "@/app/lib/site";
+import ConfettiBurst from "@/app/components/ConfettiBurst";
 
 type StyleId = "van-gogh" | "watercolor" | "anime" | "oil-painting" | "monet" | "pop-art";
 
@@ -127,46 +128,6 @@ function computeResult(answers: StyleId[]): StyleId {
   for (const style of answers) scores[style] += 1;
   return (Object.keys(scores) as StyleId[]).reduce((best, key) =>
     scores[key] > scores[best] ? key : best
-  );
-}
-
-const CONFETTI_COLORS = ["var(--cobalt)", "var(--jade)", "var(--saffron)", "var(--magenta)", "var(--teal-muted)"];
-
-function ConfettiBurst() {
-  const dots = Array.from({ length: 12 }, (_, i) => {
-    const angle = (i / 12) * Math.PI * 2;
-    const distance = 40 + (i % 3) * 12;
-    const dx = Math.cos(angle) * distance;
-    const dy = Math.sin(angle) * distance;
-    return {
-      dx: `${dx}px`,
-      dy: `${dy}px`,
-      color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-      delay: `${(i % 4) * 40}ms`,
-      left: "50%",
-      top: "50%",
-    };
-  });
-
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-visible" aria-hidden="true">
-      {dots.map((dot, i) => (
-        <span
-          key={i}
-          className="confetti-dot"
-          style={
-            {
-              left: dot.left,
-              top: dot.top,
-              background: dot.color,
-              animationDelay: dot.delay,
-              "--dx": dot.dx,
-              "--dy": dot.dy,
-            } as React.CSSProperties
-          }
-        />
-      ))}
-    </div>
   );
 }
 

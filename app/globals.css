@@ -140,6 +140,26 @@ body {
   transform: scale(0.95);
 }
 
+/* Contact form card — same idea as .quiz-card (diagonal low-opacity wash)
+   but sweeps all four tool accents since this page isn't tied to one tool. */
+.contact-card {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--cobalt) 8%, var(--canvas)) 0%,
+    color-mix(in srgb, var(--jade) 8%, var(--canvas)) 35%,
+    color-mix(in srgb, var(--saffron) 8%, var(--canvas)) 65%,
+    color-mix(in srgb, var(--magenta) 8%, var(--canvas)) 100%
+  );
+}
+
+/* Contact form submit button — same shape/weight as the site's solid-ink
+   buttons, just gradient-filled instead, since this page is allowed to be
+   more playful. Saffron is deliberately left out of the sweep so white
+   button text stays readable across the whole fill. */
+.gradient-button {
+  background: linear-gradient(90deg, var(--cobalt) 0%, var(--magenta) 50%, var(--teal-muted) 100%);
+}
+
 /* Confetti burst on the quiz result reveal — pure CSS, skipped entirely
    under prefers-reduced-motion (result still shows, just no animation). */
 .confetti-dot {

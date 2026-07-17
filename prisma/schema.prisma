@@ -60,3 +60,15 @@ model CreditPurchaseRequest {
   @@index([userId])
   @@index([status])
 }
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  category  String // 'general' | 'bug' | 'misuse-report' | 'business'
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+  resolved  Boolean  @default(false)
+
+  @@index([resolved])
+}
