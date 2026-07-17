@@ -101,7 +101,7 @@ export default function CreditsForm({
           onChange={(e) => setTransactionRef(e.target.value)}
           className="rounded-full border border-border-soft bg-transparent px-4 py-2 text-sm text-ink outline-none focus:border-accent"
         />
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-danger">{error}</p>}
         {message && <p className="text-sm text-jade">{message}</p>}
         <button
           type="submit"

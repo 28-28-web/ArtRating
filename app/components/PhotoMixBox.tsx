@@ -180,7 +180,7 @@ export default function PhotoMixBox({ mode }: { mode: PreviewMode }) {
               {generating ? "Generating…" : "Generate Free Preview"}
             </button>
 
-            {previewError && <p className="text-sm text-red-600">{previewError}</p>}
+            {previewError && <p className="text-sm text-danger">{previewError}</p>}
 
             {gate && <GenerationGateNotice kind={gate} onAuthenticated={generatePreview} />}
 

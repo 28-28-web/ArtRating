@@ -6,6 +6,7 @@ import Logo from "@/app/components/Logo";
 import NavDropdown from "@/app/components/NavDropdown";
 import NavAuthStatus from "@/app/components/NavAuthStatus";
 import PaintDab from "@/app/components/PaintDab";
+import ThemeToggle from "@/app/components/ThemeToggle";
 
 const TOOLS = [
   { href: "/professional-headshot-generator", label: "Headshot Generator", color: "var(--teal-muted)" },
@@ -34,6 +35,7 @@ export default function SiteNav() {
           <Link href="/credits" className="text-sm text-ink-soft hover:text-ink">
             Credits
           </Link>
+          <ThemeToggle />
           <NavAuthStatus />
         </div>
 
@@ -91,7 +93,10 @@ export default function SiteNav() {
             >
               Credits
             </Link>
-            <NavAuthStatus />
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <NavAuthStatus />
+            </div>
           </div>
         </div>
       )}

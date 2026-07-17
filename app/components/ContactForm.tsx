@@ -95,7 +95,7 @@ export default function ContactForm() {
               onChange={(e) => setName(e.target.value)}
               className={inputClass}
             />
-            {errors.name && <p className="text-xs text-red-600">{errors.name}</p>}
+            {errors.name && <p className="text-xs text-danger">{errors.name}</p>}
           </div>
 
           <div className="flex flex-col gap-1">
@@ -109,7 +109,7 @@ export default function ContactForm() {
               onChange={(e) => setEmail(e.target.value)}
               className={inputClass}
             />
-            {errors.email && <p className="text-xs text-red-600">{errors.email}</p>}
+            {errors.email && <p className="text-xs text-danger">{errors.email}</p>}
           </div>
 
           <div className="flex flex-col gap-1">
@@ -131,7 +131,7 @@ export default function ContactForm() {
                 </button>
               ))}
             </div>
-            {errors.category && <p className="text-xs text-red-600">{errors.category}</p>}
+            {errors.category && <p className="text-xs text-danger">{errors.category}</p>}
           </div>
 
           <div className="flex flex-col gap-1">
@@ -145,10 +145,10 @@ export default function ContactForm() {
               rows={5}
               className={inputClass}
             />
-            {errors.message && <p className="text-xs text-red-600">{errors.message}</p>}
+            {errors.message && <p className="text-xs text-danger">{errors.message}</p>}
           </div>
 
-          {submitError && <p className="text-sm text-red-600">{submitError}</p>}
+          {submitError && <p className="text-sm text-danger">{submitError}</p>}
 
           <button
             type="submit"

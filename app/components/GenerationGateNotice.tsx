@@ -56,7 +56,7 @@ export default function GenerationGateNotice({
           onChange={(e) => setPassword(e.target.value)}
           className="rounded-full border border-border-soft bg-transparent px-4 py-2 text-sm text-ink outline-none focus:border-accent"
         />
-        {error && <p className="text-xs text-red-600">{error}</p>}
+        {error && <p className="text-xs text-danger">{error}</p>}
         <button
           type="submit"
           disabled={submitting}

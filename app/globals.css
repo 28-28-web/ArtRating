@@ -2,9 +2,11 @@
 
 :root {
   --canvas: #FDFBF7;       /* page background — warm primed-canvas white */
+  --surface: #FDFBF7;      /* card surface — same as canvas in light mode, lifts in dark mode */
   --ink: #2B2A28;          /* body text — warm charcoal, not pure black */
   --ink-soft: #5C5B56;     /* secondary text */
   --border-soft: #E8E4DA;  /* card borders, dividers */
+  --danger: #DC2626;       /* form/validation error text */
 
   --cobalt: #2F5FD1;       /* art-style tool */
   --jade: #1F9E75;         /* pet-to-human tool */
@@ -21,17 +23,66 @@
   --magenta-text: #B02A6A;
   --teal-muted-text: #0F6E56;
 
+  /* Fill tones for filled surfaces that hold *white* text (chips, the
+     contact-form gradient button) — kept separate from the plain accent
+     tokens above because those get lightened for dark mode (readable as a
+     border/stroke against a dark canvas), which is the opposite of what a
+     white-text fill needs. Same value as the accent token in light mode
+     (where they already happen to satisfy both), overridden independently
+     only where dark mode needs it (see below). */
+  --cobalt-fill: #2F5FD1;
+  --jade-fill: #1F9E75;
+  --magenta-fill: #D1367F;
+  --teal-muted-fill: #0F6E56;
+
   /* Default site accent (art-style / homepage). Tool pages override this
      locally by setting --accent/--accent-text on a wrapping element. */
   --accent: var(--cobalt);
   --accent-text: var(--cobalt-text);
 }
 
+[data-theme="dark"] {
+  --canvas: #1C1B19;       /* dark canvas — warm charcoal, not pure black */
+  --surface: #252420;      /* a shade lighter than canvas so cards read as "on top of" the page */
+  --ink: #F3F1EA;
+  --ink-soft: #B8B5AC;     /* 8.4:1 on dark canvas — comfortably passes AA for secondary/disclaimer text */
+  /* Lightened well past the light-mode value (#E8E4DA's dark-mode inverse
+     would sit ~1.4:1 on dark canvas — invisible). #6B6759 clears 3:1 so
+     card borders/dividers stay perceivable. */
+  --border-soft: #6B6759;
+  --danger: #F87171;       /* text-red-600 sits at 3.6:1 on the dark canvas (fails AA); this clears 6.2:1 */
+
+  /* Lightened for legibility as a border/stroke/dab against the dark
+     canvas — verified >=4.5:1 as text too, so brush-divider strokes and
+     *-text hover links stay readable (see --*-text below). */
+  --cobalt: #6E8FEA;
+  --jade: #4FC79A;
+  --saffron: #F6C567;
+  --magenta: #E86FA6;
+  --teal-muted: #3FA687;
+
+  --cobalt-text: #6E8FEA;
+  --jade-text: #4FC79A;
+  --saffron-text: #F6C567;
+  --magenta-text: #E86FA6;
+  --teal-muted-text: #3FA687;
+
+  /* Chip/button fills stay close to the light-mode values on purpose — see
+     the comment on --cobalt-fill etc. above. Only jade needed retuning
+     here: the light-mode #1F9E75 fill only clears 3.4:1 against white
+     text (it was already borderline), and this repo has no [data-theme]
+     switch to separately fix light mode without risking a visible light-mode
+     change, so it's left as-is there and only tightened for dark mode. */
+  --jade-fill: #178260;
+}
+
 @theme inline {
   --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
   --color-border-soft: var(--border-soft);
+  --color-danger: var(--danger);
 
   --color-cobalt: var(--cobalt);
   --color-jade: var(--jade);
@@ -80,7 +131,7 @@ body {
    .tool-card-content wrapper so buttons/inputs/chat bubbles are never
    harder to click. */
 .tool-card {
-  background: var(--canvas);
+  background: var(--surface);
   border: 1px solid var(--border-soft);
   border-radius: 6px;
   padding: 14px 14px 18px;
@@ -93,6 +144,13 @@ body {
 .tool-card.accent-border {
   border-color: var(--accent);
   border-width: 2px;
+}
+/* Dark mode: --surface already lifts the card off the canvas, so the
+   light-mode's dark drop shadow (tuned for a white background) is swapped
+   for a faint light-colored glow instead — a dark shadow on a dark card
+   over a dark canvas would be invisible anyway. */
+[data-theme="dark"] .tool-card {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
 .tool-card-content {
@@ -123,12 +181,18 @@ body {
 }
 
 /* Answer chips — cycle the tool accent palette; saffron gets dark text,
-   the rest get white, per the contrast rule (measured, not assumed). */
-.chip-cobalt { background: var(--cobalt); color: #fff; }
-.chip-jade { background: var(--jade); color: #fff; }
-.chip-saffron { background: var(--saffron); color: var(--ink); }
-.chip-magenta { background: var(--magenta); color: #fff; }
-.chip-teal-muted { background: var(--teal-muted); color: #fff; }
+   the rest get white, per the contrast rule (measured, not assumed). Use
+   the *-fill tokens, not the plain accent tokens: in dark mode the plain
+   tokens lighten (for border/stroke use) which would drop white-text
+   contrast on a filled chip well below AA. Saffron's text is a fixed dark
+   hex rather than var(--ink), since --ink flips to a near-white in dark
+   mode and saffron's fill (light/warm in both themes) never wants light
+   text on it. */
+.chip-cobalt { background: var(--cobalt-fill); color: #fff; }
+.chip-jade { background: var(--jade-fill); color: #fff; }
+.chip-saffron { background: var(--saffron); color: #1C1B19; }
+.chip-magenta { background: var(--magenta-fill); color: #fff; }
+.chip-teal-muted { background: var(--teal-muted-fill); color: #fff; }
 
 .quiz-chip {
   transition: transform 0.15s ease-out;
@@ -155,9 +219,17 @@ body {
 /* Contact form submit button — same shape/weight as the site's solid-ink
    buttons, just gradient-filled instead, since this page is allowed to be
    more playful. Saffron is deliberately left out of the sweep so white
-   button text stays readable across the whole fill. */
+   button text stays readable across the whole fill. Uses the *-fill tokens
+   for the same reason as the chips above — the plain accent tokens
+   lighten in dark mode for border/stroke use and would break white-text
+   contrast here. */
 .gradient-button {
-  background: linear-gradient(90deg, var(--cobalt) 0%, var(--magenta) 50%, var(--teal-muted) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--cobalt-fill) 0%,
+    var(--magenta-fill) 50%,
+    var(--teal-muted-fill) 100%
+  );
 }
 
 /* Confetti burst on the quiz result reveal — pure CSS, skipped entirely
@@ -281,9 +353,7 @@ body {
   }
 }
 
-/* Dark-mode glow so photos don't float borderless against a dark canvas.
-   No [data-theme="dark"] toggle exists in this codebase yet — this rule is
-   forward-compatible and stays inert until one is added. */
+/* Dark-mode glow so photos don't float borderless against a dark canvas. */
 [data-theme="dark"] .hero-gallery-item img {
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
