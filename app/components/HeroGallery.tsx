@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 
 type GalleryItem = {
@@ -77,7 +80,34 @@ const GALLERY: GalleryItem[] = [
   },
 ];
 
+const MAX_TILT_DEG = 4;
+
 export default function HeroGallery() {
+  // Only tilt for mouse/trackpad users who haven't asked for less motion —
+  // computed once on mount rather than per mousemove event.
+  const canTilt = useRef(false);
+
+  useEffect(() => {
+    canTilt.current =
+      window.matchMedia("(hover: hover)").matches &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }, []);
+
+  function handleMouseMove(e: React.MouseEvent<HTMLImageElement>) {
+    if (!canTilt.current) return;
+    const img = e.currentTarget;
+    const rect = img.getBoundingClientRect();
+    const relX = (e.clientX - rect.left) / rect.width - 0.5; // -0.5..0.5
+    const relY = (e.clientY - rect.top) / rect.height - 0.5;
+    img.style.setProperty("--tilt-y", `${(relX * MAX_TILT_DEG * 2).toFixed(2)}deg`);
+    img.style.setProperty("--tilt-x", `${(-relY * MAX_TILT_DEG * 2).toFixed(2)}deg`);
+  }
+
+  function handleMouseLeave(e: React.MouseEvent<HTMLImageElement>) {
+    e.currentTarget.style.setProperty("--tilt-x", "0deg");
+    e.currentTarget.style.setProperty("--tilt-y", "0deg");
+  }
+
   return (
     <div className="hero-gallery w-full">
       {GALLERY.map((item) => (
@@ -87,7 +117,13 @@ export default function HeroGallery() {
           className={`hero-gallery-item ${item.borderClass}`}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={item.src} alt={item.alt} loading="lazy" />
+          <img
+            src={item.src}
+            alt={item.alt}
+            loading="lazy"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          />
           <span className="hero-gallery-label">{item.label}</span>
         </Link>
       ))}

@@ -8,8 +8,11 @@ import NavAuthStatus from "@/app/components/NavAuthStatus";
 import PaintDab from "@/app/components/PaintDab";
 import ThemeToggle from "@/app/components/ThemeToggle";
 
+// Headshot Generator lives as its own top-level nav item (see below) — it's
+// the primary affiliate-funnel page right now — so it's deliberately not in
+// this list. The other four tools stay grouped under the Tools dropdown.
 const TOOLS = [
-  { href: "/professional-headshot-generator", label: "Headshot Generator", color: "var(--teal-muted)" },
+  { href: "/", label: "Art Style", color: "var(--cobalt)" },
   { href: "/pet-to-human", label: "Pet to Human", color: "var(--jade)" },
   { href: "/toy-ification", label: "Toy-ify Yourself", color: "var(--saffron)" },
   { href: "/photo-mix", label: "Photo Mix", color: "var(--magenta)" },
@@ -30,6 +33,9 @@ export default function SiteNav() {
         <Logo />
 
         <div className="hidden items-center gap-6 md:flex">
+          <Link href="/professional-headshot-generator" className="text-sm text-ink-soft hover:text-ink">
+            Headshot Generator
+          </Link>
           <NavDropdown label="Tools" items={TOOLS} />
           <NavDropdown label="Guides" items={GUIDES} />
           <Link href="/credits" className="text-sm text-ink-soft hover:text-ink">
@@ -60,7 +66,16 @@ export default function SiteNav() {
 
       {mobileOpen && (
         <div className="mt-4 flex flex-col gap-1 border-t border-border-soft pt-4 md:hidden">
-          <p className="px-2 text-xs font-medium uppercase tracking-wide text-ink-soft/70">Tools</p>
+          <Link
+            href="/professional-headshot-generator"
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm text-ink hover:bg-[var(--border-soft)]/40"
+          >
+            <PaintDab color="var(--teal-muted)" size={10} />
+            Headshot Generator
+          </Link>
+
+          <p className="mt-2 px-2 text-xs font-medium uppercase tracking-wide text-ink-soft/70">Tools</p>
           {TOOLS.map((tool) => (
             <Link
               key={tool.href}

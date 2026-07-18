@@ -357,3 +357,181 @@ body {
 [data-theme="dark"] .hero-gallery-item img {
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
+
+/* Before/after compare slider — plain CSS clip-path reveal, no library.
+   --compare-pos is set inline by CompareSlider.tsx as the range input moves. */
+.compare-slider {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid var(--border-soft);
+}
+.compare-slider img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* Stands in for a real "after" result — see the TODO in CompareSlider.tsx. */
+.compare-after {
+  filter: saturate(1.25) contrast(1.1) brightness(1.05);
+}
+.compare-before-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  clip-path: inset(0 calc(100% - var(--compare-pos, 50%)) 0 0);
+}
+.compare-slider::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--compare-pos, 50%);
+  width: 2px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  transform: translateX(-1px);
+  pointer-events: none;
+  z-index: 2;
+}
+.compare-tag {
+  position: absolute;
+  top: 8px;
+  z-index: 3;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+.compare-tag-before {
+  left: 8px;
+}
+.compare-tag-after {
+  right: 8px;
+}
+.compare-handle {
+  position: absolute;
+  z-index: 4;
+  width: 100%;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  margin: 0;
+  cursor: ew-resize;
+  appearance: none;
+  background: transparent;
+}
+.compare-handle::-webkit-slider-thumb {
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid var(--accent);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  cursor: ew-resize;
+}
+.compare-handle::-moz-range-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid var(--accent);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  cursor: ew-resize;
+}
+.compare-handle::-webkit-slider-runnable-track,
+.compare-handle::-moz-range-track {
+  background: transparent;
+}
+
+/* Subtle cursor-tilt on hero gallery images — desktop only (guarded in JS
+   via matchMedia('(hover: hover)')) and skipped under prefers-reduced-motion.
+   --tilt-x/--tilt-y are set inline by HeroGallery.tsx on mousemove; the
+   existing hover-scale (below) composes into the same transform via
+   --tilt-scale so both effects can run together without clobbering. */
+.hero-gallery-item img {
+  transform: perspective(700px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))
+    scale(var(--tilt-scale, 1));
+}
+.hero-gallery-item:hover img,
+.hero-gallery-item:focus-visible img {
+  --tilt-scale: 1.03;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-gallery-item img {
+    transform: none !important;
+  }
+}
+
+/* Floating paint-dab background accents — decorative only, sits behind
+   hero content (z-index below), hidden on mobile per the task's own call
+   to keep small screens clean/fast, paused under reduced-motion. */
+.hero-decorative {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.hero-decorative > :not(.paint-dab-bg) {
+  position: relative;
+  z-index: 1;
+}
+.paint-dab-bg {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.25;
+  z-index: 0;
+  pointer-events: none;
+  animation: float-dab 8s ease-in-out infinite;
+}
+@keyframes float-dab {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(8px, -12px);
+  }
+}
+@media (max-width: 639px) {
+  .paint-dab-bg {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .paint-dab-bg {
+    animation: none;
+  }
+}
+
+/* Headline entrance — once on initial load only, not scroll-triggered. */
+.headline-in {
+  animation: headline-in 400ms ease-out both;
+}
+@keyframes headline-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .headline-in {
+    animation: none;
+  }
+}
