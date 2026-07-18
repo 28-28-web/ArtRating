@@ -307,19 +307,27 @@ body {
 .hero-gallery-item {
   position: relative;
   display: block;
+  aspect-ratio: 1;
   border-radius: 6px;
   overflow: hidden;
 }
+/* aspect-ratio lives on the item now, not the img — next/image's `fill`
+   mode makes the img position:absolute/inset:0, sized by its parent, so an
+   aspect-ratio on the img itself would have no box to apply to. Hover-scale
+   and the cursor-tilt effect (further down this file) share one transform
+   via --tilt-scale/--tilt-x/--tilt-y so neither clobbers the other — this
+   used to be a plain `transform: scale(1.03)` on hover, which had higher
+   specificity than the tilt rule and silently cancelled the tilt rotation
+   on hover (exactly when it should be visible). */
 .hero-gallery-item img {
-  width: 100%;
-  aspect-ratio: 1;
   object-fit: cover;
-  display: block;
+  transform: perspective(700px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))
+    scale(var(--tilt-scale, 1));
   transition: transform 150ms ease-out;
 }
 .hero-gallery-item:hover img,
 .hero-gallery-item:focus-visible img {
-  transform: scale(1.03);
+  --tilt-scale: 1.03;
 }
 
 .hero-gallery-item.from-art-style { border: 3px solid var(--cobalt); }
@@ -350,6 +358,9 @@ body {
   .hero-gallery-item img,
   .hero-gallery-label {
     transition: none;
+  }
+  .hero-gallery-item img {
+    transform: none;
   }
 }
 
@@ -452,25 +463,6 @@ body {
 .compare-handle::-webkit-slider-runnable-track,
 .compare-handle::-moz-range-track {
   background: transparent;
-}
-
-/* Subtle cursor-tilt on hero gallery images — desktop only (guarded in JS
-   via matchMedia('(hover: hover)')) and skipped under prefers-reduced-motion.
-   --tilt-x/--tilt-y are set inline by HeroGallery.tsx on mousemove; the
-   existing hover-scale (below) composes into the same transform via
-   --tilt-scale so both effects can run together without clobbering. */
-.hero-gallery-item img {
-  transform: perspective(700px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))
-    scale(var(--tilt-scale, 1));
-}
-.hero-gallery-item:hover img,
-.hero-gallery-item:focus-visible img {
-  --tilt-scale: 1.03;
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero-gallery-item img {
-    transform: none !important;
-  }
 }
 
 /* Floating paint-dab background accents — decorative only, sits behind
