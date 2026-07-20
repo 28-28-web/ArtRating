@@ -73,11 +73,11 @@ export default function TermsPage() {
       <section className="flex flex-col gap-3">
         <h2 className="font-display text-xl font-semibold text-ink">Credits and payments</h2>
         <p className="text-ink">
-          Free generations are limited as described on the site (currently: one before login, one
-          more after logging in). Additional generations require credits, purchased via manual
-          bank transfer verification. Credits are non-refundable once used; unused credit
-          balances tied to a clear payment error will be reviewed case by case if you contact us
-          within 7 days of purchase.
+          Generating a preview is free and doesn&apos;t require an account, up to the generation limit
+          described on the site. Downloading the full-quality, watermark-free file requires an
+          account and 1 credit per download, purchased via manual bank transfer verification.
+          Credits are non-refundable once used; unused credit balances tied to a clear payment
+          error will be reviewed case by case if you contact us within 7 days of purchase.
         </p>
       </section>
 

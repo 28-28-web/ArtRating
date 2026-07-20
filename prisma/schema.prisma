@@ -24,15 +24,22 @@ model AnonymousUsage {
 }
 
 model Generation {
-  id         String   @id @default(cuid())
-  userId     String?
-  user       User?    @relation(fields: [userId], references: [id])
-  anonId     String? // set when userId is null, links back to AnonymousUsage
-  toolId     String // 'art-style' | 'headshot' | 'pet-to-human' | 'toy-ification'
-  usedCredit Boolean  @default(false)
-  status     String   @default("pending")
-  imageUrl   String?
-  createdAt  DateTime @default(now())
+  id            String    @id @default(cuid())
+  userId        String?
+  user          User?     @relation(fields: [userId], references: [id])
+  anonId        String? // set when userId is null, links back to AnonymousUsage
+  toolId        String // 'art-style' | 'headshot' | 'pet-to-human' | 'toy-ification' | 'photo-mix'
+  usedCredit    Boolean   @default(false)
+  status        String    @default("pending")
+  imageUrl      String? // watermarked preview, shown on screen before payment
+  cleanImageUrl String? // watermark-free file, only ever returned by /api/download.
+  // Only ever set for generations made while logged in (userId != null) — see
+  // the "option (b)" note in the download route: anonymous-era generations
+  // aren't retroactively downloadable after logging in, so there's no clean
+  // file to store for them and this column stays null.
+  downloadedAt  DateTime? // set once the download credit has been charged, so a
+  // page refresh / repeat click doesn't charge a second credit for the same file.
+  createdAt     DateTime  @default(now())
 
   @@index([userId])
   @@index([anonId])

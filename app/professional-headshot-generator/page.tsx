@@ -19,7 +19,7 @@ const faqs = [
   {
     question: "Is this free?",
     answer:
-      "Your first-ever generation on the site is free, full quality, no login needed. After that, one more free generation once you log in — after those two, you'll need credits to keep generating.",
+      "Generating a preview is free and doesn't need an account — you get 6 free generations, shared across every tool on the site. Downloading the full-quality, watermark-free file is the only part that needs an account: log in and use 1 credit per download.",
   },
   {
     question: "How is this different from Deep Art Effects or PhotoAI?",

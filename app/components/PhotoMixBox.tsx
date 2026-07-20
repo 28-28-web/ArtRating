@@ -2,7 +2,8 @@
 
 import { useRef, useState } from "react";
 import type { PreviewMode } from "@/app/lib/previewModes";
-import GenerationGateNotice from "@/app/components/GenerationGateNotice";
+import GenerationCounter from "@/app/components/GenerationCounter";
+import DownloadButton from "@/app/components/DownloadButton";
 import PaintDab from "@/app/components/PaintDab";
 
 function PhotoPanel({
@@ -64,9 +65,11 @@ export default function PhotoMixBox({ mode }: { mode: PreviewMode }) {
   const [previewB, setPreviewB] = useState<string | null>(null);
   const [consent, setConsent] = useState(false);
   const [aiPreview, setAiPreview] = useState<string | null>(null);
+  const [generationId, setGenerationId] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
-  const [gate, setGate] = useState<"needs-login" | "needs-payment" | null>(null);
+  const [capMessage, setCapMessage] = useState<string | null>(null);
+  const [generationCount, setGenerationCount] = useState(0);
   const [showShareLinks, setShowShareLinks] = useState(false);
 
   function readFile(file: File | undefined, onDone: (dataUrl: string) => void) {
@@ -75,8 +78,9 @@ export default function PhotoMixBox({ mode }: { mode: PreviewMode }) {
     reader.onload = () => {
       onDone(reader.result as string);
       setAiPreview(null);
+      setGenerationId(null);
       setPreviewError(null);
-      setGate(null);
+      setCapMessage(null);
     };
     reader.readAsDataURL(file);
   }
@@ -101,7 +105,7 @@ export default function PhotoMixBox({ mode }: { mode: PreviewMode }) {
     if (!previewA || !previewB || !consent) return;
     setGenerating(true);
     setPreviewError(null);
-    setGate(null);
+    setCapMessage(null);
     try {
       const res = await fetch(mode.apiEndpoint, {
         method: "POST",
@@ -109,21 +113,19 @@ export default function PhotoMixBox({ mode }: { mode: PreviewMode }) {
         body: JSON.stringify({ imageA: previewA, imageB: previewB, consent }),
       });
 
-      if (res.status === 401) {
-        setGate("needs-login");
-        return;
-      }
-      if (res.status === 402) {
-        setGate("needs-payment");
-        return;
-      }
-
       const data = await res.json();
+
+      if (res.status === 429) {
+        setCapMessage(data.message || "You've used all your free generations.");
+        return;
+      }
       if (!res.ok || data.error || !data.image) {
         setPreviewError(data.error || "Preview generation temporarily unavailable");
         return;
       }
       setAiPreview(data.image);
+      setGenerationId(data.generationId ?? null);
+      setGenerationCount((n) => n + 1);
     } catch {
       setPreviewError("Preview generation temporarily unavailable");
     } finally {
@@ -170,6 +172,10 @@ export default function PhotoMixBox({ mode }: { mode: PreviewMode }) {
           </label>
         )}
 
+        <div className="mt-2">
+          <GenerationCounter refreshSignal={generationCount} />
+        </div>
+
         {(previewA || previewB) && (
           <div className="mt-4 flex flex-col gap-3">
             <button
@@ -182,27 +188,24 @@ export default function PhotoMixBox({ mode }: { mode: PreviewMode }) {
 
             {previewError && <p className="text-sm text-danger">{previewError}</p>}
 
-            {gate && <GenerationGateNotice kind={gate} onAuthenticated={generatePreview} />}
+            {capMessage && (
+              <div className="gate-notice flex flex-col items-center gap-2 p-4 text-center">
+                <PaintDab size={14} />
+                <p className="font-display text-sm font-semibold text-ink">{capMessage}</p>
+              </div>
+            )}
 
             {aiPreview && (
               <div className="flex flex-col items-center gap-2 border-t border-border-soft pt-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={aiPreview}
-                  alt="AI-generated photo mix preview"
+                  alt="AI-generated photo mix preview (watermarked)"
                   className="max-h-96 w-full rounded-lg object-contain"
                 />
                 <p className="text-center text-sm text-ink-soft">{mode.resultCaption}</p>
 
-                {mode.bottomActions?.includes("download") && (
-                  <a
-                    href={aiPreview}
-                    download={`${mode.id ?? "paintify"}-preview.jpg`}
-                    className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas hover:opacity-90"
-                  >
-                    Download
-                  </a>
-                )}
+                <DownloadButton generationId={generationId} />
 
                 {mode.bottomActions?.includes("share") && (
                   <div className="flex flex-col items-center gap-2">

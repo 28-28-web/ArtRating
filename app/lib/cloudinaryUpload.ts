@@ -31,3 +31,11 @@ export async function uploadResultImage(dataUrl: string, toolId: string): Promis
     return null;
   }
 }
+
+// Inserts Cloudinary's fl_attachment delivery flag so the browser downloads
+// the file (Content-Disposition: attachment) instead of navigating to it —
+// plain <a download> is ignored for cross-origin URLs like Cloudinary's, so
+// this is what actually makes the download button behave like a download.
+export function withAttachmentFlag(url: string): string {
+  return url.replace("/upload/", "/upload/fl_attachment/");
+}

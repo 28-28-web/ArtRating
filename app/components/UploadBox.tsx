@@ -2,7 +2,8 @@
 
 import { useRef, useState } from "react";
 import { ART_STYLE_MODE, type PreviewMode } from "@/app/lib/previewModes";
-import GenerationGateNotice from "@/app/components/GenerationGateNotice";
+import GenerationCounter from "@/app/components/GenerationCounter";
+import DownloadButton from "@/app/components/DownloadButton";
 import PaintDab from "@/app/components/PaintDab";
 
 export default function UploadBox({
@@ -15,9 +16,11 @@ export default function UploadBox({
   const [preview, setPreview] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [aiPreview, setAiPreview] = useState<string | null>(null);
+  const [generationId, setGenerationId] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
-  const [gate, setGate] = useState<"needs-login" | "needs-payment" | null>(null);
+  const [capMessage, setCapMessage] = useState<string | null>(null);
+  const [generationCount, setGenerationCount] = useState(0);
   const [showShareLinks, setShowShareLinks] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -43,8 +46,9 @@ export default function UploadBox({
     reader.onload = () => {
       setPreview(reader.result as string);
       setAiPreview(null);
+      setGenerationId(null);
       setPreviewError(null);
-      setGate(null);
+      setCapMessage(null);
     };
     reader.readAsDataURL(file);
   }
@@ -53,7 +57,7 @@ export default function UploadBox({
     if (!preview) return;
     setGenerating(true);
     setPreviewError(null);
-    setGate(null);
+    setCapMessage(null);
     try {
       const res = await fetch(mode.apiEndpoint, {
         method: "POST",
@@ -61,21 +65,19 @@ export default function UploadBox({
         body: JSON.stringify({ style: selectedStyle ?? mode.fallbackStyle, image: preview }),
       });
 
-      if (res.status === 401) {
-        setGate("needs-login");
-        return;
-      }
-      if (res.status === 402) {
-        setGate("needs-payment");
-        return;
-      }
-
       const data = await res.json();
+
+      if (res.status === 429) {
+        setCapMessage(data.message || "You've used all your free generations.");
+        return;
+      }
       if (!res.ok || data.error || !data.image) {
         setPreviewError(data.error || "Preview generation temporarily unavailable");
         return;
       }
       setAiPreview(data.image);
+      setGenerationId(data.generationId ?? null);
+      setGenerationCount((n) => n + 1);
     } catch {
       setPreviewError("Preview generation temporarily unavailable");
     } finally {
@@ -127,6 +129,10 @@ export default function UploadBox({
 
         {mode.disclaimer && <p className="mt-2 text-xs text-ink-soft">{mode.disclaimer}</p>}
 
+        <div className="mt-2">
+          <GenerationCounter refreshSignal={generationCount} />
+        </div>
+
         {preview && (
           <div className="mt-4 flex flex-col gap-3">
             <button
@@ -139,17 +145,24 @@ export default function UploadBox({
 
             {previewError && <p className="text-sm text-danger">{previewError}</p>}
 
-            {gate && <GenerationGateNotice kind={gate} onAuthenticated={generatePreview} />}
+            {capMessage && (
+              <div className="gate-notice flex flex-col items-center gap-2 p-4 text-center">
+                <PaintDab size={14} />
+                <p className="font-display text-sm font-semibold text-ink">{capMessage}</p>
+              </div>
+            )}
 
             {aiPreview && (
               <div className="flex flex-col items-center gap-2 border-t border-border-soft pt-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={aiPreview}
-                  alt="AI-generated style preview"
+                  alt="AI-generated style preview (watermarked)"
                   className="max-h-96 w-full rounded-lg object-contain"
                 />
                 <p className="text-center text-sm text-ink-soft">{mode.resultCaption}</p>
+
+                <DownloadButton generationId={generationId} />
 
                 {mode.ctaTool && (
                   <a
@@ -159,16 +172,6 @@ export default function UploadBox({
                     className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas hover:opacity-90"
                   >
                     Try {mode.ctaTool.name} →
-                  </a>
-                )}
-
-                {mode.bottomActions?.includes("download") && (
-                  <a
-                    href={aiPreview}
-                    download={`${mode.id ?? "paintify"}-preview.jpg`}
-                    className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas hover:opacity-90"
-                  >
-                    Download
                   </a>
                 )}
 

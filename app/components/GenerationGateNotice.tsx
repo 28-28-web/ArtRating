@@ -19,9 +19,9 @@ export default function GenerationGateNotice({
       <div className="gate-notice flex flex-col items-center gap-2 p-4 text-center">
         <PaintDab size={14} />
         <p className="font-display text-sm font-semibold text-ink">
-          You&apos;ve used both free generations.
+          You need a credit to download this.
         </p>
-        <p className="text-sm text-ink-soft">Add credits to keep going.</p>
+        <p className="text-sm text-ink-soft">Generating stays free — downloading the full-quality file costs 1 credit.</p>
         <Link
           href="/credits"
           className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas hover:opacity-90"
@@ -36,7 +36,7 @@ export default function GenerationGateNotice({
     <div className="gate-notice flex flex-col items-center gap-3 p-4 text-center">
       <PaintDab size={14} />
       <p className="font-display text-sm font-semibold text-ink">
-        Log in to generate another image — your first one&apos;s on us!
+        Log in to download this image.
       </p>
       <form onSubmit={handleSubmit} className="flex w-full max-w-xs flex-col gap-2">
         <input

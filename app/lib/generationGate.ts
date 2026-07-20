@@ -1,8 +1,14 @@
 import { prisma } from "@/app/lib/prisma";
 
-export type GateResult =
-  | { allowed: true; reason: "free-anonymous" | "free-logged-in" | "paid"; deductCredit?: boolean }
-  | { allowed: false; reason: "needs-login" | "needs-payment" };
+// Generation is free and doesn't require login — a visitor can generate up
+// to this many images per tool, and the pool is shared across all five
+// tools per anon cookie (not per-tool), so switching tools doesn't reset the
+// count. Logging in starts a fresh pool of the same size tied to the
+// account, which is a real incentive to log in before hitting the cap, even
+// though download (not generation) is the only place payment applies now.
+export const FREE_GENERATION_CAP = 6;
+
+export type GateResult = { allowed: boolean };
 
 export async function checkGenerationEligibility(params: {
   anonId: string | null;
@@ -11,55 +17,66 @@ export async function checkGenerationEligibility(params: {
   const { anonId, userId } = params;
 
   if (userId) {
-    const priorCount = await prisma.generation.count({ where: { userId } });
-    if (priorCount < 1) return { allowed: true, reason: "free-logged-in" };
-
-    const credit = await prisma.userCredit.findUnique({ where: { userId } });
-    if (credit && credit.balance > 0) return { allowed: true, reason: "paid", deductCredit: true };
-
-    return { allowed: false, reason: "needs-payment" };
+    const count = await prisma.generation.count({ where: { userId } });
+    return { allowed: count < FREE_GENERATION_CAP };
   }
 
-  // anonymous path
-  if (!anonId) return { allowed: true, reason: "free-anonymous" }; // first-ever visit, no cookie yet
+  if (!anonId) return { allowed: true }; // first-ever visit, no cookie yet
   const anon = await prisma.anonymousUsage.findUnique({ where: { id: anonId } });
-  if (!anon || anon.count < 1) return { allowed: true, reason: "free-anonymous" };
-
-  return { allowed: false, reason: "needs-login" };
+  if (!anon || anon.count < FREE_GENERATION_CAP) return { allowed: true };
+  return { allowed: false };
 }
 
-// Only call this after a generation actually succeeded — never charge/count on failure.
+// Only call this after a generation actually succeeded — never count on
+// failure. No credit deduction here anymore — download is the paid step.
 export async function recordSuccessfulGeneration(params: {
   toolId: string;
   imageUrl: string | null;
+  cleanImageUrl: string | null;
   userId: string | null;
   anonId: string | null;
-  deductCredit?: boolean;
-}) {
-  const { toolId, imageUrl, userId, anonId, deductCredit } = params;
+}): Promise<{ generationId: string | null }> {
+  const { toolId, imageUrl, cleanImageUrl, userId, anonId } = params;
 
   if (userId) {
-    await prisma.$transaction(async (tx) => {
-      await tx.generation.create({
-        data: { userId, toolId, imageUrl, status: "success", usedCredit: !!deductCredit },
-      });
-      if (deductCredit) {
-        await tx.userCredit.update({ where: { userId }, data: { balance: { decrement: 1 } } });
-      }
+    const generation = await prisma.generation.create({
+      data: { userId, toolId, imageUrl, cleanImageUrl, status: "success" },
+      select: { id: true },
     });
-    return;
+    return { generationId: generation.id };
   }
 
   if (anonId) {
-    await prisma.$transaction(async (tx) => {
-      await tx.generation.create({
+    const generation = await prisma.$transaction(async (tx) => {
+      const created = await tx.generation.create({
         data: { anonId, toolId, imageUrl, status: "success" },
+        select: { id: true },
       });
       await tx.anonymousUsage.upsert({
         where: { id: anonId },
         create: { id: anonId, count: 1 },
         update: { count: { increment: 1 } },
       });
+      return created;
     });
+    return { generationId: generation.id };
   }
+
+  return { generationId: null };
+}
+
+export async function getGenerationUsage(params: {
+  anonId: string | null;
+  userId: string | null;
+}): Promise<{ used: number; cap: number }> {
+  const { anonId, userId } = params;
+
+  if (userId) {
+    const used = await prisma.generation.count({ where: { userId } });
+    return { used, cap: FREE_GENERATION_CAP };
+  }
+
+  if (!anonId) return { used: 0, cap: FREE_GENERATION_CAP };
+  const anon = await prisma.anonymousUsage.findUnique({ where: { id: anonId } });
+  return { used: anon?.count ?? 0, cap: FREE_GENERATION_CAP };
 }

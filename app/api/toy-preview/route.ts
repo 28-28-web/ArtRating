@@ -4,7 +4,8 @@ import { TOY_MODE } from "@/app/lib/previewModes";
 import { auth } from "@/auth";
 import { ANON_ID_COOKIE, readCookie, verifyAnonId } from "@/app/lib/anonId";
 import { checkGenerationEligibility, recordSuccessfulGeneration } from "@/app/lib/generationGate";
-import { uploadResultImage } from "@/app/lib/cloudinaryUpload";
+import { processGenerationOutput } from "@/app/lib/generationOutput";
+import { capReachedResponse } from "@/app/lib/capReachedResponse";
 
 const TOOL_ID = "toy-ification";
 
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
 
   const gate = await checkGenerationEligibility({ anonId, userId });
   if (!gate.allowed) {
-    return NextResponse.json({ reason: gate.reason }, { status: gate.reason === "needs-login" ? 401 : 402 });
+    return capReachedResponse(userId);
   }
 
   const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
@@ -56,14 +57,18 @@ export async function POST(request: Request) {
     return unavailable();
   }
 
-  const hostedUrl = await uploadResultImage(result.image, TOOL_ID);
-  await recordSuccessfulGeneration({
+  const output = await processGenerationOutput({
+    rawDataUrl: result.image,
     toolId: TOOL_ID,
-    imageUrl: hostedUrl,
+    storeClean: !!userId,
+  });
+  const { generationId } = await recordSuccessfulGeneration({
+    toolId: TOOL_ID,
+    imageUrl: output.previewUrl,
+    cleanImageUrl: output.cleanUrl,
     userId,
     anonId,
-    deductCredit: gate.deductCredit,
   });
 
-  return NextResponse.json({ image: hostedUrl ?? result.image });
+  return NextResponse.json({ image: output.previewUrl ?? output.previewDataUrl, generationId });
 }
