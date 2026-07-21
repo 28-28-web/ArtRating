@@ -2,9 +2,15 @@ import sharp from "sharp";
 
 // Separate from cloudflareImg2Img.ts — different model (multi-reference-image
 // blend, not single-image img2img), different request shape (multipart form,
-// not JSON), different Workers AI model.
+// not JSON), different Workers AI model, and genuinely slower: flux-2-dev
+// blends two reference images instead of transforming one, so it needs a
+// longer timeout than the single-image tools. 30s was copied from the
+// schnell-based img2img helper and was too short — that's what was causing
+// "request timed out" on every attempt. Raised to 60s, with one automatic
+// retry on a timeout specifically (not on other error types, which are more
+// likely to be a real/persistent failure than a transient slow response).
 const CLOUDFLARE_MODEL = "@cf/black-forest-labs/flux-2-dev";
-const REQUEST_TIMEOUT_MS = 30000;
+const REQUEST_TIMEOUT_MS = 60000;
 const MAX_DIMENSION = 512;
 
 async function resizeToMax512(buffer: Buffer): Promise<Buffer> {
@@ -13,7 +19,7 @@ async function resizeToMax512(buffer: Buffer): Promise<Buffer> {
     .toBuffer();
 }
 
-export async function generatePhotoMix({
+async function requestFluxMix({
   accountId,
   apiToken,
   imageA,
@@ -25,12 +31,10 @@ export async function generatePhotoMix({
   imageA: Buffer;
   imageB: Buffer;
   prompt: string;
-}): Promise<{ image?: string; error?: string }> {
-  const [resizedA, resizedB] = await Promise.all([resizeToMax512(imageA), resizeToMax512(imageB)]);
-
+}): Promise<{ image?: string; error?: string; timedOut?: boolean }> {
   const formData = new FormData();
-  formData.append("input_image_0", new Blob([new Uint8Array(resizedA)]));
-  formData.append("input_image_1", new Blob([new Uint8Array(resizedB)]));
+  formData.append("input_image_0", new Blob([new Uint8Array(imageA)]));
+  formData.append("input_image_1", new Blob([new Uint8Array(imageB)]));
   formData.append("prompt", prompt);
 
   const controller = new AbortController();
@@ -77,11 +81,36 @@ export async function generatePhotoMix({
   } catch (error) {
     if (error instanceof Error && error.name === "AbortError") {
       console.error("Cloudflare Workers AI (flux-2-dev): request timed out");
-    } else {
-      console.error(error);
+      return { error: "unavailable", timedOut: true };
     }
+    console.error(error);
     return { error: "unavailable" };
   } finally {
     clearTimeout(timeout);
   }
+}
+
+export async function generatePhotoMix({
+  accountId,
+  apiToken,
+  imageA,
+  imageB,
+  prompt,
+}: {
+  accountId: string;
+  apiToken: string;
+  imageA: Buffer;
+  imageB: Buffer;
+  prompt: string;
+}): Promise<{ image?: string; error?: string }> {
+  const [resizedA, resizedB] = await Promise.all([resizeToMax512(imageA), resizeToMax512(imageB)]);
+
+  const first = await requestFluxMix({ accountId, apiToken, imageA: resizedA, imageB: resizedB, prompt });
+  if (first.image || !first.timedOut) {
+    return { image: first.image, error: first.error };
+  }
+
+  console.error("Cloudflare Workers AI (flux-2-dev): retrying once after timeout");
+  const retry = await requestFluxMix({ accountId, apiToken, imageA: resizedA, imageB: resizedB, prompt });
+  return { image: retry.image, error: retry.error };
 }

@@ -186,6 +186,13 @@ export default function PhotoMixBox({ mode }: { mode: PreviewMode }) {
               {generating ? "Generating…" : "Generate Free Preview"}
             </button>
 
+            {generating && (
+              <p className="text-center text-xs text-ink-soft">
+                This can take up to a minute — blending two photos takes longer than a
+                single-photo transform.
+              </p>
+            )}
+
             {previewError && <p className="text-sm text-danger">{previewError}</p>}
 
             {capMessage && (
