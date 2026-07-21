@@ -1,38 +1,33 @@
 import sharp from "sharp";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 
-const WATERMARK_TEXT = "PAINTIFY";
+// Pre-rendered PNG tile instead of rendering "PAINTIFY" text at request time
+// via an SVG-to-raster composite. The SVG-text approach depended on
+// fontconfig + an installed font being present in the runtime container —
+// node:24-slim has neither, so sharp/librsvg silently drew zero glyphs
+// ("Fontconfig error: Cannot load default config file" in the logs, byte
+// count still went up from the alpha-channel structure sharp adds, which is
+// why the bug looked like a successful-but-invisible watermark). Baking the
+// text into a static asset at authoring time removes the runtime dependency
+// on fonts entirely — tiling a raster image needs no font rendering at all.
+// See public/watermark-tile.png (240x240, transparent, one rotated wordmark
+// per tile — sharp's `tile: true` composite repeats it across the image).
+const TILE_PATH = path.join(process.cwd(), "public", "watermark-tile.png");
 
-// Tiled, rotated, semi-transparent text laid over the whole image — this is
-// what makes the on-screen preview different from the paid download. Pure
-// sharp (no extra deps): build an SVG of the tiled text, composite it over
-// the source raster, flatten to PNG.
-export async function applyWatermark(buffer: Buffer): Promise<Buffer> {
-  const image = sharp(buffer);
-  const meta = await image.metadata();
-  const width = meta.width ?? 800;
-  const height = meta.height ?? 800;
+let cachedTile: Buffer | null = null;
 
-  const overlay = Buffer.from(buildWatermarkSvg(width, height));
-
-  return image.composite([{ input: overlay, top: 0, left: 0 }]).png().toBuffer();
+async function loadTile(): Promise<Buffer> {
+  if (!cachedTile) {
+    cachedTile = await readFile(TILE_PATH);
+  }
+  return cachedTile;
 }
 
-function buildWatermarkSvg(width: number, height: number): string {
-  const tileSize = Math.max(140, Math.round(Math.min(width, height) / 4));
-  const fontSize = Math.round(tileSize * 0.16);
-  const rows = Math.ceil(height / tileSize) + 2;
-  const cols = Math.ceil(width / tileSize) + 2;
-
-  let texts = "";
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      // Offset every other row so the tiling reads as a diagonal pattern
-      // rather than a rigid grid.
-      const x = c * tileSize - tileSize / 2 + (r % 2 ? tileSize / 2 : 0);
-      const y = r * tileSize - tileSize / 2;
-      texts += `<text x="${x}" y="${y}" transform="rotate(-30 ${x} ${y})" font-family="sans-serif" font-weight="600" font-size="${fontSize}" fill="#ffffff" fill-opacity="0.32" stroke="#000000" stroke-opacity="0.12" stroke-width="1">${WATERMARK_TEXT}</text>`;
-    }
-  }
-
-  return `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">${texts}</svg>`;
+export async function applyWatermark(buffer: Buffer): Promise<Buffer> {
+  const tile = await loadTile();
+  return sharp(buffer)
+    .composite([{ input: tile, tile: true, blend: "over" }])
+    .png()
+    .toBuffer();
 }

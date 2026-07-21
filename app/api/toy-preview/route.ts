@@ -57,11 +57,17 @@ export async function POST(request: Request) {
     return unavailable();
   }
 
-  const output = await processGenerationOutput({
-    rawDataUrl: result.image,
-    toolId: TOOL_ID,
-    storeClean: !!userId,
-  });
+  let output;
+  try {
+    output = await processGenerationOutput({
+      rawDataUrl: result.image,
+      toolId: TOOL_ID,
+      storeClean: !!userId,
+    });
+  } catch (error) {
+    console.error("[toy-preview] processGenerationOutput failed:", error);
+    return unavailable();
+  }
   const { generationId } = await recordSuccessfulGeneration({
     toolId: TOOL_ID,
     imageUrl: output.previewUrl,
