@@ -7,6 +7,7 @@ import { processGenerationOutput } from "@/app/lib/generationOutput";
 import { capReachedResponse } from "@/app/lib/capReachedResponse";
 
 const TOOL_ID = "photo-mix";
+const DEBUG_GENERATION = process.env.DEBUG_GENERATION === "true";
 
 const PROMPT =
   "Place the person from image 0 together with the subject from image 1 in one warm, natural photo. " +
@@ -81,6 +82,9 @@ export async function POST(request: Request) {
   });
 
   if (!result.image) {
+    if (DEBUG_GENERATION) {
+      console.log("[photo-mix] generation failed, quota NOT incremented (recordSuccessfulGeneration not called)");
+    }
     return unavailable();
   }
 

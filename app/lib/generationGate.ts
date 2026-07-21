@@ -1,5 +1,17 @@
 import { prisma } from "@/app/lib/prisma";
 
+// TODO: remove once the "quota incremented on failure" report is confirmed
+// resolved on the live deploy. Audited this file end-to-end: this is the
+// only place in the codebase that increments AnonymousUsage.count or counts
+// toward a logged-in user's cap (grepped for anonymousUsage.upsert / count:
+// { increment across the whole app/ tree — one hit, right here), and it's
+// only ever called from the 5 generation routes after `result.image` is
+// confirmed truthy, never on a timeout/error path. Couldn't reproduce the
+// reported bug by reading the code — this log exists so the next failed
+// attempt on the live deploy shows definitively whether this function is
+// (or isn't) being reached, rather than guessing.
+const DEBUG_GENERATION = process.env.DEBUG_GENERATION === "true";
+
 // Generation is free and doesn't require login — a visitor can generate up
 // to this many images per tool, and the pool is shared across all five
 // tools per anon cookie (not per-tool), so switching tools doesn't reset the
@@ -39,6 +51,9 @@ export async function recordSuccessfulGeneration(params: {
   const { toolId, imageUrl, cleanImageUrl, userId, anonId } = params;
 
   if (userId) {
+    if (DEBUG_GENERATION) {
+      console.log("[generationGate] recording success (logged-in), no quota counter to bump:", { toolId, userId });
+    }
     const generation = await prisma.generation.create({
       data: { userId, toolId, imageUrl, cleanImageUrl, status: "success" },
       select: { id: true },
@@ -47,6 +62,9 @@ export async function recordSuccessfulGeneration(params: {
   }
 
   if (anonId) {
+    if (DEBUG_GENERATION) {
+      console.log("[generationGate] recording success (anon), incrementing AnonymousUsage.count:", { toolId, anonId });
+    }
     const generation = await prisma.$transaction(async (tx) => {
       const created = await tx.generation.create({
         data: { anonId, toolId, imageUrl, status: "success" },
