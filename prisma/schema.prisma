@@ -88,10 +88,18 @@ model ContactMessage {
 // limit that exists only because of this one tool's cost, not a subset of
 // the shared quota.
 model PhotoMixDailyUsage {
-  id          String   @id @default(cuid())
+  id          String @id @default(cuid())
   identityKey String // anonId or userId, whichever applies
-  usageDate   DateTime @db.Date // UTC date only, matches Cloudflare's 00:00 UTC Neuron reset
-  count       Int      @default(0)
+  // Plain "YYYY-MM-DD" (UTC) text, not a DateTime/@db.Date column — this was
+  // a DateTime originally; switched after the 2nd-generation-not-blocked
+  // investigation didn't turn up a confirmed code bug (see the commit that
+  // made this change for what was checked and ruled out) but a Date object
+  // round-tripping through JS -> Prisma -> Postgres DATE -> JS is one more
+  // layer than this needs. A literal date string removes that layer
+  // entirely — pure string equality, nothing to serialize or misinterpret,
+  // and it's human-readable directly in the database or logs.
+  usageDate String
+  count     Int    @default(0)
 
   @@unique([identityKey, usageDate])
 }
