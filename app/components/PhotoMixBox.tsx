@@ -1,10 +1,18 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import type { PreviewMode } from "@/app/lib/previewModes";
 import GenerationCounter from "@/app/components/GenerationCounter";
 import DownloadButton from "@/app/components/DownloadButton";
 import PaintDab from "@/app/components/PaintDab";
+
+const OTHER_TOOLS = [
+  { href: "/#try-it", label: "Art Style" },
+  { href: "/professional-headshot-generator", label: "Headshot Generator" },
+  { href: "/pet-to-human", label: "Pet to Human" },
+  { href: "/toy-ification", label: "Toy-ification" },
+];
 
 function PhotoPanel({
   label,
@@ -69,6 +77,7 @@ export default function PhotoMixBox({ mode }: { mode: PreviewMode }) {
   const [generating, setGenerating] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [capMessage, setCapMessage] = useState<string | null>(null);
+  const [dailyCapMessage, setDailyCapMessage] = useState<string | null>(null);
   const [generationCount, setGenerationCount] = useState(0);
   const [showShareLinks, setShowShareLinks] = useState(false);
 
@@ -81,6 +90,7 @@ export default function PhotoMixBox({ mode }: { mode: PreviewMode }) {
       setGenerationId(null);
       setPreviewError(null);
       setCapMessage(null);
+      setDailyCapMessage(null);
     };
     reader.readAsDataURL(file);
   }
@@ -106,6 +116,7 @@ export default function PhotoMixBox({ mode }: { mode: PreviewMode }) {
     setGenerating(true);
     setPreviewError(null);
     setCapMessage(null);
+    setDailyCapMessage(null);
     try {
       const res = await fetch(mode.apiEndpoint, {
         method: "POST",
@@ -116,7 +127,11 @@ export default function PhotoMixBox({ mode }: { mode: PreviewMode }) {
       const data = await res.json();
 
       if (res.status === 429) {
-        setCapMessage(data.message || "You've used all your free generations.");
+        if (data.error === "photo-mix-daily-cap") {
+          setDailyCapMessage(data.message || "Photo Mix is limited to 1 free try per day.");
+        } else {
+          setCapMessage(data.message || "You've used all your free generations.");
+        }
         return;
       }
       if (!res.ok || data.error || !data.image) {
@@ -199,6 +214,24 @@ export default function PhotoMixBox({ mode }: { mode: PreviewMode }) {
               <div className="gate-notice flex flex-col items-center gap-2 p-4 text-center">
                 <PaintDab size={14} />
                 <p className="font-display text-sm font-semibold text-ink">{capMessage}</p>
+              </div>
+            )}
+
+            {dailyCapMessage && (
+              <div className="gate-notice flex flex-col items-center gap-3 p-4 text-center">
+                <PaintDab size={14} />
+                <p className="font-display text-sm font-semibold text-ink">{dailyCapMessage}</p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {OTHER_TOOLS.map((tool) => (
+                    <Link
+                      key={tool.href}
+                      href={tool.href}
+                      className="rounded-full border border-border-soft px-3 py-1.5 text-xs font-medium text-ink hover:border-accent hover:text-accent-text"
+                    >
+                      {tool.label} →
+                    </Link>
+                  ))}
+                </div>
               </div>
             )}
 

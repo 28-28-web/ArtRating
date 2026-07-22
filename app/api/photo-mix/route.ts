@@ -5,6 +5,11 @@ import { ANON_ID_COOKIE, readCookie, verifyAnonId } from "@/app/lib/anonId";
 import { checkGenerationEligibility, recordSuccessfulGeneration } from "@/app/lib/generationGate";
 import { processGenerationOutput } from "@/app/lib/generationOutput";
 import { capReachedResponse } from "@/app/lib/capReachedResponse";
+import {
+  checkPhotoMixDailyCap,
+  recordPhotoMixDailyUsage,
+  photoMixDailyCapResponse,
+} from "@/app/lib/photoMixDailyCap";
 
 const TOOL_ID = "photo-mix";
 const DEBUG_GENERATION = process.env.DEBUG_GENERATION === "true";
@@ -36,6 +41,15 @@ export async function POST(request: Request) {
   const gate = await checkGenerationEligibility({ anonId, userId });
   if (!gate.allowed) {
     return capReachedResponse(userId);
+  }
+
+  // Additional, stricter, independent cap — a request must pass both this
+  // and the shared 6-generation check above. In practice this is almost
+  // always the binding constraint for photo-mix specifically.
+  const identityKey = userId ?? anonId;
+  const dailyCap = await checkPhotoMixDailyCap(identityKey);
+  if (!dailyCap.allowed) {
+    return photoMixDailyCapResponse();
   }
 
   let imageAUrl: string;
@@ -106,6 +120,7 @@ export async function POST(request: Request) {
     userId,
     anonId,
   });
+  await recordPhotoMixDailyUsage(identityKey);
 
   return NextResponse.json({ image: output.previewUrl ?? output.previewDataUrl, generationId });
 }

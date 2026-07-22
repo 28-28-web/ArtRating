@@ -79,3 +79,19 @@ model ContactMessage {
 
   @@index([resolved])
 }
+
+// Separate, much stricter cap for photo-mix only — flux-2-dev costs
+// roughly 8,000-9,000 Neurons per call vs ~43 for the schnell-based tools,
+// so 1-2 photo-mix generations can exhaust the whole account's 10,000/day
+// free Neuron pool (shared across all 5 tools). Deliberately not part of
+// AnonymousUsage/the shared 6-cap system — this is an independent, stricter
+// limit that exists only because of this one tool's cost, not a subset of
+// the shared quota.
+model PhotoMixDailyUsage {
+  id          String   @id @default(cuid())
+  identityKey String // anonId or userId, whichever applies
+  usageDate   DateTime @db.Date // UTC date only, matches Cloudflare's 00:00 UTC Neuron reset
+  count       Int      @default(0)
+
+  @@unique([identityKey, usageDate])
+}
