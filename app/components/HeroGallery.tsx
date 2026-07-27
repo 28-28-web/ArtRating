@@ -11,12 +11,17 @@ type GalleryItem = {
   borderClass: string;
   src: string;
   alt: string;
+  hidden?: boolean;
 };
 
 // Real example photos supplied by the site owner (public/examples/), one per
 // tool — each is what you'd upload to that tool, not a finished AI result.
 // Files were renamed from inconsistent manual-save names to clean slugs; see
 // the commit that did this for the original filenames.
+//
+// `hidden: true` temporarily pulls a tile out per site owner request (same
+// flag/reasoning as SiteNav.tsx's TOOLS list) — not deleted, just filtered
+// out below.
 const GALLERY: GalleryItem[] = [
   {
     tool: "art-style",
@@ -25,6 +30,7 @@ const GALLERY: GalleryItem[] = [
     borderClass: "from-art-style",
     src: "/examples/art-style-example.jpg",
     alt: "Example photo for the Art Style tool — a city skyline at sunset",
+    hidden: true,
   },
   {
     tool: "headshot",
@@ -41,6 +47,7 @@ const GALLERY: GalleryItem[] = [
     borderClass: "from-pet-human",
     src: "/examples/pet-to-human-example.jpg",
     alt: "Example photo for the Pet-to-Human tool — a close-up cat portrait",
+    hidden: true,
   },
   {
     tool: "toy",
@@ -49,6 +56,7 @@ const GALLERY: GalleryItem[] = [
     borderClass: "from-toy",
     src: "/examples/toy-ification-example.jpg",
     alt: "Example photo for the Toy-ification tool — a plain-background portrait",
+    hidden: true,
   },
   {
     tool: "photo-mix",
@@ -57,8 +65,10 @@ const GALLERY: GalleryItem[] = [
     borderClass: "from-photo-mix",
     src: "/examples/photo-mix-example.jpg",
     alt: "Example photo for the Photo Mix tool — a person with their cat",
+    hidden: true,
   },
 ];
+const VISIBLE_GALLERY = GALLERY.filter((item) => !item.hidden);
 
 const MAX_TILT_DEG = 4;
 const IMAGE_SIZES = "(max-width: 639px) 45vw, (max-width: 1023px) 30vw, 260px";
@@ -91,7 +101,7 @@ export default function HeroGallery() {
 
   return (
     <div className="hero-gallery w-full">
-      {GALLERY.map((item) => (
+      {VISIBLE_GALLERY.map((item) => (
         <Link
           key={item.tool}
           href={item.href}

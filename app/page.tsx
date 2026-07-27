@@ -5,6 +5,12 @@ import CompareSlider from "@/app/components/CompareSlider";
 import BrushDivider from "@/app/components/BrushDivider";
 import { SITE_NAME, SITE_URL } from "@/app/lib/site";
 
+// The Art Style tool lives directly on the homepage (no separate route),
+// so "hiding" it means not rendering this section — temporarily disabled
+// per site owner request, same flag/reasoning as SiteNav.tsx's TOOLS list.
+// Component/code untouched, just not mounted.
+const SHOW_ART_STYLE_TOOL = false;
+
 // Positions/sizes/delays are hand-varied so the four dabs don't float in
 // sync — purely decorative, hidden on mobile and paused under
 // prefers-reduced-motion (see .paint-dab-bg in globals.css).
@@ -74,7 +80,7 @@ export default function Home() {
           <HeroGallery />
         </div>
 
-        <HomeInteractive />
+        {SHOW_ART_STYLE_TOOL && <HomeInteractive />}
 
         <section className="flex w-full flex-col gap-4">
           <div>

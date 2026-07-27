@@ -11,12 +11,18 @@ import ThemeToggle from "@/app/components/ThemeToggle";
 // Headshot Generator lives as its own top-level nav item (see below) — it's
 // the primary affiliate-funnel page right now — so it's deliberately not in
 // this list. The other four tools stay grouped under the Tools dropdown.
+//
+// `hidden: true` temporarily pulls a tool out of the nav per site owner
+// request — the page/route itself still works if linked directly, this
+// only removes it from here. Flip back to false (or drop the field) to
+// re-show it. Code is not deleted, just filtered out below.
 const TOOLS = [
-  { href: "/", label: "Art Style", color: "var(--cobalt)" },
-  { href: "/pet-to-human", label: "Pet to Human", color: "var(--jade)" },
-  { href: "/toy-ification", label: "Toy-ify Yourself", color: "var(--saffron)" },
-  { href: "/photo-mix", label: "Photo Mix", color: "var(--magenta)" },
+  { href: "/", label: "Art Style", color: "var(--cobalt)", hidden: true },
+  { href: "/pet-to-human", label: "Pet to Human", color: "var(--jade)", hidden: true },
+  { href: "/toy-ification", label: "Toy-ify Yourself", color: "var(--saffron)", hidden: true },
+  { href: "/photo-mix", label: "Photo Mix", color: "var(--magenta)", hidden: true },
 ];
+const VISIBLE_TOOLS = TOOLS.filter((tool) => !tool.hidden);
 
 const GUIDES = [
   { href: "/best-photo-to-painting-ai-tools-2026", label: "Best Tools 2026" },
@@ -36,7 +42,7 @@ export default function SiteNav() {
           <Link href="/professional-headshot-generator" className="text-sm text-ink-soft hover:text-ink">
             Headshot Generator
           </Link>
-          <NavDropdown label="Tools" items={TOOLS} />
+          {VISIBLE_TOOLS.length > 0 && <NavDropdown label="Tools" items={VISIBLE_TOOLS} />}
           <NavDropdown label="Guides" items={GUIDES} />
           <Link href="/credits" className="text-sm text-ink-soft hover:text-ink">
             Credits
@@ -75,18 +81,22 @@ export default function SiteNav() {
             Headshot Generator
           </Link>
 
-          <p className="mt-2 px-2 text-xs font-medium uppercase tracking-wide text-ink-soft/70">Tools</p>
-          {TOOLS.map((tool) => (
-            <Link
-              key={tool.href}
-              href={tool.href}
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm text-ink hover:bg-[var(--border-soft)]/40"
-            >
-              <PaintDab color={tool.color} size={10} />
-              {tool.label}
-            </Link>
-          ))}
+          {VISIBLE_TOOLS.length > 0 && (
+            <>
+              <p className="mt-2 px-2 text-xs font-medium uppercase tracking-wide text-ink-soft/70">Tools</p>
+              {VISIBLE_TOOLS.map((tool) => (
+                <Link
+                  key={tool.href}
+                  href={tool.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm text-ink hover:bg-[var(--border-soft)]/40"
+                >
+                  <PaintDab color={tool.color} size={10} />
+                  {tool.label}
+                </Link>
+              ))}
+            </>
+          )}
 
           <p className="mt-2 px-2 text-xs font-medium uppercase tracking-wide text-ink-soft/70">Guides</p>
           {GUIDES.map((guide) => (
