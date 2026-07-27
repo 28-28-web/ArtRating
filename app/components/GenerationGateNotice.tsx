@@ -21,7 +21,7 @@ export default function GenerationGateNotice({
         <p className="font-display text-sm font-semibold text-ink">
           You need a credit to download this.
         </p>
-        <p className="text-sm text-ink-soft">Generating stays free — downloading the full-quality file costs 1 credit.</p>
+        <p className="text-sm text-ink-soft">Remove watermark — from $5.</p>
         <Link
           href="/credits"
           className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas hover:opacity-90"

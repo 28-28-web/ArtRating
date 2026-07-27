@@ -18,7 +18,7 @@ const DEBUG_GENERATION = process.env.DEBUG_GENERATION === "true";
 // count. Logging in starts a fresh pool of the same size tied to the
 // account, which is a real incentive to log in before hitting the cap, even
 // though download (not generation) is the only place payment applies now.
-export const FREE_GENERATION_CAP = 6;
+export const FREE_GENERATION_CAP = 2;
 
 export type GateResult = { allowed: boolean };
 

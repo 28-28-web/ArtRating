@@ -20,9 +20,12 @@ export default async function CreditsPage() {
         <h1 className="font-display text-3xl font-semibold text-ink">Get Credits</h1>
         <BrushDivider />
         <p className="text-ink-soft">
-          Generating previews is always free. Each credit lets you download one full-quality,
-          watermark-free result. Pay via bKash or Nagad and submit your transaction reference
-          below — credits are added after a quick manual review.
+          Try free — 2 headshots with watermark, no signup. Remove watermark — from $5.
+        </p>
+        <p className="text-ink-soft">
+          Each credit lets you download one full-quality, watermark-free result. Pay via bKash or
+          Nagad and submit your transaction reference below — credits are added after a quick
+          manual review.
         </p>
       </div>
 

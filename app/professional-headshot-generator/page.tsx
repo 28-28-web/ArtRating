@@ -3,6 +3,7 @@ import ToolInteractive from "@/app/components/ToolInteractive";
 import BrushDivider from "@/app/components/BrushDivider";
 import { HEADSHOT_MODE } from "@/app/lib/previewModes";
 import { accentVars } from "@/app/lib/accent";
+import { FREE_GENERATION_CAP } from "@/app/lib/generationGate";
 
 export const metadata: Metadata = {
   title: "AI Headshot Generator | HeadshotMaker AI",
@@ -19,8 +20,7 @@ const faqs = [
   },
   {
     question: "Is this free?",
-    answer:
-      "Generating a preview is free and doesn't need an account — you get 6 free generations, shared across every tool on the site. Downloading the full-quality, watermark-free file is the only part that needs an account: log in and use 1 credit per download.",
+    answer: `Generating a preview is free and doesn't need an account — you get ${FREE_GENERATION_CAP} free generations, shared across every tool on the site. Downloading the full-quality, watermark-free file is the only part that needs an account: log in and use 1 credit per download.`,
   },
   {
     question: "How is this different from Deep Art Effects or PhotoAI?",
