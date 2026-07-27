@@ -31,6 +31,12 @@ export default function CreditsForm({
 
     setSuccess(false);
     setPendingPackId(pack.id);
+    console.log("[paddle] opening checkout", {
+      packId: pack.id,
+      priceId: pack.paddlePriceId,
+      userId,
+      userEmail,
+    });
     paddle.Checkout.open({
       settings: { displayMode: "overlay", theme: "light", locale: "en" },
       items: [{ priceId: pack.paddlePriceId, quantity: 1 }],
