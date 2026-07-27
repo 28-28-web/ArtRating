@@ -66,7 +66,7 @@ export default function Home() {
 
           <section className="flex flex-col items-center gap-4 text-center">
             <h1 className="headline-in max-w-2xl font-display text-4xl font-semibold leading-tight tracking-tight text-ink sm:text-5xl">
-              Turn Any Photo Into a Painting with AI
+              Turn Any Photo Into a Professional Headshot
             </h1>
             <BrushDivider />
             <p className="max-w-xl text-lg text-ink-soft">
