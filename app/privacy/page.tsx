@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Privacy Policy | HeadshotMaker AI",
   description: "How HeadshotMaker AI collects, uses, and protects your data.",
+  alternates: { canonical: "/privacy" },
 };
 
 const CONTACT_EMAIL = "hello@artrating.art";

@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import { Fraunces, Inter, Caveat } from "next/font/google";
 import Link from "next/link";
 import Script from "next/script";
+import ReactDOM from "react-dom";
 import SessionProviderWrapper from "@/app/components/SessionProviderWrapper";
 import SiteNav from "@/app/components/SiteNav";
 import NavLogo from "@/app/components/NavLogo";
 import BrushDivider from "@/app/components/BrushDivider";
+import Breadcrumbs from "@/app/components/Breadcrumbs";
+import { SITE_URL } from "@/app/lib/site";
 import "./globals.css";
 
 // Runs before hydration (see `strategy="beforeInteractive"` below) so the
@@ -20,24 +23,48 @@ const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
   weight: ["600", "700"],
+  display: "swap",
 });
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   weight: ["400", "500"],
+  display: "swap",
 });
 
 const caveat = Caveat({
   variable: "--font-caveat",
   subsets: ["latin"],
   weight: ["600"],
+  display: "swap",
 });
 
+const TITLE = "HeadshotMaker AI — Professional AI Headshots in Seconds";
+const DESCRIPTION =
+  "Turn any photo into a professional AI headshot for LinkedIn, resumes, and portfolios. Free to try, no signup needed.";
+const OG_IMAGE = `${SITE_URL}/og-image.jpg`;
+
 export const metadata: Metadata = {
-  title: "HeadshotMaker AI — Professional AI Headshots in Seconds",
-  description:
-    "Turn any photo into a professional AI headshot for LinkedIn, resumes, and portfolios. Free to try, no signup needed.",
+  metadataBase: new URL(SITE_URL),
+  title: TITLE,
+  description: DESCRIPTION,
+  robots: { index: true, follow: true },
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: SITE_URL,
+    siteName: "HeadshotMaker AI",
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: "HeadshotMaker AI" }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: "Turn any photo into a professional AI headshot in seconds.",
+    images: [OG_IMAGE],
+  },
 };
 
 export default function RootLayout({
@@ -45,6 +72,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Marquee/showcase photos are served from images.unsplash.com — warm the
+  // connection early. React's float API (not a hand-written <head> element,
+  // which the App Router ESLint rule disallows) is the documented way to
+  // emit resource hints from a Server Component.
+  ReactDOM.preconnect("https://images.unsplash.com");
+
   return (
     <html
       lang="en"
@@ -59,6 +92,8 @@ export default function RootLayout({
           <header className="chrome-wash border-b border-border-soft">
             <SiteNav />
           </header>
+
+          <Breadcrumbs />
 
           {children}
 

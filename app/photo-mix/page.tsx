@@ -6,6 +6,7 @@ import { accentVars } from "@/app/lib/accent";
 
 export const metadata: Metadata = {
   title: "Mix Your Photo With Your Pet — Free AI Preview | HeadshotMaker AI",
+  alternates: { canonical: "/photo-mix" },
   description:
     "Upload your photo and a photo of your pet or favorite thing, and get a free AI preview of both together in one scene.",
 };

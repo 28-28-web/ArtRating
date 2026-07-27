@@ -57,9 +57,9 @@ export default function HeadshotShowcase() {
   return (
     <section className="flex w-full flex-col items-center gap-10">
       <div className="flex flex-col items-center gap-2 text-center">
-        <h2 className="font-display text-2xl font-semibold text-ink sm:text-3xl">
+        <h3 className="font-display text-2xl font-semibold text-ink sm:text-3xl">
           AI headshots trusted by professionals
-        </h2>
+        </h3>
         <p className="max-w-md text-ink-soft">
           Upload once — choose your style — download in seconds.
         </p>

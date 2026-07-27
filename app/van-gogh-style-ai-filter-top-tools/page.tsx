@@ -5,6 +5,7 @@ import BrushDivider from "@/app/components/BrushDivider";
 
 export const metadata: Metadata = {
   title: "Van Gogh Style AI Filter — Top Tools | HeadshotMaker AI",
+  alternates: { canonical: "/van-gogh-style-ai-filter-top-tools" },
   description:
     "Want that swirling Starry Night brushstroke look? Here are the best AI tools for turning photos into Van Gogh-style paintings.",
 };

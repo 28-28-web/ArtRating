@@ -5,9 +5,10 @@ import { HEADSHOT_MODE } from "@/app/lib/previewModes";
 import { accentVars } from "@/app/lib/accent";
 
 export const metadata: Metadata = {
-  title: "Professional Headshot Generator — Free AI Preview | HeadshotMaker AI",
+  title: "AI Headshot Generator | HeadshotMaker AI",
   description:
-    "Upload a photo and get a free AI-generated professional headshot preview — Corporate, LinkedIn, Studio Portrait, or Creative Professional styles.",
+    "Generate a professional AI headshot in seconds. Perfect for LinkedIn, resumes, and portfolios. Free to try.",
+  alternates: { canonical: "/professional-headshot-generator" },
 };
 
 const faqs = [
@@ -51,7 +52,7 @@ export default function ProfessionalHeadshotGeneratorPage() {
 
       <div className="flex flex-col items-center gap-4 text-center">
         <h1 className="max-w-2xl font-display text-4xl font-semibold leading-tight tracking-tight text-ink sm:text-5xl">
-          Professional Headshot Generator — Free AI Preview
+          AI Headshot Generator — Professional Photos in Seconds
         </h1>
         <BrushDivider />
         <p className="max-w-xl text-lg text-ink-soft">

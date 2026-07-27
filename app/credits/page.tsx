@@ -8,6 +8,7 @@ import { CREDIT_PACKS } from "@/app/lib/creditPacks";
 export const metadata: Metadata = {
   title: "Get Credits | HeadshotMaker AI",
   description: "Buy credits to download your full-quality, watermark-free AI photo results.",
+  alternates: { canonical: "/credits" },
 };
 
 export default async function CreditsPage() {

@@ -6,6 +6,7 @@ import { accentVars } from "@/app/lib/accent";
 
 export const metadata: Metadata = {
   title: "Pet to Human Generator — Free AI Preview | HeadshotMaker AI",
+  alternates: { canonical: "/pet-to-human" },
   description:
     "Upload a photo of your pet and get a free AI-generated preview of what they might look like as a human.",
 };

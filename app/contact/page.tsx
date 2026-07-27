@@ -7,6 +7,7 @@ const CONTACT_EMAIL = "hello@artrating.art";
 export const metadata: Metadata = {
   title: "Contact | HeadshotMaker AI",
   description: "Get in touch with the team behind HeadshotMaker AI.",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {

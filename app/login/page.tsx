@@ -1,5 +1,12 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import LoginForm from "@/app/components/LoginForm";
+
+export const metadata: Metadata = {
+  title: "Log In | HeadshotMaker AI",
+  description: "Log in to HeadshotMaker AI to download your full-quality, watermark-free headshots.",
+  alternates: { canonical: "/login" },
+};
 
 export default function LoginPage() {
   return (

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Terms of Service | HeadshotMaker AI",
   description: "The terms that apply when you use HeadshotMaker AI.",
+  alternates: { canonical: "/terms" },
 };
 
 const CONTACT_EMAIL = "hello@artrating.art";

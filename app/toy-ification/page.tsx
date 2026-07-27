@@ -6,6 +6,7 @@ import { accentVars } from "@/app/lib/accent";
 
 export const metadata: Metadata = {
   title: "Toy-ify Yourself — Free AI Preview | HeadshotMaker AI",
+  alternates: { canonical: "/toy-ification" },
   description:
     "Upload a photo and get a free AI-generated preview of yourself as a collectible action figure.",
 };

@@ -4,6 +4,7 @@ import BrushDivider from "@/app/components/BrushDivider";
 
 export const metadata: Metadata = {
   title: "Deep Art Effects vs PhotoAI | HeadshotMaker AI",
+  alternates: { canonical: "/deep-art-effects-vs-photoai" },
   description:
     "A head-to-head comparison of Deep Art Effects and PhotoAI — features, best use cases, and which one to pick for your photo.",
 };
