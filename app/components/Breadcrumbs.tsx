@@ -4,10 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SITE_URL } from "@/app/lib/site";
 
+// Known-brand/short-word capitalization that Title Case would otherwise get
+// wrong (e.g. "ai-headshot-vs-photographer" -> "Ai Headshot Vs Photographer").
+const WORD_OVERRIDES: Record<string, string> = { ai: "AI", linkedin: "LinkedIn", vs: "vs" };
+
 function humanize(segment: string): string {
   return segment
     .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word) => WORD_OVERRIDES[word.toLowerCase()] ?? word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }
 
