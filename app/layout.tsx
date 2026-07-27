@@ -65,7 +65,7 @@ export default function RootLayout({
           <footer className="chrome-wash flex flex-col items-center gap-3 border-t border-border-soft px-6 py-10 text-center text-xs text-ink-soft">
             <Logo />
             <p className="max-w-xs text-ink-soft">
-              Turn your photos into paintings with AI — upload, pick a style, download.
+              Turn any photo into a professional AI headshot — upload, generate, download.
             </p>
             <BrushDivider className="my-1" />
             <nav className="flex gap-4">
