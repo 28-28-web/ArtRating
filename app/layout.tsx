@@ -35,9 +35,9 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Paintify — AI Photo-to-Painting Tools",
+  title: "AI Headshot Generator — Professional Photos in Seconds",
   description:
-    "Turn your photos into paintings with AI. Get style recommendations and compare the best photo-to-painting tools like Deep Art Effects and PhotoAI.",
+    "Turn any photo into a professional AI headshot for LinkedIn, resumes, and portfolios. Free to try, no signup needed.",
 };
 
 export default function RootLayout({

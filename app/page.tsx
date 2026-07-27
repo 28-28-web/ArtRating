@@ -34,7 +34,7 @@ const jsonLd = {
       name: SITE_NAME,
       url: SITE_URL,
       description:
-        "Turn your photos into paintings with AI. Get style recommendations and compare the best photo-to-painting tools.",
+        "Turn any photo into a professional AI headshot for LinkedIn, resumes, and portfolios. Free to try, no signup needed.",
     },
   ],
 };
