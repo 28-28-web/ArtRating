@@ -135,6 +135,39 @@ body {
   }
 }
 
+/* Indeterminate progress bar shown in UploadBox while a generation request
+   is in flight — there's no real completion percentage to report (the
+   Cloudflare call is a single request/response), so this is a looping
+   sweep, not a determinate fill. */
+.progress-bar-track {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--border-soft);
+}
+.progress-bar-fill {
+  width: 40%;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  animation: progress-sweep 1.2s ease-in-out infinite;
+}
+@keyframes progress-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .progress-bar-fill {
+    animation: none;
+    width: 100%;
+  }
+}
+
 /* Pinned-Polaroid card — the outer frame (border/shadow/paint-dab/tagline)
    tilts; interactive content inside stays level via the counter-rotated
    .tool-card-content wrapper so buttons/inputs/chat bubbles are never

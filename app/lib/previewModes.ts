@@ -25,6 +25,12 @@ export type PreviewMode = {
   // Two-image blend tools (photo-mix) instead of the single-upload flow.
   requiresTwoImages?: boolean;
   consentCheckboxLabel?: string;
+  // When set, ToolInteractive renders a literal tab selector (one tab per
+  // entry, id sent verbatim as `style` in the generate request) instead of
+  // the chat-based style advisor every other tool uses. Headshot-only, per
+  // site owner request — a deliberate, isolated break from the site-wide
+  // chat-UI pattern, not a precedent for other tools.
+  styleTabs?: { id: string; label: string }[];
   // Handwritten Caveat-font tagline shown next to the paint-dab on this
   // tool's polaroid cards (upload card and chat card).
   cardTagline: string;
@@ -56,6 +62,7 @@ export const ART_STYLE_MODE: PreviewMode = {
 };
 
 export const HEADSHOT_MODE: PreviewMode = {
+  id: "headshot",
   accent: "teal-muted",
   cardTagline: "let's make it official",
   apiEndpoint: "/api/headshot-preview",
@@ -65,6 +72,18 @@ export const HEADSHOT_MODE: PreviewMode = {
   resultCaption:
     "This is an AI-generated preview, not a real photoshoot. Get a dedicated headshot tool for a more polished result →",
   ctaTool: null, // TODO: add once Deep Art Effects / PhotoAI.me approved
+  negativePrompt: "blur, distortion, cartoon, anime, low quality, watermark, text",
+  styleTabs: [
+    { id: "corporate", label: "Corporate" },
+    { id: "creative", label: "Creative" },
+    { id: "executive", label: "Executive" },
+    { id: "casual", label: "Casual" },
+  ],
+  // chatMode/chatTitle/etc. below are unused now that styleTabs replaces the
+  // chat advisor for this tool (ToolInteractive branches on styleTabs before
+  // ever rendering ChatWidget) — left in place rather than deleted in case
+  // the chat advisor comes back; /api/chat's headshot branch still works if
+  // anything ever calls it again.
   chatMode: "headshot",
   chatTitle: "Headshot Style Advisor",
   chatSubtitle: "Powered by AI · tells you which headshot look fits you",

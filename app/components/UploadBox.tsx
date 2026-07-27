@@ -143,6 +143,17 @@ export default function UploadBox({
               {generating ? "Generating…" : "Generate Free Preview"}
             </button>
 
+            {generating && (
+              <div
+                className="progress-bar-track"
+                role="progressbar"
+                aria-label="Generating your image"
+                aria-valuetext="Generating"
+              >
+                <div className="progress-bar-fill" />
+              </div>
+            )}
+
             {previewError && <p className="text-sm text-danger">{previewError}</p>}
 
             {capMessage && (

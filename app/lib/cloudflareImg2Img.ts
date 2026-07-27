@@ -8,6 +8,7 @@ export async function generateImg2Img({
   negativePrompt,
   imageDataUrl,
   strength,
+  numSteps,
 }: {
   accountId: string;
   apiToken: string;
@@ -15,6 +16,9 @@ export async function generateImg2Img({
   negativePrompt?: string;
   imageDataUrl: string;
   strength: number;
+  // Model default/max is 20 — only pass this to be explicit, not because
+  // the default needs overriding.
+  numSteps?: number;
 }): Promise<{ image?: string; error?: string }> {
   if (!imageDataUrl.startsWith("data:image/")) {
     return { error: "Invalid image" };
@@ -41,6 +45,7 @@ export async function generateImg2Img({
           image: inputBytes,
           strength,
           ...(negativePrompt ? { negative_prompt: negativePrompt } : {}),
+          ...(numSteps ? { num_steps: numSteps } : {}),
         }),
         signal: controller.signal,
       }

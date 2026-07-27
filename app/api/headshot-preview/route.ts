@@ -14,27 +14,34 @@ const DEBUG_GENERATION = process.env.DEBUG_GENERATION === "true";
 // strength), so "Corporate style" looked almost identical to the source
 // photo. Raised to 0.55 and the prompt now explicitly says "replace" instead
 // of just describing the target look, since softer phrasing wasn't enough to
-// override the source image at moderate strength either. If identity drifts
-// too much at 0.55, dial back toward 0.45 rather than lower — going back to
-// 0.35 reproduces the original bug.
-const HEADSHOT_STRENGTH = 0.55;
+// override the source image at moderate strength either. Raised again to
+// 0.65 per site owner request — this pushes further in the direction away
+// from the original bug (more transformation, not less), but per the same
+// logic that flagged 0.55 as a possible identity-drift risk, 0.65 raises
+// that risk further still. Worth watching in practice; if faces stop being
+// recognizable, dial back toward 0.55 rather than lower.
+const HEADSHOT_STRENGTH = 0.65;
+const HEADSHOT_STEPS = 20;
+const HEADSHOT_NEGATIVE_PROMPT = "blur, distortion, cartoon, anime, low quality, watermark, text";
 
+// Keys match TabbedUploadSection's tab ids exactly (see
+// HEADSHOT_MODE.styleTabs in previewModes.ts) — direct lookup, not the old
+// substring-match against free-text chat input, since tabs always send one
+// of these four exact strings.
 const HEADSHOT_STYLE_PROMPTS: Record<string, string> = {
   corporate:
-    "replace the person's outfit with a dark business suit or blazer over a collared shirt, replace the background entirely with a plain neutral grey studio backdrop, even studio lighting, corporate headshot photography",
-  linkedin:
-    "replace the person's outfit with smart business attire such as a blazer or button-down shirt, replace the background entirely with a softly blurred neutral backdrop, warm soft studio lighting, LinkedIn profile headshot photography",
-  "studio portrait":
-    "replace the person's outfit with formal studio attire, replace the background entirely with a seamless grey studio backdrop, clean directional studio lighting, classic studio portrait photography",
-  "creative professional":
-    "replace the person's outfit with smart-casual professional attire such as an open-collar shirt or stylish blazer with no tie, replace the background entirely with a softly blurred neutral or muted-color backdrop, soft directional lighting, creative industry headshot photography",
+    "professional corporate headshot, business suit, neutral grey background, studio lighting, LinkedIn profile photo",
+  creative:
+    "creative professional headshot, modern colorful background, artistic lighting, portfolio photo",
+  executive:
+    "executive portrait, formal dark suit, dramatic lighting, prestigious background, CEO photo",
+  casual:
+    "casual professional headshot, smart casual attire, natural background, friendly expression",
 };
 
 function promptForHeadshotStyle(style: string) {
   const key = style.trim().toLowerCase();
-  const match = Object.entries(HEADSHOT_STYLE_PROMPTS).find(([k]) => key.includes(k));
-  const styleText = match ? match[1] : HEADSHOT_STYLE_PROMPTS.corporate;
-  return `Professional corporate headshot photo of the same person, ${styleText}, sharp focus, high detail, natural skin tone, photorealistic, no distortion`;
+  return HEADSHOT_STYLE_PROMPTS[key] ?? HEADSHOT_STYLE_PROMPTS.corporate;
 }
 
 function unavailable() {
@@ -83,8 +90,10 @@ export async function POST(request: Request) {
     accountId,
     apiToken,
     prompt,
+    negativePrompt: HEADSHOT_NEGATIVE_PROMPT,
     imageDataUrl,
     strength: HEADSHOT_STRENGTH,
+    numSteps: HEADSHOT_STEPS,
   });
 
   if (!result.image) {

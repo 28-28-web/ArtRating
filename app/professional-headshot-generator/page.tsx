@@ -57,7 +57,7 @@ export default function ProfessionalHeadshotGeneratorPage() {
         <BrushDivider />
         <p className="max-w-xl text-lg text-ink-soft">
           Upload a photo and see an instant AI preview of a professional headshot — pick a Corporate,
-          LinkedIn, Studio Portrait, or Creative Professional look.
+          Creative, Executive, or Casual look.
         </p>
       </div>
 
