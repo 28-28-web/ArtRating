@@ -110,19 +110,64 @@ body {
 }
 
 /* Brushstroke divider — draws itself in on scroll-into-view, colored per
-   page via --accent. Respects prefers-reduced-motion. */
-.brush-divider path {
+   page via --accent. Respects prefers-reduced-motion.
+
+   Hover target is deliberately the PARENT (heading/section wrapping this
+   SVG), not the tiny divider itself — every call site renders
+   <Heading /><BrushDivider />  as direct siblings inside one div/section,
+   so `:has(> .brush-divider):hover` reaches that wrapper generically
+   without needing a class change at each of the ~10 usage sites. */
+.brush-divider-stroke {
+  stroke: var(--accent);
   stroke-dasharray: 100;
   stroke-dashoffset: 100;
-  transition: stroke-dashoffset 0.6s ease-out;
+  transition:
+    stroke-dashoffset 0.6s ease-out,
+    stroke 0.3s ease,
+    stroke-width 0.3s ease;
 }
-.brush-divider.is-drawn path {
+.brush-divider.is-drawn .brush-divider-stroke {
   stroke-dashoffset: 0;
 }
+
+.brush-divider-ghost {
+  stroke: #d4af37;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+:where(div, section):has(> .brush-divider):hover .brush-divider-stroke {
+  stroke: #d4af37;
+  stroke-width: 3;
+  animation-play-state: paused;
+}
+:where(div, section):has(> .brush-divider):hover .brush-divider-ghost {
+  opacity: 0.45;
+}
+
+/* Idle shimmer — only once the draw-in has completed, so it can't fight
+   the initial stroke-dashoffset transition. */
+@keyframes brush-shimmer {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.brush-divider.is-drawn .brush-divider-stroke {
+  animation: brush-shimmer 3s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .brush-divider path {
+  .brush-divider-stroke {
     transition: none;
     stroke-dashoffset: 0;
+    animation: none;
+  }
+  .brush-divider-ghost {
+    transition: none;
   }
 }
 
