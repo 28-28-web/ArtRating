@@ -1,116 +1,83 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usePaddle, onCheckoutCompleted } from "@/app/lib/paddle";
+import type { CREDIT_PACKS } from "@/app/lib/creditPacks";
+
+type Pack = (typeof CREDIT_PACKS)[number];
 
 export default function CreditsForm({
   packs,
-  bkashNumber,
-  nagadNumber,
+  userId,
+  userEmail,
 }: {
-  packs: { id: string; credits: number; priceLabel: string }[];
-  bkashNumber: string;
-  nagadNumber: string;
+  packs: Pack[];
+  userId: string;
+  userEmail: string;
 }) {
-  const [packId, setPackId] = useState(packs[0]?.id);
-  const [method, setMethod] = useState<"bkash" | "nagad">("bkash");
-  const [transactionRef, setTransactionRef] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { paddle, failed } = usePaddle();
+  const [pendingPackId, setPendingPackId] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSubmitting(true);
-    setError(null);
-    setMessage(null);
-    try {
-      const res = await fetch("/api/credits/purchase-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ packId, method, transactionRef }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Could not submit request");
-        return;
-      }
-      setMessage(
-        "Submitted! We'll add your credits after reviewing the payment, usually within a few hours."
-      );
-      setTransactionRef("");
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setSubmitting(false);
+  useEffect(() => onCheckoutCompleted(() => setSuccess(true)), []);
+
+  function handleBuy(pack: Pack) {
+    if (!pack.paddlePriceId) return; // button is disabled in this case, see below
+
+    if (!paddle) {
+      if (failed) window.location.reload();
+      return;
     }
+
+    setSuccess(false);
+    setPendingPackId(pack.id);
+    paddle.Checkout.open({
+      settings: { displayMode: "overlay", theme: "light", locale: "en" },
+      items: [{ priceId: pack.paddlePriceId, quantity: 1 }],
+      customData: { userId, priceId: pack.paddlePriceId },
+      customer: { email: userEmail },
+    });
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        {packs.map((pack) => (
-          <button
-            key={pack.id}
-            type="button"
-            onClick={() => setPackId(pack.id)}
-            className={`rounded-xl border p-4 text-center ${
-              packId === pack.id ? "border-accent bg-[var(--border-soft)]/30" : "border-border-soft"
-            }`}
-          >
-            <p className="text-lg font-semibold text-ink">{pack.credits} credits</p>
-            <p className="text-sm text-ink-soft">{pack.priceLabel}</p>
-          </button>
-        ))}
-      </div>
-
-      <div className="rounded-xl border border-border-soft p-4 text-sm">
-        <p className="font-medium text-ink">Pay via bKash or Nagad (Send Money):</p>
-        <p className="mt-1 text-ink-soft">
-          bKash: {bkashNumber} · Nagad: {nagadNumber}
-        </p>
-        <p className="mt-1 text-xs text-ink-soft/70">
-          Placeholder numbers until the site owner adds real merchant numbers.
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <div className="flex gap-4">
-          <label className="flex items-center gap-2 text-sm text-ink">
-            <input
-              type="radio"
-              name="method"
-              checked={method === "bkash"}
-              onChange={() => setMethod("bkash")}
-            />
-            bKash
-          </label>
-          <label className="flex items-center gap-2 text-sm text-ink">
-            <input
-              type="radio"
-              name="method"
-              checked={method === "nagad"}
-              onChange={() => setMethod("nagad")}
-            />
-            Nagad
-          </label>
-        </div>
-        <input
-          required
-          placeholder="Transaction reference / TrxID"
-          value={transactionRef}
-          onChange={(e) => setTransactionRef(e.target.value)}
-          className="rounded-full border border-border-soft bg-transparent px-4 py-2 text-sm text-ink outline-none focus:border-accent"
-        />
-        {error && <p className="text-sm text-danger">{error}</p>}
-        {message && <p className="text-sm text-jade">{message}</p>}
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas disabled:opacity-50"
+      {success && (
+        <p
+          className="rounded-xl border p-4 text-center text-sm font-medium"
+          style={{ borderColor: "var(--jade)", color: "var(--jade-text)", background: "color-mix(in srgb, var(--jade) 10%, var(--canvas))" }}
         >
-          {submitting ? "Submitting…" : "Submit for review"}
-        </button>
-      </form>
+          Credits added! It can take a few seconds to reflect in your balance.
+        </p>
+      )}
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {packs.map((pack) => {
+          const priceNotReady = !pack.paddlePriceId;
+          const isPending = pendingPackId === pack.id && !success;
+          return (
+            <div key={pack.id} className="flex flex-col items-center gap-2 rounded-xl border border-border-soft p-4 text-center">
+              <p className="text-lg font-semibold text-ink">{pack.credits} credits</p>
+              <p className="text-2xl font-display font-semibold text-ink">{pack.priceLabel}</p>
+              <button
+                type="button"
+                onClick={() => handleBuy(pack)}
+                disabled={priceNotReady}
+                className="mt-2 w-full rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas disabled:opacity-50"
+              >
+                {priceNotReady
+                  ? "Not available yet"
+                  : isPending && !paddle && !failed
+                    ? "Preparing checkout…"
+                    : isPending && failed
+                      ? "Payment system unavailable — tap to retry"
+                      : "Buy now"}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      <p className="text-center text-xs text-ink-soft">Payments processed securely by Paddle.</p>
     </div>
   );
 }

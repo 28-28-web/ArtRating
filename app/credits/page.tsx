@@ -23,9 +23,9 @@ export default async function CreditsPage() {
           Try free — 2 headshots with watermark, no signup. Remove watermark — from $5.
         </p>
         <p className="text-ink-soft">
-          Each credit lets you download one full-quality, watermark-free result. Pay via bKash or
-          Nagad and submit your transaction reference below — credits are added after a quick
-          manual review.
+          Each credit lets you download one full-quality, watermark-free result. Checkout is
+          handled securely by Paddle — credits are added automatically once your payment goes
+          through.
         </p>
       </div>
 
@@ -37,11 +37,7 @@ export default async function CreditsPage() {
           to buy credits.
         </p>
       ) : (
-        <CreditsForm
-          packs={CREDIT_PACKS}
-          bkashNumber={process.env.BKASH_NUMBER || "01XXXXXXXXX"}
-          nagadNumber={process.env.NAGAD_NUMBER || "01XXXXXXXXX"}
-        />
+        <CreditsForm packs={CREDIT_PACKS} userId={session.user.id} userEmail={session.user.email ?? ""} />
       )}
     </main>
   );

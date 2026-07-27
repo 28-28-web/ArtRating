@@ -1,21 +1,33 @@
-// USD pricing per site owner request. NOTE: the actual payment collection
-// mechanism (CreditsForm.tsx / credits/page.tsx) is still bKash/Nagad manual
-// review — both are BDT-only Bangladeshi mobile wallets. There is no
-// currency conversion wired up anywhere: a buyer picking "$5" still has to
-// send some BDT amount via bKash/Nagad, and nothing in this codebase
-// computes what that amount should be. This mismatch needs resolving
-// (either real BDT-equivalent numbers, or an actual USD-capable payment
-// processor) before this pricing is live.
-//
-// "Unlimited" is not a real recurring subscription — there's no billing
-// webhook/cron/expiry anywhere in this codebase, only the same one-time
-// manual-review purchase flow as the other two packs. Modeled here as a
-// large one-time credit grant sold under the "Unlimited" label so it works
-// with the existing balance-decrement logic without fabricating
-// subscription infrastructure that doesn't exist. Revisit if real recurring
-// billing gets built.
+// USD pricing, sold via Paddle Checkout (see app/lib/paddle.ts,
+// app/components/CreditsForm.tsx, app/api/webhook/paddle/route.ts).
+// paddlePriceId is read from the matching NEXT_PUBLIC_PADDLE_PRICE_*
+// env var — undefined until the site owner creates the real prices in
+// the Paddle dashboard and sets them. CreditsForm disables a pack's
+// button rather than crash when its priceId is missing.
 export const CREDIT_PACKS = [
-  { id: "pack-starter", credits: 10, priceLabel: "$5" },
-  { id: "pack-pro", credits: 50, priceLabel: "$19" },
-  { id: "pack-unlimited", credits: 1000, priceLabel: "$39/mo" },
+  {
+    id: "pack-starter",
+    credits: 10,
+    priceLabel: "$5",
+    paddlePriceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_STARTER,
+  },
+  {
+    id: "pack-pro",
+    credits: 50,
+    priceLabel: "$19",
+    paddlePriceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_PRO,
+  },
+  {
+    id: "pack-unlimited",
+    credits: 200,
+    priceLabel: "$39",
+    paddlePriceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_UNLIMITED,
+  },
 ];
+
+// Server-side lookup for the webhook — maps a Paddle price ID back to how
+// many credits it grants. Built from the same array so the two can't drift.
+export function creditsForPriceId(priceId: string): number | null {
+  const pack = CREDIT_PACKS.find((p) => p.paddlePriceId === priceId);
+  return pack ? pack.credits : null;
+}
