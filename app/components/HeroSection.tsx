@@ -109,6 +109,14 @@ export default function HeroSection({ freeGenerationCap }: { freeGenerationCap: 
         ))}
       </section>
 
+      <p className="hero-social-proof">
+        <span>LinkedIn Ready</span>
+        <span aria-hidden="true"> • </span>
+        <span>No Photographer Needed</span>
+        <span aria-hidden="true"> • </span>
+        <span>Results in 30 Seconds</span>
+      </p>
+
       <section className="hero-stats-strip" aria-label="Key stats">
         {STATS.map((stat) => (
           <div className="hero-stat" key={stat.label}>

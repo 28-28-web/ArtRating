@@ -794,7 +794,7 @@ body {
 .hero-cta-primary {
   border-radius: 999px;
   padding: 12px 22px;
-  background: #378adb;
+  background: #d4af37;
   color: #fff;
   font-weight: 600;
   font-size: 0.95rem;
@@ -949,6 +949,16 @@ body {
   .hero-step:not(:last-child)::after {
     display: none;
   }
+}
+
+/* Social proof strip — between the steps and stats strips */
+.hero-social-proof {
+  width: 100%;
+  background: #0a0a0f;
+  padding: 10px 20px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
 }
 
 /* Stats strip */
