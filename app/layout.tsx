@@ -4,7 +4,7 @@ import Link from "next/link";
 import Script from "next/script";
 import SessionProviderWrapper from "@/app/components/SessionProviderWrapper";
 import SiteNav from "@/app/components/SiteNav";
-import Logo from "@/app/components/Logo";
+import NavLogo from "@/app/components/NavLogo";
 import BrushDivider from "@/app/components/BrushDivider";
 import "./globals.css";
 
@@ -63,7 +63,7 @@ export default function RootLayout({
           {children}
 
           <footer className="chrome-wash flex flex-col items-center gap-3 border-t border-border-soft px-6 py-10 text-center text-xs text-ink-soft">
-            <Logo />
+            <NavLogo />
             <p className="max-w-xs text-ink-soft">
               Turn any photo into a professional AI headshot — upload, generate, download.
             </p>
