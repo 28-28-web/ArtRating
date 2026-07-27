@@ -19,6 +19,15 @@ import "./globals.css";
 // instead of writing a `data-theme="light"` attribute that nothing reads.
 const THEME_INIT_SCRIPT = `(function(){try{var s=localStorage.getItem('theme');var isDark=s?s==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;if(isDark)document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();`;
 
+const CLARITY_PROJECT_ID = "xt7bawq7rd";
+const CLARITY_SCRIPT = `
+  (function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "${CLARITY_PROJECT_ID}");
+`;
+
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
@@ -87,6 +96,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-body">
         <Script id="theme-init" strategy="beforeInteractive">
           {THEME_INIT_SCRIPT}
+        </Script>
+        <Script id="microsoft-clarity" strategy="afterInteractive">
+          {CLARITY_SCRIPT}
         </Script>
         <SessionProviderWrapper>
           <header className="chrome-wash border-b border-border-soft">
