@@ -94,8 +94,8 @@ export default function HeadshotShowcase() {
         <h3 className="font-display text-xl font-semibold text-ink">Sample results from our AI</h3>
         <BrushDivider className="mt-1" />
         <p className="max-w-sm text-xs text-ink-soft">
-          Stock preview photos shown for style and layout only — not actual Paintify-generated
-          output.{" "}
+          Stock preview photos shown for style and layout only — not actual HeadshotMaker
+          AI-generated output.{" "}
           <Link href="/professional-headshot-generator" className="underline hover:text-accent-text">
             Try the real generator →
           </Link>

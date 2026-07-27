@@ -35,7 +35,7 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "AI Headshot Generator — Professional Photos in Seconds",
+  title: "HeadshotMaker AI — Professional AI Headshots in Seconds",
   description:
     "Turn any photo into a professional AI headshot for LinkedIn, resumes, and portfolios. Free to try, no signup needed.",
 };

@@ -6,7 +6,7 @@ import BrushDivider from "@/app/components/BrushDivider";
 import { CREDIT_PACKS } from "@/app/lib/creditPacks";
 
 export const metadata: Metadata = {
-  title: "Get Credits | Paintify",
+  title: "Get Credits | HeadshotMaker AI",
   description: "Buy credits to download your full-quality, watermark-free AI photo results.",
 };
 

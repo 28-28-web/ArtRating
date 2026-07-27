@@ -5,7 +5,7 @@ import { HEADSHOT_MODE } from "@/app/lib/previewModes";
 import { accentVars } from "@/app/lib/accent";
 
 export const metadata: Metadata = {
-  title: "Professional Headshot Generator — Free AI Preview | Paintify",
+  title: "Professional Headshot Generator — Free AI Preview | HeadshotMaker AI",
   description:
     "Upload a photo and get a free AI-generated professional headshot preview — Corporate, LinkedIn, Studio Portrait, or Creative Professional styles.",
 };

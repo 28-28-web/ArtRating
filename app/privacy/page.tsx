@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Paintify",
-  description: "How Paintify collects, uses, and protects your data.",
+  title: "Privacy Policy | HeadshotMaker AI",
+  description: "How HeadshotMaker AI collects, uses, and protects your data.",
 };
 
 const CONTACT_EMAIL = "support@artrating.art";
@@ -16,7 +16,7 @@ export default function PrivacyPage() {
       </div>
 
       <p className="text-ink">
-        Paintify is operated by FCLBD (Fateh Consortium Ltd Bangladesh). This policy explains what
+        HeadshotMaker AI is operated by FCLBD (Fateh Consortium Ltd Bangladesh). This policy explains what
         we collect, why, and what control you have.
       </p>
 
@@ -96,7 +96,7 @@ export default function PrivacyPage() {
       <section className="flex flex-col gap-3">
         <h2 className="font-display text-xl font-semibold text-ink">Children&apos;s privacy</h2>
         <p className="text-ink">
-          Paintify is not intended for children under 13 (or the minimum age required by your
+          HeadshotMaker AI is not intended for children under 13 (or the minimum age required by your
           local law, if higher). We do not knowingly collect data from children.
         </p>
       </section>

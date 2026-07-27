@@ -8,7 +8,7 @@ export default function Logo() {
         <circle cx="17" cy="7" r="6" fill="var(--saffron)" opacity="0.9" />
         <circle cx="13" cy="16" r="7" fill="var(--magenta)" opacity="0.9" />
       </svg>
-      Paintify
+      HeadshotMaker AI
     </Link>
   );
 }

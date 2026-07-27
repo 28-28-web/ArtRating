@@ -3,7 +3,7 @@ import { AFFILIATE_TOOLS } from "@/app/lib/affiliate";
 import BrushDivider from "@/app/components/BrushDivider";
 
 export const metadata: Metadata = {
-  title: "Deep Art Effects vs PhotoAI | Paintify",
+  title: "Deep Art Effects vs PhotoAI | HeadshotMaker AI",
   description:
     "A head-to-head comparison of Deep Art Effects and PhotoAI — features, best use cases, and which one to pick for your photo.",
 };

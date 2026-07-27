@@ -3,8 +3,8 @@ import ContactForm from "@/app/components/ContactForm";
 import BrushDivider from "@/app/components/BrushDivider";
 
 export const metadata: Metadata = {
-  title: "Contact | Paintify",
-  description: "Get in touch with the team behind Paintify.",
+  title: "Contact | HeadshotMaker AI",
+  description: "Get in touch with the team behind HeadshotMaker AI.",
 };
 
 export default function ContactPage() {
@@ -14,7 +14,7 @@ export default function ContactPage() {
         <h1 className="font-display text-3xl font-semibold text-ink">Contact</h1>
         <BrushDivider />
         <p className="max-w-xl text-ink-soft">
-          Paintify is built and operated by FCLBD (Fateh Consortium Ltd Bangladesh). We read every
+          HeadshotMaker AI is built and operated by FCLBD (Fateh Consortium Ltd Bangladesh). We read every
           message and aim to respond within a few business days.
         </p>
       </div>

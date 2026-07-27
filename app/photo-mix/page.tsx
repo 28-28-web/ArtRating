@@ -5,7 +5,7 @@ import { PHOTO_MIX_MODE } from "@/app/lib/previewModes";
 import { accentVars } from "@/app/lib/accent";
 
 export const metadata: Metadata = {
-  title: "Mix Your Photo With Your Pet — Free AI Preview | Paintify",
+  title: "Mix Your Photo With Your Pet — Free AI Preview | HeadshotMaker AI",
   description:
     "Upload your photo and a photo of your pet or favorite thing, and get a free AI preview of both together in one scene.",
 };

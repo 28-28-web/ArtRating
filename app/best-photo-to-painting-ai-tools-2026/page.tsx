@@ -3,7 +3,7 @@ import { AFFILIATE_TOOLS } from "@/app/lib/affiliate";
 import BrushDivider from "@/app/components/BrushDivider";
 
 export const metadata: Metadata = {
-  title: "Best Photo-to-Painting AI Tools 2026 | Paintify",
+  title: "Best Photo-to-Painting AI Tools 2026 | HeadshotMaker AI",
   description:
     "Our ranked picks for the best AI tools that turn photos into paintings in 2026, including Deep Art Effects and PhotoAI.",
 };

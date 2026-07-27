@@ -5,7 +5,7 @@ import { PET_TO_HUMAN_MODE } from "@/app/lib/previewModes";
 import { accentVars } from "@/app/lib/accent";
 
 export const metadata: Metadata = {
-  title: "Pet to Human Generator — Free AI Preview | Paintify",
+  title: "Pet to Human Generator — Free AI Preview | HeadshotMaker AI",
   description:
     "Upload a photo of your pet and get a free AI-generated preview of what they might look like as a human.",
 };

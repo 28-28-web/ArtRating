@@ -4,7 +4,7 @@ import { AFFILIATE_TOOLS } from "@/app/lib/affiliate";
 import BrushDivider from "@/app/components/BrushDivider";
 
 export const metadata: Metadata = {
-  title: "Van Gogh Style AI Filter — Top Tools | Paintify",
+  title: "Van Gogh Style AI Filter — Top Tools | HeadshotMaker AI",
   description:
     "Want that swirling Starry Night brushstroke look? Here are the best AI tools for turning photos into Van Gogh-style paintings.",
 };

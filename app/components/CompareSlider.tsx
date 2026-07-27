@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 import Link from "next/link";
 
-// TODO: swap `src` for a real Paintify before/after pair (same person,
+// TODO: swap `src` for a real HeadshotMaker AI before/after pair (same person,
 // actual AI output) once the site owner shares test-run results or
 // Cloudflare credentials are available to generate one. Deliberately NOT
 // using two different stock photos as a fake "before/after" here — that
