@@ -47,3 +47,11 @@ export function useAuthForm(onSuccess: () => void) {
 
   return { formMode, email, setEmail, password, setPassword, error, submitting, handleSubmit, toggleMode };
 }
+
+// Google OAuth is a full-page redirect (unlike the credentials flow above,
+// which uses redirect: false to stay on the page) — there's no equivalent
+// "resume in place" for it, so callers pass whatever URL should load once
+// the user's back from Google's consent screen.
+export function signInWithGoogle(callbackUrl: string) {
+  signIn("google", { callbackUrl });
+}
