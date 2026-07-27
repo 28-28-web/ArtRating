@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Logo from "@/app/components/Logo";
+import NavLogo from "@/app/components/NavLogo";
 import NavDropdown from "@/app/components/NavDropdown";
 import NavAuthStatus from "@/app/components/NavAuthStatus";
 import PaintDab from "@/app/components/PaintDab";
@@ -36,7 +36,7 @@ export default function SiteNav() {
   return (
     <nav className="mx-auto w-full max-w-5xl px-6 py-4">
       <div className="flex items-center justify-between">
-        <Logo />
+        <NavLogo />
 
         <div className="hidden items-center gap-6 md:flex">
           <Link href="/professional-headshot-generator" className="text-sm text-ink-soft hover:text-ink">
