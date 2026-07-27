@@ -5,28 +5,27 @@ export const metadata: Metadata = {
   description: "The terms that apply when you use HeadshotMaker AI.",
 };
 
-const CONTACT_EMAIL = "support@artrating.art";
+const CONTACT_EMAIL = "hello@artrating.art";
 
 export default function TermsPage() {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-6 py-16">
       <div>
         <h1 className="font-display text-3xl font-semibold text-ink">Terms of service</h1>
-        <p className="mt-2 text-sm text-ink-soft">Last updated: July 17, 2026</p>
+        <p className="mt-2 text-sm text-ink-soft">Last updated: July 27, 2026</p>
       </div>
 
       <p className="text-ink">
-        By using HeadshotMaker AI, operated by FCLBD (Fateh Consortium Ltd Bangladesh), you agree to
-        these terms.
+        By using HeadshotMaker AI at artrating.art, operated by FCLBD (Fateh Consortium Ltd
+        Bangladesh), you agree to these terms.
       </p>
 
       <section className="flex flex-col gap-3">
         <h2 className="font-display text-xl font-semibold text-ink">What HeadshotMaker AI does</h2>
         <p className="text-ink">
-          HeadshotMaker AI generates AI-based image transformations (art styles, headshots,
-          pet-to-human, toy figures, and two-photo mixes) from photos you upload. Results are
-          AI-generated interpretations, not real photographs — they may not accurately represent
-          reality and are provided for entertainment and casual use.
+          HeadshotMaker AI generates professional-style AI headshots from photos you upload.
+          Results are AI-generated interpretations, not real photographs — they may not perfectly
+          represent reality.
         </p>
       </section>
 
@@ -40,10 +39,6 @@ export default function TermsPage() {
             explicit involving minors, or otherwise harmful.
           </li>
           <li>
-            Attempt to generate images depicting real, named public figures in a way that implies
-            their endorsement or a real event.
-          </li>
-          <li>
             Attempt to abuse, overload, or circumvent the free-generation limits or security of
             the service.
           </li>
@@ -54,38 +49,29 @@ export default function TermsPage() {
       <section className="flex flex-col gap-3">
         <h2 className="font-display text-xl font-semibold text-ink">Your content</h2>
         <p className="text-ink">
-          You retain rights to the photos you upload and the images HeadshotMaker AI generates for you.
-          By using the service, you grant us a limited license to process your photos solely to
-          generate your requested output. We may use anonymized, non-identifying examples of
-          generated content for marketing only with your separate permission.
-        </p>
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <h2 className="font-display text-xl font-semibold text-ink">The photo-mix tool</h2>
-        <p className="text-ink">
-          When mixing two photos, you confirm you have the right to use both images, including
-          any photo of another person. You are responsible for having appropriate consent before
-          uploading a second person&apos;s photo.
+          You retain rights to the photos you upload. The headshots HeadshotMaker AI generates for
+          you are yours to use for personal or commercial purposes. By using the service, you
+          grant us a limited license to process your photos solely to generate your requested
+          output.
         </p>
       </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="font-display text-xl font-semibold text-ink">Credits and payments</h2>
         <p className="text-ink">
-          Generating a preview is free and doesn&apos;t require an account, up to the generation limit
-          described on the site. Downloading the full-quality, watermark-free file requires an
-          account and 1 credit per download, purchased via manual bank transfer verification.
-          Credits are non-refundable once used; unused credit balances tied to a clear payment
-          error will be reviewed case by case if you contact us within 7 days of purchase.
+          Generating a preview is free and doesn&apos;t require an account, up to the generation
+          limit described on the site. Downloading the full-quality, watermark-free file requires
+          an account and 1 credit per download. Because downloads are a digital product delivered
+          immediately, all sales are final — we do not offer refunds once a file has been
+          downloaded.
         </p>
       </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="font-display text-xl font-semibold text-ink">No warranty</h2>
         <p className="text-ink">
-          HeadshotMaker AI is provided &quot;as is.&quot; We do not guarantee generated results will meet
-          your expectations, be free of errors, or be available at all times.
+          HeadshotMaker AI is provided &quot;as is.&quot; We do not guarantee generated results
+          will meet your expectations, be free of errors, or be available at all times.
         </p>
       </section>
 
