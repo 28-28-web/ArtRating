@@ -92,22 +92,22 @@ export default function Home() {
               href="/best-photo-to-painting-ai-tools-2026"
               className="rounded-xl border border-border-soft p-4 hover:border-accent"
             >
-              <p className="font-medium text-ink">Best Photo-to-Painting AI Tools 2026</p>
+              <p className="font-medium text-ink">Best AI headshot generators 2026</p>
               <p className="mt-1 text-sm text-ink-soft">Our top picks, ranked and compared.</p>
             </Link>
             <Link
               href="/deep-art-effects-vs-photoai"
               className="rounded-xl border border-border-soft p-4 hover:border-accent"
             >
-              <p className="font-medium text-ink">Deep Art Effects vs PhotoAI</p>
-              <p className="mt-1 text-sm text-ink-soft">Head-to-head feature and pricing comparison.</p>
+              <p className="font-medium text-ink">LinkedIn headshot tips</p>
+              <p className="mt-1 text-sm text-ink-soft">What makes a profile photo get more views.</p>
             </Link>
             <Link
               href="/van-gogh-style-ai-filter-top-tools"
               className="rounded-xl border border-border-soft p-4 hover:border-accent"
             >
-              <p className="font-medium text-ink">Van Gogh Style AI Filter — Top Tools</p>
-              <p className="mt-1 text-sm text-ink-soft">Best apps for that swirling brushstroke look.</p>
+              <p className="font-medium text-ink">AI headshot vs photographer</p>
+              <p className="mt-1 text-sm text-ink-soft">Cost, quality, and turnaround compared.</p>
             </Link>
           </div>
         </section>
