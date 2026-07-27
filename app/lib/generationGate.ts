@@ -89,12 +89,19 @@ export async function getGenerationUsage(params: {
 }): Promise<{ used: number; cap: number }> {
   const { anonId, userId } = params;
 
+  // Raw counts can legitimately exceed FREE_GENERATION_CAP — the stored
+  // tally is never itself capped (checkGenerationEligibility just compares
+  // count < FREE_GENERATION_CAP, which works correctly at any magnitude),
+  // and FREE_GENERATION_CAP has already been lowered once this project
+  // (6 -> 2). A session that generated under the old cap keeps its old,
+  // higher count in the DB forever. Clamp for display only — the raw count
+  // stays intact for anyone who wants the real historical number.
   if (userId) {
     const used = await prisma.generation.count({ where: { userId } });
-    return { used, cap: FREE_GENERATION_CAP };
+    return { used: Math.min(used, FREE_GENERATION_CAP), cap: FREE_GENERATION_CAP };
   }
 
   if (!anonId) return { used: 0, cap: FREE_GENERATION_CAP };
   const anon = await prisma.anonymousUsage.findUnique({ where: { id: anonId } });
-  return { used: anon?.count ?? 0, cap: FREE_GENERATION_CAP };
+  return { used: Math.min(anon?.count ?? 0, FREE_GENERATION_CAP), cap: FREE_GENERATION_CAP };
 }
