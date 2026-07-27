@@ -24,10 +24,12 @@ const TOOLS = [
 ];
 const VISIBLE_TOOLS = TOOLS.filter((tool) => !tool.hidden);
 
+// Internal guide pages don't exist yet — links are wired up ahead of the
+// content per site owner request. They 404 until those pages are written.
 const GUIDES = [
-  { href: "/best-photo-to-painting-ai-tools-2026", label: "Best Tools 2026" },
-  { href: "/deep-art-effects-vs-photoai", label: "Deep Art Effects vs PhotoAI" },
-  { href: "/van-gogh-style-ai-filter-top-tools", label: "Van Gogh Filters" },
+  { href: "/guides/linkedin-premium-review", label: "LinkedIn Premium review" },
+  { href: "/guides/best-resume-builders", label: "Best resume builders 2026" },
+  { href: "/guides/ai-headshot-vs-photographer", label: "AI headshot vs photographer" },
 ];
 
 export default function SiteNav() {
