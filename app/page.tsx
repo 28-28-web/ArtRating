@@ -70,8 +70,8 @@ export default function Home() {
             </h1>
             <BrushDivider />
             <p className="max-w-xl text-lg text-ink-soft">
-              Upload a photo, tell our style advisor what look you want, and we&apos;ll point you to
-              the best AI photo-to-painting tool for the job.
+              Upload your photo and get a professional AI headshot in seconds. Perfect for
+              LinkedIn, resumes, and portfolios.
             </p>
           </section>
 
