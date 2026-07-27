@@ -110,6 +110,9 @@ export default function RootLayout({
               <Link href="/terms" className="hover:text-accent-text">
                 Terms
               </Link>
+              <Link href="/refund" className="hover:text-accent-text">
+                Refund Policy
+              </Link>
               <Link href="/contact" className="hover:text-accent-text">
                 Contact
               </Link>

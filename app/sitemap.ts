@@ -18,6 +18,7 @@ const routes: { path: string; priority: number; changeFrequency: MetadataRoute.S
   { path: "/contact", priority: 0.4, changeFrequency: "monthly" },
   { path: "/privacy", priority: 0.3, changeFrequency: "yearly" },
   { path: "/terms", priority: 0.3, changeFrequency: "yearly" },
+  { path: "/refund", priority: 0.3, changeFrequency: "yearly" },
   // /login and /admin/* intentionally excluded — not content pages, nothing to index.
 ];
 
