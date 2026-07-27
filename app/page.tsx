@@ -2,6 +2,7 @@ import Link from "next/link";
 import HomeInteractive from "@/app/components/HomeInteractive";
 import HeroGallery from "@/app/components/HeroGallery";
 import CompareSlider from "@/app/components/CompareSlider";
+import HeadshotShowcase from "@/app/components/HeadshotShowcase";
 import BrushDivider from "@/app/components/BrushDivider";
 import { SITE_NAME, SITE_URL } from "@/app/lib/site";
 
@@ -79,6 +80,8 @@ export default function Home() {
 
           <HeroGallery />
         </div>
+
+        <HeadshotShowcase />
 
         {SHOW_ART_STYLE_TOOL && <HomeInteractive />}
 

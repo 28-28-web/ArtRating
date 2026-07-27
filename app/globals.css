@@ -527,3 +527,140 @@ body {
     animation: none;
   }
 }
+
+/* Headshot showcase — marquee rows. Each track renders its photo list
+   twice back-to-back and animates translateX by exactly -50%, so the loop
+   seam is invisible (the second copy lines up exactly where the first
+   started). Direction alternates per row via a separate keyframe rather
+   than animation-direction: reverse, since reverse would also flip the
+   easing and we want both directions to feel identical. */
+.headshot-marquee-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.headshot-marquee-label {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-fraunces);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+.headshot-marquee-label::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--label-color, var(--cobalt));
+}
+.headshot-marquee-mask {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+.headshot-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 0.75rem;
+  animation-duration: var(--marquee-duration, 28s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.headshot-marquee-left {
+  animation-name: marquee-left;
+}
+.headshot-marquee-right {
+  animation-name: marquee-right;
+}
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+.headshot-marquee-card {
+  position: relative;
+  flex: 0 0 auto;
+  width: clamp(96px, 28vw, 140px);
+  height: clamp(120px, 35vw, 176px);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 2px solid var(--border-soft);
+}
+.headshot-marquee-card img {
+  object-fit: cover;
+}
+@media (prefers-reduced-motion: reduce) {
+  .headshot-marquee-track {
+    animation: none;
+  }
+}
+
+/* Headshot showcase — grid reveal. Each card runs its own copy of the
+   same 5s loop, offset by animation-delay, so cards visibly light up one
+   after another and the whole grid "resets" every 5s (0%/100% share the
+   hidden state so the loop has no jump-cut). */
+.headshot-grid-card {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 2px solid var(--border-soft);
+  animation: grid-reveal 5s ease-in-out infinite both;
+}
+.headshot-grid-card img {
+  object-fit: cover;
+}
+.headshot-grid-name {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #fff;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
+}
+.headshot-grid-badge {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--badge-color, var(--cobalt));
+}
+@keyframes grid-reveal {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  15%,
+  85% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .headshot-grid-card {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
