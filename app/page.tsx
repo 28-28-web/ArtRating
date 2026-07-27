@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import HomeInteractive from "@/app/components/HomeInteractive";
-import HeroGallery from "@/app/components/HeroGallery";
+import HeroSection from "@/app/components/HeroSection";
 import HeadshotShowcase from "@/app/components/HeadshotShowcase";
 import BrushDivider from "@/app/components/BrushDivider";
 import { SITE_NAME, SITE_URL } from "@/app/lib/site";
@@ -17,16 +17,6 @@ export const metadata: Metadata = {
 // per site owner request, same flag/reasoning as SiteNav.tsx's TOOLS list.
 // Component/code untouched, just not mounted.
 const SHOW_ART_STYLE_TOOL = false;
-
-// Positions/sizes/delays are hand-varied so the four dabs don't float in
-// sync — purely decorative, hidden on mobile and paused under
-// prefers-reduced-motion (see .paint-dab-bg in globals.css).
-const HERO_DABS = [
-  { color: "var(--cobalt)", top: "8%", left: "6%", size: 120, delay: "0s" },
-  { color: "var(--jade)", top: "55%", left: "88%", size: 90, delay: "1.5s" },
-  { color: "var(--saffron)", top: "82%", left: "18%", size: 100, delay: "3s" },
-  { color: "var(--magenta)", top: "4%", left: "72%", size: 80, delay: "4.5s" },
-];
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -120,62 +110,10 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd).replace(/</g, "\\u003c") }}
       />
+      <HeroSection freeGenerationCap={FREE_GENERATION_CAP} />
+
       <main className="flex w-full max-w-5xl flex-1 flex-col items-center gap-16 px-6 py-16">
-        <div className="hero-decorative flex w-full flex-col items-center gap-16">
-          {HERO_DABS.map((dab, i) => (
-            <span
-              key={i}
-              className="paint-dab-bg"
-              aria-hidden="true"
-              style={{
-                background: dab.color,
-                top: dab.top,
-                left: dab.left,
-                width: dab.size,
-                height: dab.size,
-                animationDelay: dab.delay,
-              }}
-            />
-          ))}
-
-          <section className="flex flex-col items-center gap-4 text-center">
-            <h1 className="headline-in max-w-2xl font-display text-4xl font-semibold leading-tight tracking-tight text-ink sm:text-5xl">
-              Turn Any Photo Into a Professional Headshot
-            </h1>
-            <BrushDivider />
-            <p className="max-w-xl text-lg text-ink-soft">
-              Upload your photo and get a professional AI headshot in seconds. Perfect for{" "}
-              <Link href="/guides/linkedin-premium-review" className="underline hover:text-accent-text">
-                LinkedIn
-              </Link>
-              , resumes, and portfolios.
-            </p>
-          </section>
-
-          <section className="flex w-full flex-col items-center gap-6 text-center">
-            <h2 className="font-display text-2xl font-semibold text-ink sm:text-3xl">
-              How HeadshotMaker AI Works
-            </h2>
-            <div className="grid w-full gap-4 sm:grid-cols-3">
-              {[
-                { step: "1", title: "Upload your photo", body: "Any clear photo of your face works." },
-                { step: "2", title: "Choose your style", body: "Corporate, Creative, or Executive." },
-                { step: "3", title: "Download in seconds", body: "Get your full-resolution headshot." },
-              ].map((item) => (
-                <div key={item.step} className="rounded-xl border border-border-soft p-4">
-                  <p className="font-display text-lg font-semibold text-ink">
-                    {item.step}. {item.title}
-                  </p>
-                  <p className="mt-1 text-sm text-ink-soft">{item.body}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <HeroGallery />
-        </div>
-
-        <section className="flex w-full flex-col items-center gap-10">
+        <section id="examples" className="flex w-full flex-col items-center gap-10">
           <h2 className="font-display text-2xl font-semibold text-ink sm:text-3xl">
             AI Headshot Styles
           </h2>
