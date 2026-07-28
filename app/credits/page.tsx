@@ -11,8 +11,14 @@ export const metadata: Metadata = {
   alternates: { canonical: "/credits" },
 };
 
-export default async function CreditsPage() {
+export default async function CreditsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string>>;
+}) {
   const session = await auth();
+  const params = await searchParams;
+  const showSuccess = params.success === "true";
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-6 py-16">
@@ -37,7 +43,12 @@ export default async function CreditsPage() {
           to buy credits.
         </p>
       ) : (
-        <CreditsForm packs={CREDIT_PACKS} userId={session.user.id} userEmail={session.user.email ?? ""} />
+        <CreditsForm
+          packs={CREDIT_PACKS}
+          userId={session.user.id ?? ""}
+          userEmail={session.user.email ?? ""}
+          showSuccess={showSuccess}
+        />
       )}
     </main>
   );
