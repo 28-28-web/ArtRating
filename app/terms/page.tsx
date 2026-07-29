@@ -58,6 +58,26 @@ export default function TermsPage() {
       </section>
 
       <section className="flex flex-col gap-3">
+        <h2 className="font-display text-xl font-semibold text-ink">Coloring pages you generate</h2>
+        <p className="text-ink">
+          Coloring pages you download after paying with a credit are yours to use for personal or
+          commercial purposes, including printing and selling physical or digital coloring books —
+          for example through Amazon KDP or another print-on-demand service.
+        </p>
+        <p className="text-ink">
+          Your first 3 free, watermarked generations are for personal use only (previewing the
+          tool, printing at home, classroom use). Commercial use, including anything you plan to
+          sell, requires the paid, watermark-free download.
+        </p>
+        <p className="text-ink">
+          You may not resell, redistribute, or rebrand the coloring page generator itself. If a
+          platform you publish to (such as Amazon KDP) requires you to disclose that content is
+          AI-generated, you&apos;re responsible for making that disclosure — we don&apos;t
+          represent coloring page output as wholly human-authored.
+        </p>
+      </section>
+
+      <section className="flex flex-col gap-3">
         <h2 className="font-display text-xl font-semibold text-ink">Credits and payments</h2>
         <p className="text-ink">
           Generating a preview is free and doesn&apos;t require an account, up to the generation

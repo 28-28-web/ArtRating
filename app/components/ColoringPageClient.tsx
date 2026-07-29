@@ -250,7 +250,7 @@ export default function ColoringPageClient() {
           {image && (
             <div className="flex flex-col items-center gap-3 border-t border-border-soft pt-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={image} alt="AI-generated coloring page (watermarked)" className="max-h-96 w-full rounded-lg border border-border-soft object-contain bg-white" />
+              <img src={image} alt="AI coloring page generated from your prompt (watermarked preview)" className="max-h-96 w-full rounded-lg border border-border-soft object-contain bg-white" />
               <div className="flex flex-wrap justify-center gap-2">
                 <button
                   onClick={downloadFree}
@@ -276,6 +276,7 @@ export default function ColoringPageClient() {
                 setPrompt(ex.prompt);
                 setStyle(ex.style);
               }}
+              aria-label={`${ex.label} coloring page example — click to try this prompt`}
               className="flex flex-col items-center gap-2 rounded-xl p-2 text-center hover:opacity-80"
             >
               <div className="aspect-square w-full max-w-32">{ex.icon}</div>
