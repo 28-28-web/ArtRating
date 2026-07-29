@@ -9,6 +9,7 @@ import { SITE_URL } from "@/app/lib/site";
 const routes: { path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
   { path: "", priority: 1.0, changeFrequency: "weekly" },
   { path: "/professional-headshot-generator", priority: 0.9, changeFrequency: "weekly" },
+  { path: "/coloring-page-generator", priority: 0.9, changeFrequency: "weekly" },
   { path: "/linkedin-headshot", priority: 0.8, changeFrequency: "monthly" },
   { path: "/author-headshot", priority: 0.8, changeFrequency: "monthly" },
   { path: "/credits", priority: 0.8, changeFrequency: "monthly" },

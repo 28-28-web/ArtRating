@@ -44,6 +44,9 @@ export default function SiteNav() {
           <Link href="/professional-headshot-generator" className="text-sm text-ink-soft hover:text-ink">
             Headshot Generator
           </Link>
+          <Link href="/coloring-page-generator" className="text-sm text-ink-soft hover:text-ink">
+            Coloring Pages
+          </Link>
           {VISIBLE_TOOLS.length > 0 && <NavDropdown label="Tools" items={VISIBLE_TOOLS} />}
           <NavDropdown label="Guides" items={GUIDES} />
           <Link href="/credits" className="text-sm text-ink-soft hover:text-ink">
@@ -81,6 +84,15 @@ export default function SiteNav() {
           >
             <PaintDab color="var(--teal-muted)" size={10} />
             Headshot Generator
+          </Link>
+
+          <Link
+            href="/coloring-page-generator"
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm text-ink hover:bg-[var(--border-soft)]/40"
+          >
+            <PaintDab color="var(--saffron)" size={10} />
+            Coloring Pages
           </Link>
 
           {VISIBLE_TOOLS.length > 0 && (
