@@ -47,6 +47,11 @@ export default async function CreditsPage({
           handled securely by Paddle — credits are added automatically once your payment goes
           through.
         </p>
+        <p className="text-sm text-ink-soft">
+          <Link href="/professional-headshot-generator" className="underline hover:text-accent-text">
+            ← Back to the headshot generator
+          </Link>
+        </p>
       </div>
 
       {!session?.user ? (

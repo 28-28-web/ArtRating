@@ -115,7 +115,18 @@ export default function RootLayout({
               Turn any photo into a professional AI headshot — upload, generate, download.
             </p>
             <BrushDivider className="my-1" />
-            <nav className="flex gap-4">
+            <nav className="flex flex-wrap justify-center gap-4">
+              <Link href="/professional-headshot-generator" className="hover:text-accent-text">
+                Headshot Generator
+              </Link>
+              <Link href="/linkedin-headshot" className="hover:text-accent-text">
+                LinkedIn Headshot
+              </Link>
+              <Link href="/author-headshot" className="hover:text-accent-text">
+                Author Headshot
+              </Link>
+            </nav>
+            <nav className="flex flex-wrap justify-center gap-4">
               <Link href="/privacy" className="hover:text-accent-text">
                 Privacy
               </Link>

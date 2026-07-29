@@ -23,7 +23,7 @@ export default function CreditsForm({
   function handleBuy(pack: Pack) {
     const plan = PLAN_FOR_PACK[pack.id];
     if (!plan) return;
-    window.location.href = `https://bookkraftai.com/credits?plan=${plan}&user=${encodeURIComponent(userEmail)}`;
+    window.location.assign(`https://bookkraftai.com/credits?plan=${plan}&user=${encodeURIComponent(userEmail)}`);
   }
 
   return (

@@ -9,10 +9,11 @@ export default function NavAuthStatus() {
   const [balance, setBalance] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!session?.user) {
-      setBalance(null);
-      return;
-    }
+    // No setBalance(null) for the logged-out case — that branch never
+    // renders the balance pill anyway (see the `session?.user` check
+    // below), so there's nothing to reset. Avoids a synchronous setState
+    // in the effect body for a case that has no visible effect.
+    if (!session?.user) return;
     fetch("/api/user/balance")
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {

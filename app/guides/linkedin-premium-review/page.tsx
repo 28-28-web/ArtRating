@@ -163,10 +163,10 @@ export default function LinkedInPremiumReviewPage() {
         <div className="rounded-2xl border border-border-soft p-6 text-center">
           <p className="text-ink">Try our free AI headshot generator — no signup needed.</p>
           <Link
-            href="/professional-headshot-generator"
+            href="/linkedin-headshot"
             className="mt-3 inline-block rounded-full bg-ink px-5 py-2 text-sm font-medium text-canvas hover:opacity-90"
           >
-            Generate my headshot →
+            Generate my LinkedIn headshot →
           </Link>
         </div>
       </section>

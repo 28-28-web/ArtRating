@@ -39,9 +39,9 @@ export default function HeroSection({ freeGenerationCap }: { freeGenerationCap: 
         <div className="hero-main-left">
           <span className="hero-badge">AI-powered headshots</span>
           <h1 className="hero-main-h1">
-            Your photo.
+            AI Headshot Generator.
             <br />
-            <span className="hero-main-h1-accent">Professional results.</span>
+            <span className="hero-main-h1-accent">Professional results in seconds.</span>
           </h1>
           <p className="hero-main-sub">
             Upload any selfie — get a LinkedIn-ready headshot in 30 seconds. No photographer, no
@@ -84,7 +84,7 @@ export default function HeroSection({ freeGenerationCap }: { freeGenerationCap: 
             <Image
               key={active.id}
               src={active.src}
-              alt={`${active.label}-style AI headshot example`}
+              alt={`${active.label}-style AI headshot generator example — professional results from selfie`}
               fill
               sizes="(max-width: 767px) 90vw, 300px"
               className="hero-style-frame-img"

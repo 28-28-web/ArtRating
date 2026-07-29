@@ -9,6 +9,9 @@ import { FREE_GENERATION_CAP } from "@/app/lib/generationGate";
 import { CREDIT_PACKS } from "@/app/lib/creditPacks";
 
 export const metadata: Metadata = {
+  title: "HeadshotMaker AI — Free AI Headshot Generator | Professional Results in 30s",
+  description:
+    "Generate studio-quality professional headshots from any selfie using AI. Perfect for LinkedIn, Amazon author pages, and resumes. Free to try — no signup needed.",
   alternates: { canonical: "/" },
 };
 
@@ -36,10 +39,22 @@ const jsonLd = {
   ],
 };
 
+const cheapestPack = CREDIT_PACKS[0];
+
 // No aggregateRating field here — the site has no real review/rating system
 // behind it yet, and Google's structured-data guidelines treat a fabricated
 // rating as a policy violation (can trigger a manual action on rich
 // results). Add it once genuine ratings exist to back it up.
+//
+// applicationCategory stays "PhotoApplication" — schema.org's actual
+// enumerated ApplicationCategory values don't include "PhotoEditingApplication";
+// using a non-existent category risks the whole block being ignored rather
+// than helping.
+//
+// offers is an array (schema.org allows multiple Offer entries) so it can
+// honestly represent both real price points: generating a preview is
+// genuinely free, and $5 is the real starting price for a credit pack
+// (download/watermark removal), not the cost to use the app itself.
 const softwareAppJsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -48,15 +63,21 @@ const softwareAppJsonLd = {
   operatingSystem: "Web",
   url: SITE_URL,
   description: "AI-powered professional headshot generator for LinkedIn, resumes, and portfolios.",
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "USD",
-    description: "Free to try, no signup needed",
-  },
+  offers: [
+    {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      description: "Free to try, no signup needed",
+    },
+    {
+      "@type": "Offer",
+      price: cheapestPack.priceLabel.replace(/[^0-9.]/g, ""),
+      priceCurrency: "USD",
+      description: `Starter pack — ${cheapestPack.credits} credits for watermark-free downloads`,
+    },
+  ],
 };
-
-const cheapestPack = CREDIT_PACKS[0];
 
 // Kept in sync with the visible FAQ section below — numbers pulled from the
 // real gating logic (generationGate.ts) and pricing (creditPacks.ts) rather
@@ -118,6 +139,36 @@ export default function Home() {
             AI Headshot Styles
           </h2>
           <HeadshotShowcase />
+        </section>
+
+        <section className="flex w-full flex-col gap-4">
+          <div>
+            <h2 className="font-display text-xl font-semibold text-ink">More AI Headshot Tools</h2>
+            <BrushDivider className="mt-1" />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Link
+              href="/professional-headshot-generator"
+              className="rounded-xl border border-border-soft p-4 hover:border-accent"
+            >
+              <p className="font-medium text-ink">AI Headshot Generator</p>
+              <p className="mt-1 text-sm text-ink-soft">The main tool — upload, choose a style, download.</p>
+            </Link>
+            <Link
+              href="/linkedin-headshot"
+              className="rounded-xl border border-border-soft p-4 hover:border-accent"
+            >
+              <p className="font-medium text-ink">LinkedIn Headshot Generator</p>
+              <p className="mt-1 text-sm text-ink-soft">Built for LinkedIn profile photos specifically.</p>
+            </Link>
+            <Link
+              href="/author-headshot"
+              className="rounded-xl border border-border-soft p-4 hover:border-accent"
+            >
+              <p className="font-medium text-ink">Author Headshot Generator</p>
+              <p className="mt-1 text-sm text-ink-soft">For book covers and Amazon author pages.</p>
+            </Link>
+          </div>
         </section>
 
         <section className="flex w-full flex-col gap-4">
