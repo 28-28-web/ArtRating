@@ -193,23 +193,16 @@ export default function Home() {
             <h2 className="font-display text-xl font-semibold text-ink">Guides &amp; Comparisons</h2>
             <BrushDivider className="mt-1" />
           </div>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             <Link
-              href="/best-photo-to-painting-ai-tools-2026"
-              className="rounded-xl border border-border-soft p-4 hover:border-accent"
-            >
-              <p className="font-medium text-ink">Best AI headshot generators 2026</p>
-              <p className="mt-1 text-sm text-ink-soft">Our top picks, ranked and compared.</p>
-            </Link>
-            <Link
-              href="/deep-art-effects-vs-photoai"
+              href="/linkedin-headshot"
               className="rounded-xl border border-border-soft p-4 hover:border-accent"
             >
               <p className="font-medium text-ink">LinkedIn headshot tips</p>
               <p className="mt-1 text-sm text-ink-soft">What makes a profile photo get more views.</p>
             </Link>
             <Link
-              href="/van-gogh-style-ai-filter-top-tools"
+              href="/guides/ai-headshot-vs-photographer"
               className="rounded-xl border border-border-soft p-4 hover:border-accent"
             >
               <p className="font-medium text-ink">AI headshot vs photographer</p>

@@ -91,11 +91,11 @@ export default function HeadshotShowcase() {
       </div>
 
       <div className="flex flex-col items-center gap-1 text-center">
-        <h3 className="font-display text-xl font-semibold text-ink">Sample results from our AI</h3>
+        <h3 className="font-display text-xl font-semibold text-ink">Example styles</h3>
         <BrushDivider className="mt-1" />
         <p className="max-w-sm text-xs text-ink-soft">
-          Stock preview photos shown for style and layout only — not actual HeadshotMaker
-          AI-generated output.{" "}
+          Stock photos shown to illustrate each style and layout — not actual HeadshotMaker AI
+          output.{" "}
           <Link href="/professional-headshot-generator" className="underline hover:text-accent-text">
             Try the real generator →
           </Link>
