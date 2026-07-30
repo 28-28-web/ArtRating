@@ -132,6 +132,16 @@ export default function RootLayout({
                 Author Headshot
               </Link>
             </nav>
+            <p className="text-xs text-ink-soft">
+              HeadshotMaker AI is a product of{" "}
+              <a href="https://thefclbd.com" target="_blank" rel="noopener noreferrer" className="hover:text-accent-text">
+                Fateh Consortium Ltd (FCLBD)
+              </a>
+              , Bangladesh.
+            </p>
+            <p className="text-xs text-ink-soft">
+              🔒 Secure payments by Paddle &bull; 📧 hello@artrating.art &bull; 🏢 Fateh Consortium Ltd, Bangladesh
+            </p>
             <nav className="flex flex-wrap justify-center gap-4">
               <Link href="/privacy" className="hover:text-accent-text">
                 Privacy

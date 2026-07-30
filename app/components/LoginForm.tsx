@@ -76,6 +76,17 @@ export default function LoginForm() {
       <button onClick={toggleMode} className="text-xs text-ink-soft underline hover:text-accent-text">
         {formMode === "login" ? "New here? Create account" : "Already have an account? Log in"}
       </button>
+      <p className="text-center text-xs text-ink-soft">
+        By continuing, you agree to our{" "}
+        <a href="/terms" className="underline hover:text-accent-text">Terms of Service</a>{" "}
+        and{" "}
+        <a href="/privacy" className="underline hover:text-accent-text">Privacy Policy</a>.{" "}
+        HeadshotMaker AI is operated by{" "}
+        <a href="https://thefclbd.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-accent-text">
+          Fateh Consortium Ltd
+        </a>
+        , Bangladesh.
+      </p>
     </>
   );
 }

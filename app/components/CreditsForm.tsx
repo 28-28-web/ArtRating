@@ -61,7 +61,11 @@ export default function CreditsForm({
       </div>
 
       <p className="text-center text-xs text-ink-soft">
-        Payments processed securely by Paddle.
+        Payments processed securely by Paddle on behalf of{" "}
+        <a href="https://thefclbd.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-accent-text">
+          Fateh Consortium Ltd (FCLBD)
+        </a>
+        , Bangladesh. Your card details are never stored on our servers.
       </p>
     </div>
   );
