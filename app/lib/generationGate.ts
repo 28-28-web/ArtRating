@@ -49,14 +49,15 @@ export async function checkGenerationEligibility(params: {
   pool?: GatePool;
 }): Promise<GateResult> {
   const { anonId, userId, pool } = params;
+
+  // Logged-in users bypass the free-generation cap entirely, regardless of
+  // credit balance — generation is free for everyone with an account;
+  // payment only happens at download (see download/[generationId]/route.ts,
+  // untouched by this). The 2-free-generation cap exists to get anonymous
+  // visitors to sign up, not to ration logged-in usage.
+  if (userId) return { allowed: true };
+
   const cap = pool?.cap ?? FREE_GENERATION_CAP;
-
-  if (userId) {
-    const where = pool ? { userId, toolId: { in: pool.toolIds } } : { userId };
-    const count = await prisma.generation.count({ where });
-    return { allowed: count < cap };
-  }
-
   if (!anonId) return { allowed: true }; // first-ever visit, no cookie yet
   const anon = await prisma.anonymousUsage.findUnique({ where: { id: anonUsageKey(anonId, pool) } });
   if (!anon || anon.count < cap) return { allowed: true };
@@ -113,23 +114,27 @@ export async function getGenerationUsage(params: {
   anonId: string | null;
   userId: string | null;
   pool?: GatePool;
-}): Promise<{ used: number; cap: number }> {
+}): Promise<{ used: number; cap: number; unlimited?: boolean }> {
   const { anonId, userId, pool } = params;
   const cap = pool?.cap ?? FREE_GENERATION_CAP;
 
-  // Raw counts can legitimately exceed the cap — the stored tally is never
-  // itself capped (checkGenerationEligibility just compares count < cap,
-  // which works correctly at any magnitude), and FREE_GENERATION_CAP has
-  // already been lowered once this project (6 -> 2). A session that
-  // generated under an old, higher cap keeps its old count in the DB
-  // forever. Clamp for display only — the raw count stays intact for
-  // anyone who wants the real historical number.
+  // Logged-in users aren't capped (see checkGenerationEligibility) — `used`
+  // here is informational only (their real historical count), never
+  // compared against `cap`. `unlimited: true` is the signal callers should
+  // key UI off of, not "used >= cap".
   if (userId) {
     const where = pool ? { userId, toolId: { in: pool.toolIds } } : { userId };
     const used = await prisma.generation.count({ where });
-    return { used: Math.min(used, cap), cap };
+    return { used, cap, unlimited: true };
   }
 
+  // Raw anon counts can legitimately exceed the cap — the stored tally is
+  // never itself capped (checkGenerationEligibility just compares
+  // count < cap, which works correctly at any magnitude), and
+  // FREE_GENERATION_CAP has already been lowered once this project (6 -> 2).
+  // A session that generated under an old, higher cap keeps its old count in
+  // the DB forever. Clamp for display only — the raw count stays intact for
+  // anyone who wants the real historical number.
   if (!anonId) return { used: 0, cap };
   const anon = await prisma.anonymousUsage.findUnique({ where: { id: anonUsageKey(anonId, pool) } });
   return { used: Math.min(anon?.count ?? 0, cap), cap };

@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 // generation-status/route.ts's POOLS map (e.g. "coloring") for tools with
 // their own independent free-generation pool; omit for the default pool.
 export default function GenerationCounter({ refreshSignal, pool }: { refreshSignal?: number; pool?: string }) {
-  const [status, setStatus] = useState<{ used: number; cap: number } | null>(null);
+  const [status, setStatus] = useState<{ used: number; cap: number; unlimited?: boolean } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -24,7 +24,8 @@ export default function GenerationCounter({ refreshSignal, pool }: { refreshSign
     };
   }, [refreshSignal, pool]);
 
-  if (!status) return null;
+  // Logged-in users aren't capped — no "X of Y free" line to show them.
+  if (!status || status.unlimited) return null;
 
   return (
     <p className="text-xs text-ink-soft">
