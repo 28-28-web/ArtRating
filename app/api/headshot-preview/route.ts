@@ -12,17 +12,20 @@ const DEBUG_GENERATION = process.env.DEBUG_GENERATION === "true";
 // 0.35 was too conservative — at that strength SD 1.5 img2img barely touched
 // attire/background (large image regions get preserved heavily at low
 // strength), so "Corporate style" looked almost identical to the source
-// photo. Raised to 0.55 and the prompt now explicitly says "replace" instead
-// of just describing the target look, since softer phrasing wasn't enough to
-// override the source image at moderate strength either. Raised again to
-// 0.65 per site owner request — this pushes further in the direction away
-// from the original bug (more transformation, not less), but per the same
-// logic that flagged 0.55 as a possible identity-drift risk, 0.65 raises
-// that risk further still. Worth watching in practice; if faces stop being
-// recognizable, dial back toward 0.55 rather than lower.
-const HEADSHOT_STRENGTH = 0.65;
+// photo. Raised to 0.55, then to 0.65 per site owner request for stronger
+// stylization — but 0.65 crossed into identity-loss territory: reported
+// case of a male user's selfie producing a completely different woman.
+// SD 1.5 has no face-lock/identity-preservation mechanism (no IP-Adapter,
+// no InstantID, no ControlNet), so above ~0.5-0.55 the output is dominated
+// by prompt+model priors rather than the input photo. Dialed back to 0.45
+// — biases back toward identity preservation over stylization strength.
+// If style transformation feels too weak at 0.45, raise cautiously and
+// re-test identity retention each time, don't jump straight back to 0.65.
+const HEADSHOT_STRENGTH = 0.45;
 const HEADSHOT_STEPS = 20;
-const HEADSHOT_NEGATIVE_PROMPT = "blur, distortion, cartoon, anime, low quality, watermark, text";
+const HEADSHOT_IDENTITY_CLAUSE = "same person, preserve the subject's facial features, identity, and gender";
+const HEADSHOT_NEGATIVE_PROMPT =
+  "blur, distortion, cartoon, anime, low quality, watermark, text, different person, different face, face swap, wrong gender, altered identity";
 
 // Keys match TabbedUploadSection's tab ids exactly (see
 // HEADSHOT_MODE.styleTabs in previewModes.ts) — direct lookup, not the old
@@ -41,7 +44,8 @@ const HEADSHOT_STYLE_PROMPTS: Record<string, string> = {
 
 function promptForHeadshotStyle(style: string) {
   const key = style.trim().toLowerCase();
-  return HEADSHOT_STYLE_PROMPTS[key] ?? HEADSHOT_STYLE_PROMPTS.corporate;
+  const stylePrompt = HEADSHOT_STYLE_PROMPTS[key] ?? HEADSHOT_STYLE_PROMPTS.corporate;
+  return `${stylePrompt}, ${HEADSHOT_IDENTITY_CLAUSE}`;
 }
 
 function unavailable() {
