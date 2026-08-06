@@ -18,9 +18,20 @@ const nextConfig: NextConfig = {
   // redirect — that tool lives on the homepage itself, not a separate page.
   async redirects() {
     return [
-      { source: "/pet-to-human", destination: "/", permanent: true },
-      { source: "/toy-ification", destination: "/", permanent: true },
-      { source: "/photo-mix", destination: "/", permanent: true },
+      // Catch-all for old tool URLs — 308 so backlinks/bookmarks land on homepage
+      // rather than 404. /coloring-page-generator, /pet-to-human, etc. all redirect
+      // here. :path* prevents redirecting *headshot* routes that start with these prefixes.
+      { source: "/pet-to-human/:path*", destination: "/", permanent: true },
+      { source: "/toy-ification/:path*", destination: "/", permanent: true },
+      { source: "/photo-mix/:path*", destination: "/", permanent: true },
+      { source: "/coloring-page-generator/:path*", destination: "/", permanent: true },
+      { source: "/coloring-page-generator", destination: "/", permanent: true },
+      { source: "/free-ai-coloring-page-generator/:path*", destination: "/", permanent: true },
+      { source: "/free-ai-coloring-page-generator", destination: "/", permanent: true },
+      { source: "/photo-to-coloring-page/:path*", destination: "/", permanent: true },
+      { source: "/photo-to-coloring-page", destination: "/", permanent: true },
+      { source: "/ai-coloring-book-generator/:path*", destination: "/", permanent: true },
+      { source: "/ai-coloring-book-generator", destination: "/", permanent: true },
     ];
   },
 };

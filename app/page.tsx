@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import HomeInteractive from "@/app/components/HomeInteractive";
 import HeroSection from "@/app/components/HeroSection";
 import HeadshotShowcase from "@/app/components/HeadshotShowcase";
 import BrushDivider from "@/app/components/BrushDivider";
@@ -15,11 +14,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-// The Art Style tool lives directly on the homepage (no separate route),
-// so "hiding" it means not rendering this section — temporarily disabled
-// per site owner request, same flag/reasoning as SiteNav.tsx's TOOLS list.
-// Component/code untouched, just not mounted.
-const SHOW_ART_STYLE_TOOL = false;
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -185,8 +179,6 @@ export default function Home() {
             ))}
           </div>
         </section>
-
-        {SHOW_ART_STYLE_TOOL && <HomeInteractive />}
 
         <section className="flex w-full flex-col gap-4">
           <div>

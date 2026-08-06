@@ -6,9 +6,16 @@ import { useAuthForm, signInWithGoogle } from "@/app/lib/useAuthForm";
 
 export default function GenerationGateNotice({
   kind,
+  message,
   onAuthenticated,
 }: {
   kind: "needs-login" | "needs-payment";
+  // Overrides the default "You need a credit to download this" copy — used
+  // when this component is reused for a different needs-payment-shaped
+  // state (e.g. headshot's daily generation cap) where that default text
+  // would be inaccurate. When provided, the download-specific "Remove
+  // watermark — from $5" subline is also skipped, since it doesn't apply.
+  message?: string;
   onAuthenticated?: () => void;
 }) {
   const { formMode, email, setEmail, password, setPassword, error, submitting, handleSubmit, toggleMode } =
@@ -19,9 +26,9 @@ export default function GenerationGateNotice({
       <div className="gate-notice flex flex-col items-center gap-2 p-4 text-center">
         <PaintDab size={14} />
         <p className="font-display text-sm font-semibold text-ink">
-          You need a credit to download this.
+          {message ?? "You need a credit to download this."}
         </p>
-        <p className="text-sm text-ink-soft">Remove watermark — from $5.</p>
+        {!message && <p className="text-sm text-ink-soft">Remove watermark — from $5.</p>}
         <Link
           href="/credits"
           className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas hover:opacity-90"

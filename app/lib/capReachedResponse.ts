@@ -1,16 +1,14 @@
 import { NextResponse } from "next/server";
 import { FREE_GENERATION_CAP } from "@/app/lib/generationGate";
 
-// Generation itself is never login-gated anymore — this is the only
-// response the cap check produces, and it's a 429 (rate/quota limit), not
-// 401/402, since no login or payment unlocks more generations at this step.
-export function capReachedResponse(userId: string | null, cap: number = FREE_GENERATION_CAP) {
+export function capReachedResponse(_userId: string | null, _cap: number = FREE_GENERATION_CAP) {
   return NextResponse.json(
     {
       error: "cap-reached",
-      message: userId
-        ? `You've used all ${cap} free generations on this account.`
-        : `You've used all ${cap} free generations. Log in for ${cap} more, free.`,
+      // Shown inline in the upload box — instructs anon visitors to sign in.
+      // Logged-in users never hit this path (checkGenerationEligibility lets
+      // them through unconditionally), so the copy only needs to address anon.
+      message: `You've used all ${FREE_GENERATION_CAP} free previews — sign in to continue generating.`,
     },
     { status: 429 }
   );

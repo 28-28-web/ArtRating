@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
-const THEME_CHANGE_EVENT = "paintify-theme-change";
+const THEME_CHANGE_EVENT = "headshotmaker-theme-change";
 
 function subscribe(callback: () => void) {
   window.addEventListener(THEME_CHANGE_EVENT, callback);

@@ -1,0 +1,37 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2E56E0"/>
+      <stop offset="0.55" stop-color="#1E3AA8"/>
+      <stop offset="1" stop-color="#121F52"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.32" cy="0.26" r="0.85">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="fig" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E7EDFB"/>
+    </linearGradient>
+    <clipPath id="squircle">
+      <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#squircle)">
+    <rect x="0" y="0" width="512" height="512" fill="url(#bg)"/>
+    <rect x="0" y="0" width="512" height="512" fill="url(#glow)"/>
+
+    <!-- head + shoulders silhouette, shoulders cropped by the frame like a real headshot -->
+    <g fill="url(#fig)">
+      <path d="M 108 512
+               C 108 388 176 336 256 336
+               C 336 336 404 388 404 512 Z"/>
+      <circle cx="256" cy="196" r="88"/>
+    </g>
+
+    <!-- subtle portrait frame -->
+    <rect x="34" y="34" width="444" height="444" rx="84" ry="84"
+          fill="none" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="8"/>
+  </g>
+</svg>

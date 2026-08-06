@@ -2,7 +2,7 @@ import sharp from "sharp";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-// Pre-rendered PNG tile instead of rendering "PAINTIFY" text at request time
+// Pre-rendered PNG tile instead of rendering the wordmark text at request time
 // via an SVG-to-raster composite. The SVG-text approach depended on
 // fontconfig + an installed font being present in the runtime container —
 // node:24-slim has neither, so sharp/librsvg silently drew zero glyphs

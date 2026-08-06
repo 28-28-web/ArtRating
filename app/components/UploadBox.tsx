@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { ART_STYLE_MODE, type PreviewMode } from "@/app/lib/previewModes";
 import GenerationCounter from "@/app/components/GenerationCounter";
 import DownloadButton from "@/app/components/DownloadButton";
+import GenerationGateNotice from "@/app/components/GenerationGateNotice";
 import PaintDab from "@/app/components/PaintDab";
 
 export default function UploadBox({
@@ -20,6 +21,7 @@ export default function UploadBox({
   const [generating, setGenerating] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [capMessage, setCapMessage] = useState<string | null>(null);
+  const [dailyCapMessage, setDailyCapMessage] = useState<string | null>(null);
   const [generationCount, setGenerationCount] = useState(0);
   const [showShareLinks, setShowShareLinks] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -49,8 +51,29 @@ export default function UploadBox({
       setGenerationId(null);
       setPreviewError(null);
       setCapMessage(null);
+      setDailyCapMessage(null);
     };
     reader.readAsDataURL(file);
+  }
+
+  function getFingerprint(): string {
+    try {
+      const parts = [
+        navigator.userAgent,
+        screen.width + "x" + screen.height,
+        Intl.DateTimeFormat().resolvedOptions().timeZone,
+        navigator.language,
+      ].join("|");
+      // djb2 hash — lightweight, no crypto needed, collision-resistant enough
+      let hash = 5381;
+      for (let i = 0; i < parts.length; i++) {
+        hash = ((hash << 5) + hash) ^ parts.charCodeAt(i);
+        hash = hash >>> 0; // keep unsigned 32-bit
+      }
+      return hash.toString(16);
+    } catch {
+      return "";
+    }
   }
 
   async function generatePreview() {
@@ -58,17 +81,30 @@ export default function UploadBox({
     setGenerating(true);
     setPreviewError(null);
     setCapMessage(null);
+    setDailyCapMessage(null);
     try {
       const res = await fetch(mode.apiEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ style: selectedStyle ?? mode.fallbackStyle, image: preview }),
+        body: JSON.stringify({
+          style: selectedStyle ?? mode.fallbackStyle,
+          image: preview,
+          fp: getFingerprint(),
+        }),
       });
 
       const data = await res.json();
 
       if (res.status === 429) {
         setCapMessage(data.message || "You've used all your free generations.");
+        return;
+      }
+      if (res.status === 402) {
+        setDailyCapMessage(data.message || "You've hit today's free-generation limit.");
+        return;
+      }
+      if (res.status === 503) {
+        setPreviewError(data.message || "Free previews are fully booked for today — try again tomorrow.");
         return;
       }
       if (!res.ok || data.error || !data.image) {
@@ -157,11 +193,17 @@ export default function UploadBox({
             {previewError && <p className="text-sm text-danger">{previewError}</p>}
 
             {capMessage && (
-              <div className="gate-notice flex flex-col items-center gap-2 p-4 text-center">
-                <PaintDab size={14} />
-                <p className="font-display text-sm font-semibold text-ink">{capMessage}</p>
-              </div>
+              <GenerationGateNotice
+                kind="needs-login"
+                message={capMessage}
+                onAuthenticated={() => {
+                  setCapMessage(null);
+                  generatePreview();
+                }}
+              />
             )}
+
+            {dailyCapMessage && <GenerationGateNotice kind="needs-payment" message={dailyCapMessage} />}
 
             {aiPreview && (
               <div className="flex flex-col items-center gap-2 border-t border-border-soft pt-4">

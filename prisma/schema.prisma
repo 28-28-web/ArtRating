@@ -99,26 +99,49 @@ model ContactMessage {
   @@index([resolved])
 }
 
-// Separate, much stricter cap for photo-mix only — flux-2-dev costs
-// roughly 8,000-9,000 Neurons per call vs ~43 for the schnell-based tools,
-// so 1-2 photo-mix generations can exhaust the whole account's 10,000/day
-// free Neuron pool (shared across all 5 tools). Deliberately not part of
-// AnonymousUsage/the shared 6-cap system — this is an independent, stricter
-// limit that exists only because of this one tool's cost, not a subset of
-// the shared quota.
-model PhotoMixDailyUsage {
-  id          String @id @default(cuid())
-  identityKey String // anonId or userId, whichever applies
-  // Plain "YYYY-MM-DD" (UTC) text, not a DateTime/@db.Date column — this was
-  // a DateTime originally; switched after the 2nd-generation-not-blocked
-  // investigation didn't turn up a confirmed code bug (see the commit that
-  // made this change for what was checked and ruled out) but a Date object
-  // round-tripping through JS -> Prisma -> Postgres DATE -> JS is one more
-  // layer than this needs. A literal date string removes that layer
-  // entirely — pure string equality, nothing to serialize or misinterpret,
-  // and it's human-readable directly in the database or logs.
-  usageDate String
+// Daily free-generation cap for logged-in headshot users only — headshot
+// moved to flux-2-dev (see cloudflareHeadshotFlux.ts), which costs real
+// Neurons per call, unlike the $0/step SD1.5 model it replaces. "Unlimited for
+// logged-in" (the generic generationGate.ts behavior) is unsafe for this one
+// tool, so it gets its own additional daily cap, same pattern as
+// PhotoMixDailyUsage below. Anonymous headshot generation is untouched —
+// still governed solely by the shared 2-total AnonymousUsage cap.
+model HeadshotDailyUsage {
+  userId    String
+  usageDate String // "YYYY-MM-DD" UTC — matches Cloudflare's 00:00 UTC Neuron reset
   count     Int    @default(0)
 
-  @@unique([identityKey, usageDate])
+  @@id([userId, usageDate])
+}
+
+// IP + fingerprint based free-generation tracking — layered on top of the
+// cookie-based AnonymousUsage cap so browser-storage clearing can't reset
+// the counter. fingerprintHash is a lightweight client-side UA+screen hash.
+model FreeGenerationLog {
+  id              String   @id @default(cuid())
+  ipAddress       String
+  fingerprintHash String
+  count           Int      @default(0)
+  firstSeen       DateTime @default(now())
+  lastSeen        DateTime @updatedAt
+
+  @@unique([ipAddress, fingerprintHash])
+  @@index([ipAddress])
+}
+
+// Secondary IP-only rate limit (ignores fingerprint) to catch spoofing.
+// Resets daily at 00:00 UTC, same convention as HeadshotDailyUsage.
+model IpDailyUsage {
+  ipAddress String
+  usageDate String  // "YYYY-MM-DD" UTC
+  count     Int     @default(0)
+
+  @@id([ipAddress, usageDate])
+}
+
+// Cloudflare Neuron budget safety counter — prevents runaway free-tier cost.
+// One row per UTC day; incremented after each successful free generation.
+model DailyNeuronUsage {
+  usageDate   String @id // "YYYY-MM-DD" UTC
+  neuronCount Int    @default(0)
 }
