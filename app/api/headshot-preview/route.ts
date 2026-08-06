@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateHeadshotKontext } from "@/app/lib/falKontext";
+import { generateHeadshotSD15 } from "@/app/lib/cloudflareSD15";
 import { auth } from "@/auth";
 import { ANON_ID_COOKIE, readCookie, verifyAnonId } from "@/app/lib/anonId";
 import { checkGenerationEligibility, recordSuccessfulGeneration, FREE_GENERATION_CAP } from "@/app/lib/generationGate";
@@ -12,16 +13,17 @@ const TOOL_ID = "headshot";
 const DEBUG_GENERATION = process.env.DEBUG_GENERATION === "true";
 
 // ── Tier configurations ──────────────────────────────────────────────────────
-// fal.ai Kontext [dev]: num_inference_steps default is 28 (paid).
-// Free tier uses 20 steps for cost control; paid/HD uses full 28.
-// Billing is per-image on fal.ai (~$0.015/image), not Cloudflare Neurons.
-const FREE_TIER_CONFIG = {
-  steps: 20,
+// Anonymous → Cloudflare SD1.5 img2img (free within daily Neuron allowance).
+//   15 steps calibrated for free tier speed; SD1.5 max is 20.
+// Logged-in → fal.ai Kontext [dev] (billed ~$0.015/image).
+//   28 steps = Kontext dev default, full quality for stored clean download.
+const ANON_TIER_CONFIG = {
+  steps: 15,   // SD1.5 img2img
   estimatedNeurons: 0,
 } as const;
 
 const PAID_TIER_CONFIG = {
-  steps: 28,
+  steps: 28,   // fal.ai Kontext dev
   estimatedNeurons: 0,
 } as const;
 
@@ -104,44 +106,67 @@ async function incrementFingerprintCount(ip: string, fingerprintHash: string): P
   });
 }
 
-// ── Style prompts ────────────────────────────────────────────────────────────
-// Kontext [dev] uses direct editing instructions, not descriptive keywords.
-// Pattern: "Change the background to X. Keep the person's face, identity,
-// gender, and features exactly the same — do not change who they are. [attire/lighting]"
-const HEADSHOT_STYLE_PROMPTS: Record<string, string> = {
-  // legacy ids kept for backward compat
+// ── Style prompts — SD1.5 (anonymous free tier) ──────────────────────────────
+// SD1.5 img2img uses keyword-rich descriptive prompts. Identity clause is
+// appended automatically in cloudflareSD15.ts — don't add it here.
+const STYLE_PROMPTS_SD15: Record<string, string> = {
+  corporate: "professional corporate headshot, business suit, neutral grey studio background, professional studio lighting, LinkedIn profile photo",
+  creative:  "creative professional headshot, modern colorful background, artistic lighting, portfolio photo",
+  executive: "executive portrait, formal dark suit, dramatic lighting, prestigious office background, CEO portrait",
+  casual:    "casual professional headshot, smart casual attire, natural background, friendly expression",
+  linkedin:   "LinkedIn profile headshot, business casual attire, clean neutral background, confident approachable smile, professional studio lighting",
+  cv:         "CV resume headshot, formal business suit, plain white background, front-facing portrait, sharp studio lighting",
+  freelancer: "freelancer profile photo, smart casual attire, home office background, relaxed confident expression",
+  fiverr:     "Fiverr gig profile photo, bright colorful background, casual professional, energetic approachable expression",
+  upwork:     "Upwork profile headshot, clean white background, professional casual attire, warm approachable smile",
+  github:     "GitHub developer profile photo, casual tech attire, dark muted background, relaxed confident look",
+  youtube:    "YouTube channel profile photo, vibrant bright background, content-creator energy, casual stylish attire",
+  facebook:   "Facebook profile photo, warm natural background, casual friendly attire, genuine warm smile",
+  instagram:  "Instagram profile photo, aesthetic lifestyle background, fashion-forward casual attire, confident stylish look",
+  twitter:    "Twitter X profile photo, minimal clean background, smart casual attire, confident thought-leader expression",
+  speaker:    "keynote speaker portrait, dark stage background, professional attire, commanding confident pose",
+  ceo:        "CEO executive portrait, dark premium background, power suit, commanding authoritative expression, dramatic studio lighting",
+  author:     "author portrait, warm library bookshelf background, smart casual attire, intellectual thoughtful expression",
+  doctor:     "doctor portrait, clinical white background, white coat, professional trustworthy expression",
+  lawyer:     "lawyer portrait, dark wood-paneled office background, formal suit and tie, serious authoritative expression",
+  teacher:    "teacher portrait, bright classroom background, smart casual attire, warm encouraging expression",
+  student:    "student portrait, campus background, smart casual attire, bright approachable expression",
+  passport:         "passport photo, pure white background, neutral front-facing pose, no shadows, formal attire, official document photo",
+  "corporate-team": "corporate team headshot, uniform neutral background, professional business attire, team photo aesthetic",
+  farmer:           "farmer portrait, outdoor natural setting, practical work attire, warm natural lighting, approachable expression",
+  "office-support": "office support staff headshot, bright clean office background, smart casual business attire, friendly approachable expression",
+  "tea-boy":        "service staff portrait, casual warm background, neat uniform, warm approachable expression",
+  foreman:          "foreman supervisor portrait, industrial office background, professional work attire, authoritative approachable expression",
+};
+
+// ── Style prompts — Kontext dev (logged-in paid tier) ────────────────────────
+// Kontext [dev] uses direct editing instructions. Explicit removal phrasing
+// is required for light/white targets that could match an outdoor sky/water.
+const STYLE_PROMPTS_KONTEXT: Record<string, string> = {
   corporate: "Completely replace the existing background with a neutral grey professional studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add professional studio lighting and business suit attire if not already wearing one.",
   creative:  "Completely replace the existing background with a modern colorful artistic backdrop. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be artistic and flattering.",
   executive: "Completely replace the existing background with a dark premium executive office interior. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add dramatic studio lighting and make the attire look like a formal power suit.",
   casual:    "Replace the existing background with a warm natural park or garden setting with soft greenery. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look smart casual and the expression friendly.",
-
-  // Social & Platform
   linkedin:
     "Completely replace the existing background with a clean neutral grey professional studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add professional studio lighting and make the clothing look like business casual attire if not already.",
   cv:
-    // White target — needs explicit removal instruction or model may not replace bright sky/water
     "Completely replace the existing background — remove any outdoor scenery, sky, water, or natural elements entirely — with a plain white or light grey studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be sharp and professional. Make the attire look formal business if not already.",
   freelancer:
     "Completely replace the existing background with a tasteful blurred home office or modern workspace interior. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look smart casual and relaxed.",
   fiverr:
     "Completely replace the existing background with a bright bold solid-color or gradient backdrop — vivid and energetic. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The overall look should feel approachable and energetic, suitable for a freelance gig profile.",
   upwork:
-    // White target — needs explicit removal instruction
     "Completely replace the existing background — remove any outdoor scenery, sky, water, or natural elements entirely — with a clean white studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and approachable. The attire should look professional casual.",
   github:
     "Completely replace the existing background with a dark muted tech-style studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The look should be relaxed and confident, suitable for a developer profile.",
   youtube:
     "Completely replace the existing background with a vibrant creator-style colored backdrop. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The styling should feel casual and energetic, suitable for a YouTube channel profile.",
   facebook:
-    // Intentionally outdoor — frame as a DIFFERENT outdoor scene to force replacement
     "Replace the existing background with a different warm natural outdoor park or garden setting with trees and soft sunlight. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and natural. The attire should look casual and friendly.",
   instagram:
     "Completely replace the existing background with an aesthetic soft-bokeh studio backdrop with warm blurred tones. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The look should feel stylish and confident.",
   twitter:
-    // White target — needs explicit removal instruction
     "Completely replace the existing background — remove any outdoor scenery, sky, water, or natural elements entirely — with a minimal clean white or light grey studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be clean and modern. The attire should look smart casual.",
-
-  // By Profession
   speaker:
     "Completely replace the existing background with a dark stage or auditorium background with dramatic rim lighting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look professional and commanding.",
   ceo:
@@ -149,7 +174,6 @@ const HEADSHOT_STYLE_PROMPTS: Record<string, string> = {
   author:
     "Completely replace the existing background with a warm bookshelf or library interior. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and intellectual. The attire should look smart casual or academic.",
   doctor:
-    // Confirmed broken — white/light blue target matched bright sky. Explicit removal required.
     "Completely replace the existing background — remove any outdoor scenery, sky, water, boats, or natural elements entirely — with a solid clean white clinical hospital background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add a white medical coat over their clothing. The expression should look professional and trustworthy.",
   lawyer:
     "Completely replace the existing background with a dark wood-paneled law office interior. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look like a formal suit, appropriate for a legal professional.",
@@ -157,15 +181,11 @@ const HEADSHOT_STYLE_PROMPTS: Record<string, string> = {
     "Completely replace the existing background with a bright classroom interior with a chalkboard or whiteboard visible. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and encouraging. The attire should look smart casual.",
   student:
     "Completely replace the existing background with a university library interior or bright classroom setting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be bright and youthful. The attire should look casual student wear.",
-
-  // Special Purpose
   passport:
-    // White target — needs explicit removal instruction
     "Completely replace the existing background — remove any outdoor scenery, sky, water, boats, or natural elements entirely — with a perfectly flat plain white background with no shadows, patterns, or textures whatsoever. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting must be flat, even, and shadowless with the face centered and front-facing. This should look exactly like an official passport or ID photo.",
   "corporate-team":
     "Completely replace the existing background with a uniform neutral grey studio background suitable for a corporate team photo set. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be clean and professional. The attire should look like formal business wear.",
   farmer:
-    // Intentionally outdoor — frame as a DIFFERENT outdoor scene (farm/field vs whatever original is)
     "Replace the existing background with an outdoor farm or agricultural field setting — crops, soil, or farmland visible — with warm natural sunlight. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should feel like warm natural daylight. The attire can be practical outdoor or farming clothing.",
   "office-support":
     "Completely replace the existing background with a bright modern office interior with desks or equipment visible. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be clean office lighting. The attire should look like smart casual business wear.",
@@ -175,9 +195,14 @@ const HEADSHOT_STYLE_PROMPTS: Record<string, string> = {
     "Completely replace the existing background with an industrial workshop interior or construction site office. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be practical and realistic. The attire should look like professional supervisor or foreman work wear.",
 };
 
-function promptForStyle(style: string): string {
+function promptSD15(style: string): string {
   const key = style.trim().toLowerCase();
-  return HEADSHOT_STYLE_PROMPTS[key] ?? HEADSHOT_STYLE_PROMPTS.linkedin;
+  return STYLE_PROMPTS_SD15[key] ?? STYLE_PROMPTS_SD15.linkedin;
+}
+
+function promptKontext(style: string): string {
+  const key = style.trim().toLowerCase();
+  return STYLE_PROMPTS_KONTEXT[key] ?? STYLE_PROMPTS_KONTEXT.linkedin;
 }
 
 function unavailable() {
@@ -250,22 +275,30 @@ export async function POST(request: Request) {
     }
   }
 
-  if (!process.env.FAL_AI_API_KEY) return unavailable();
+  // ── Provider branch: Cloudflare SD1.5 (anon) vs fal.ai Kontext (logged-in) ─
+  let result: { image?: string; error?: string };
 
-  const cfg = userId ? PAID_TIER_CONFIG : FREE_TIER_CONFIG;
-
-  const prompt = promptForStyle(style);
-
-  if (DEBUG_GENERATION) {
-    console.log("[headshot] style:", style, "steps:", cfg.steps, "provider: fal-kontext");
-    console.log("[headshot] prompt:", prompt);
+  if (userId) {
+    // Logged-in: fal.ai Kontext dev — high quality, stored as clean version for HD download
+    if (!process.env.FAL_AI_API_KEY) return unavailable();
+    const prompt = promptKontext(style);
+    if (DEBUG_GENERATION) {
+      console.log("[headshot] provider: fal-kontext | style:", style, "| steps:", PAID_TIER_CONFIG.steps);
+      console.log("[headshot] prompt:", prompt);
+    }
+    result = await generateHeadshotKontext({ imageDataUrl, prompt, steps: PAID_TIER_CONFIG.steps });
+  } else {
+    // Anonymous: Cloudflare SD1.5 img2img — free within daily Neuron allowance
+    const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+    const apiToken = process.env.CLOUDFLARE_API_TOKEN;
+    if (!accountId || !apiToken) return unavailable();
+    const prompt = promptSD15(style);
+    if (DEBUG_GENERATION) {
+      console.log("[headshot] provider: cloudflare-sd15 | style:", style, "| steps:", ANON_TIER_CONFIG.steps);
+      console.log("[headshot] prompt:", prompt);
+    }
+    result = await generateHeadshotSD15({ accountId, apiToken, imageDataUrl, prompt, steps: ANON_TIER_CONFIG.steps });
   }
-
-  const result = await generateHeadshotKontext({
-    imageDataUrl,
-    prompt,
-    steps: cfg.steps,
-  });
 
   if (!result.image) {
     if (result.error === "Invalid image") return NextResponse.json({ error: "Invalid image" }, { status: 400 });
@@ -295,7 +328,7 @@ export async function POST(request: Request) {
     await Promise.all([
       incrementIpDailyUsage(ip),
       fingerprintHash ? incrementFingerprintCount(ip, fingerprintHash) : Promise.resolve(),
-      recordNeuronUsage(cfg.estimatedNeurons),
+      recordNeuronUsage(ANON_TIER_CONFIG.estimatedNeurons),
     ]);
   }
 
