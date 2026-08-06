@@ -3,7 +3,10 @@
 // text instructions to edit the background/style while the model
 // architecture preserves the subject's identity natively.
 const FAL_API_URL = "https://fal.run/fal-ai/flux-kontext/dev";
-const REQUEST_TIMEOUT_MS = 30000;
+// fal.ai Request History shows complex generations (dark scenes + attire edits)
+// taking 31–41s. 30s was too tight — abort was firing right as fal.ai finished,
+// wasting the credit charge. 60s gives safe headroom.
+const REQUEST_TIMEOUT_MS = 60000;
 const FAL_COST_PER_IMAGE = 0.015; // approx USD, for spend logging
 
 export async function generateHeadshotKontext({
@@ -27,6 +30,7 @@ export async function generateHeadshotKontext({
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const startMs = Date.now();
 
   try {
     const res = await fetch(FAL_API_URL, {
@@ -60,7 +64,8 @@ export async function generateHeadshotKontext({
       return { error: "unavailable" };
     }
 
-    console.log(`[fal-kontext] generation complete — estimated cost: $${FAL_COST_PER_IMAGE.toFixed(4)}`);
+    const elapsedMs = Date.now() - startMs;
+    console.log(`[fal-kontext] generation complete — ${elapsedMs}ms — estimated cost: $${FAL_COST_PER_IMAGE.toFixed(4)}`);
 
     // sync_mode:true → data URI; otherwise CDN URL
     if (imageUrl.startsWith("data:")) {
