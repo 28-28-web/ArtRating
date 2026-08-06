@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com" },
+    ],
+  },
   // Hidden-tool routes (see SiteNav.tsx/HeroGallery.tsx/page.tsx) — page code
   // is untouched and still works if these are visited, but redirect them so
   // they're not independently reachable/indexable either. permanent: true

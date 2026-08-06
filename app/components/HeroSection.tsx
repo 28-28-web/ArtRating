@@ -4,14 +4,27 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-// Reuses the same 3 Unsplash photos already downloaded for the
-// HeadshotShowcase marquee (public/images/headshots/) — the photo IDs
-// given for this hero are identical to that section's first corporate/
-// creative/executive entries, so no new download was needed.
 const HERO_STYLES = [
-  { id: "corporate", label: "Corporate", src: "/images/headshots/corporate-1.jpg" },
-  { id: "creative", label: "Creative", src: "/images/headshots/creative-1.jpg" },
-  { id: "executive", label: "Executive", src: "/images/headshots/executive-1.jpg" },
+  {
+    id: "linkedin",
+    label: "LinkedIn",
+    src: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=500&fit=crop&auto=format&q=80",
+  },
+  {
+    id: "ceo",
+    label: "CEO",
+    src: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=400&h=500&fit=crop&auto=format&q=80",
+  },
+  {
+    id: "passport",
+    label: "Passport",
+    src: "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?w=400&h=500&fit=crop&auto=format&q=80",
+  },
+  {
+    id: "author",
+    label: "Author",
+    src: "https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=400&h=500&fit=crop&auto=format&q=80",
+  },
 ] as const;
 
 const STEPS = [
@@ -20,12 +33,9 @@ const STEPS = [
   { n: "3", title: "Download in seconds", body: "Full resolution, watermark-free" },
 ];
 
-// Spec text said "4 styles" but only 3 style tabs are defined (Corporate/
-// Creative/Executive) — using the real count instead of a number that
-// doesn't match what's actually on the page.
 const STATS = [
   { value: "30s", label: "average generation time" },
-  { value: `${HERO_STYLES.length} styles`, label: "to choose from" },
+  { value: "22+ styles", label: "to choose from" },
   { value: "Free", label: "no signup required" },
 ];
 
@@ -60,7 +70,7 @@ export default function HeroSection({ freeGenerationCap }: { freeGenerationCap: 
             <span aria-hidden="true">·</span>
             <span>{freeGenerationCap} free headshots</span>
             <span aria-hidden="true">·</span>
-            <span>Results in 30s</span>
+            <span>22+ styles</span>
           </p>
         </div>
 

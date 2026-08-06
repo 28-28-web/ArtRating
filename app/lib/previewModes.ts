@@ -1,5 +1,6 @@
 import type { AffiliateTool } from "@/app/lib/affiliate";
 import type { AccentName } from "@/app/lib/accent";
+import { HEADSHOT_STYLES } from "@/app/lib/headshotStyles";
 
 export type PreviewMode = {
   id?: string;
@@ -73,12 +74,7 @@ export const HEADSHOT_MODE: PreviewMode = {
     "This is an AI-generated preview, not a real photoshoot. Get a dedicated headshot tool for a more polished result →",
   ctaTool: null, // TODO: add once Deep Art Effects / PhotoAI.me approved
   negativePrompt: "blur, distortion, cartoon, anime, low quality, watermark, text",
-  styleTabs: [
-    { id: "corporate", label: "Corporate" },
-    { id: "creative", label: "Creative" },
-    { id: "executive", label: "Executive" },
-    { id: "casual", label: "Casual" },
-  ],
+  styleTabs: HEADSHOT_STYLES.map(({ id, label }) => ({ id, label })),
   // chatMode/chatTitle/etc. below are unused now that styleTabs replaces the
   // chat advisor for this tool (ToolInteractive branches on styleTabs before
   // ever rendering ChatWidget) — left in place rather than deleted in case
