@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import UploadBox from "@/app/components/UploadBox";
 import type { PreviewMode } from "@/app/lib/previewModes";
@@ -12,9 +12,45 @@ import {
 
 export default function TabbedUploadSection({ mode }: { mode: PreviewMode }) {
   const [selectedStyle, setSelectedStyle] = useState<string>("linkedin");
+  const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  function selectFromDropdown(id: string) {
+    setSelectedStyle(id);
+    const btn = buttonRefs.current[id];
+    if (btn) {
+      btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+  }
 
   return (
     <section className="flex w-full flex-col items-center gap-6">
+      {/* ── Quick-jump dropdown ───────────────────────────────────────────── */}
+      <div className="w-full flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3">
+        <label
+          htmlFor="style-quick-select"
+          className="text-sm text-ink-soft whitespace-nowrap"
+        >
+          Or jump to a style:
+        </label>
+        <select
+          id="style-quick-select"
+          value={selectedStyle}
+          onChange={(e) => selectFromDropdown(e.target.value)}
+          className="w-full sm:flex-1 rounded-lg border border-border-soft bg-canvas text-ink text-sm px-3 py-2 focus:outline-none focus:border-accent cursor-pointer"
+        >
+          {HEADSHOT_STYLE_GROUPS.map((group) => (
+            <optgroup key={group} label={GROUP_LABELS[group]}>
+              {HEADSHOT_STYLES.filter((s) => s.group === group).map((style) => (
+                <option key={style.id} value={style.id}>
+                  {style.label}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+      </div>
+
+      {/* ── Grouped thumbnail grid ────────────────────────────────────────── */}
       {HEADSHOT_STYLE_GROUPS.map((group) => {
         const styles = HEADSHOT_STYLES.filter((s) => s.group === group);
         return (
@@ -31,6 +67,7 @@ export default function TabbedUploadSection({ mode }: { mode: PreviewMode }) {
               {styles.map((style) => (
                 <button
                   key={style.id}
+                  ref={(el) => { buttonRefs.current[style.id] = el; }}
                   type="button"
                   role="tab"
                   aria-selected={selectedStyle === style.id}
