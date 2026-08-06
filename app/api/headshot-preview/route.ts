@@ -12,9 +12,11 @@ const TOOL_ID = "headshot";
 const DEBUG_GENERATION = process.env.DEBUG_GENERATION === "true";
 
 // ── Identity preservation ────────────────────────────────────────────────────
-// SD 1.5 img2img strength=0.45: preserves identity while allowing style
-// transformation. Above ~0.5 causes identity loss; see cloudflareHeadshotFlux.ts.
-const HEADSHOT_STRENGTH = 0.45;
+// SD 1.5 img2img strength: controls identity vs. stylization tradeoff.
+// 0.0 = return input unchanged. 1.0 = ignore input entirely (new person).
+// 0.45 is the calibrated default; tune via HEADSHOT_STRENGTH env var without
+// a code deploy. Above ~0.55-0.60 risks identity loss — test carefully.
+const HEADSHOT_STRENGTH = parseFloat(process.env.HEADSHOT_STRENGTH ?? "0.45");
 const HEADSHOT_NEGATIVE_PROMPT =
   "blur, distortion, cartoon, anime, low quality, watermark, text, different person, different face, face swap, wrong gender, altered identity, extra limbs, bad anatomy";
 
