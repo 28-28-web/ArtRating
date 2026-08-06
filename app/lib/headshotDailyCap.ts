@@ -7,7 +7,7 @@ import { prisma } from "@/app/lib/prisma";
 // costs real Neurons per call (flux-2-dev), unlike the free tools, so
 // "unlimited for logged-in" isn't safe here. Generation stays entirely
 // free either way — hitting this cap does NOT unlock via spending a
-// credit; credits only ever pay for the download (1 credit), unchanged.
+// credit; credits only ever pay for the download (2 credits), unchanged.
 // Configurable so the free/cost balance can be tuned without touching the
 // route.
 export const HEADSHOT_DAILY_FREE_CAP = 15;

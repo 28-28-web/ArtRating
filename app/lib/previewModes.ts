@@ -28,7 +28,7 @@ export const HEADSHOT_MODE: PreviewMode = {
   disclaimer:
     "AI preview — may not perfectly match a real photoshoot. Best for casual profile use.",
   resultCaption:
-    "AI-generated preview — watermarked. Unlock HD (no watermark) with 1 credit →",
+    "AI-generated preview — watermarked. Unlock HD (no watermark) with 2 credits →",
   ctaTool: null,
   negativePrompt: "blur, distortion, cartoon, anime, low quality, watermark, text",
   styleTabs: HEADSHOT_STYLES.map(({ id, label }) => ({ id, label })),
