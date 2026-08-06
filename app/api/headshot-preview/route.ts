@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { generateHeadshotFlux } from "@/app/lib/cloudflareHeadshotFlux";
+import { generateHeadshotKontext } from "@/app/lib/falKontext";
 import { auth } from "@/auth";
 import { ANON_ID_COOKIE, readCookie, verifyAnonId } from "@/app/lib/anonId";
 import { checkGenerationEligibility, recordSuccessfulGeneration, FREE_GENERATION_CAP } from "@/app/lib/generationGate";
@@ -11,31 +11,23 @@ import { prisma } from "@/app/lib/prisma";
 const TOOL_ID = "headshot";
 const DEBUG_GENERATION = process.env.DEBUG_GENERATION === "true";
 
-// ── Identity preservation ────────────────────────────────────────────────────
-// SD 1.5 img2img strength: controls identity vs. stylization tradeoff.
-// 0.0 = return input unchanged. 1.0 = ignore input entirely (new person).
-// 0.45 is the calibrated default; tune via HEADSHOT_STRENGTH env var without
-// a code deploy. Above ~0.55-0.60 risks identity loss — test carefully.
-const HEADSHOT_STRENGTH = parseFloat(process.env.HEADSHOT_STRENGTH ?? "0.45");
-const HEADSHOT_NEGATIVE_PROMPT =
-  "blur, distortion, cartoon, anime, low quality, watermark, text, different person, different face, face swap, wrong gender, altered identity, extra limbs, bad anatomy";
-
 // ── Tier configurations ──────────────────────────────────────────────────────
-// SD 1.5 img2img: max num_steps is 20. Free tier uses fewer steps for speed;
-// paid/HD uses max for quality. No Neuron billing — SD 1.5 is fixed-cost.
+// fal.ai Kontext [dev]: num_inference_steps default is 28 (paid).
+// Free tier uses 20 steps for cost control; paid/HD uses full 28.
+// Billing is per-image on fal.ai (~$0.015/image), not Cloudflare Neurons.
 const FREE_TIER_CONFIG = {
-  steps: 15,
-  estimatedNeurons: 0, // SD1.5 img2img is not Neuron-billed
+  steps: 20,
+  estimatedNeurons: 0,
 } as const;
 
 const PAID_TIER_CONFIG = {
-  steps: 20, // SD1.5 img2img max
+  steps: 28,
   estimatedNeurons: 0,
 } as const;
 
 // ── Neuron budget safety ─────────────────────────────────────────────────────
-// SD1.5 doesn't use Neurons, so this threshold will never be reached.
-// Keeping the infrastructure in place in case the model changes back.
+// fal.ai is billed per-image, not Cloudflare Neurons — estimatedNeurons=0 so
+// this threshold is never reached. Kept in place for future model switches.
 const DAILY_NEURON_THRESHOLD = 8_000;
 
 function todayUtc(): string {
@@ -113,51 +105,72 @@ async function incrementFingerprintCount(ip: string, fingerprintHash: string): P
 }
 
 // ── Style prompts ────────────────────────────────────────────────────────────
-// SD 1.5 img2img prompt format: keyword-rich positive prompt.
-// Identity clause is appended by promptForStyle — don't add PRESERVE here.
+// Kontext [dev] uses direct editing instructions, not descriptive keywords.
+// Pattern: "Change the background to X. Keep the person's face, identity,
+// gender, and features exactly the same — do not change who they are. [attire/lighting]"
 const HEADSHOT_STYLE_PROMPTS: Record<string, string> = {
   // legacy ids kept for backward compat
-  corporate: "professional corporate headshot, business suit, neutral grey studio background, professional studio lighting, LinkedIn profile photo",
-  creative:  "creative professional headshot, modern colorful background, artistic lighting, portfolio photo",
-  executive: "executive portrait, formal dark suit, dramatic lighting, prestigious office background, CEO portrait",
-  casual:    "casual professional headshot, smart casual attire, natural background, friendly expression",
+  corporate: "Change the background to a neutral grey studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add professional studio lighting and business suit attire if not already wearing one.",
+  creative:  "Change the background to a modern colorful artistic backdrop. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be artistic and flattering.",
+  executive: "Change the background to a dark premium executive office background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add dramatic studio lighting and make the attire look like a formal power suit.",
+  casual:    "Change the background to a natural, warm lifestyle setting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look smart casual and the expression friendly.",
 
   // Social & Platform
-  linkedin:   "LinkedIn profile headshot, business casual attire, clean neutral background, confident approachable smile, professional studio lighting",
-  cv:         "CV resume headshot, formal business suit, plain white background, front-facing portrait, sharp studio lighting",
-  freelancer: "freelancer profile photo, smart casual attire, home office background, relaxed confident expression",
-  fiverr:     "Fiverr gig profile photo, bright colorful background, casual professional, energetic approachable expression",
-  upwork:     "Upwork profile headshot, clean white background, professional casual attire, warm approachable smile",
-  github:     "GitHub developer profile photo, casual tech attire, dark muted background, relaxed confident look",
-  youtube:    "YouTube channel profile photo, vibrant bright background, content-creator energy, casual stylish attire",
-  facebook:   "Facebook profile photo, warm natural background, casual friendly attire, genuine warm smile",
-  instagram:  "Instagram profile photo, aesthetic lifestyle background, fashion-forward casual attire, confident stylish look",
-  twitter:    "Twitter X profile photo, minimal clean background, smart casual attire, confident thought-leader expression",
+  linkedin:
+    "Change the background to a clean neutral grey studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add professional studio lighting and make the clothing look like business casual attire if not already.",
+  cv:
+    "Change the background to a plain white or light grey background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be sharp and professional. Make the attire look formal business if not already.",
+  freelancer:
+    "Change the background to a tasteful blurred home office or modern workspace. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look smart casual and relaxed.",
+  fiverr:
+    "Change the background to a bright, colorful, energetic backdrop. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The overall look should feel approachable and energetic, suitable for a freelance gig profile.",
+  upwork:
+    "Change the background to a clean white or light neutral background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and approachable. The attire should look professional casual.",
+  github:
+    "Change the background to a dark, muted, tech-friendly background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The look should be relaxed and confident, suitable for a developer profile.",
+  youtube:
+    "Change the background to a vibrant, bright, creator-style backdrop. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The styling should feel casual and energetic, suitable for a YouTube channel profile.",
+  facebook:
+    "Change the background to a warm natural outdoor or lifestyle setting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and natural. The attire should look casual and friendly.",
+  instagram:
+    "Change the background to an aesthetic lifestyle backdrop with soft bokeh and warm tones. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The look should feel stylish and confident.",
+  twitter:
+    "Change the background to a minimal clean white or light grey background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be clean and modern. The attire should look smart casual.",
 
   // By Profession
-  speaker:    "keynote speaker portrait, dark stage background, professional attire, commanding confident pose",
-  ceo:        "CEO executive portrait, dark premium background, power suit, commanding authoritative expression, dramatic studio lighting",
-  author:     "author portrait, warm library bookshelf background, smart casual attire, intellectual thoughtful expression",
-  doctor:     "doctor portrait, clinical white background, white coat, professional trustworthy expression",
-  lawyer:     "lawyer portrait, dark wood-paneled office background, formal suit and tie, serious authoritative expression",
-  teacher:    "teacher portrait, bright classroom background, smart casual attire, warm encouraging expression",
-  student:    "student portrait, campus background, smart casual attire, bright approachable expression",
+  speaker:
+    "Change the background to a dark stage or auditorium background with dramatic rim lighting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look professional and commanding.",
+  ceo:
+    "Change the background to a dark premium studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add dramatic studio lighting to convey authority. The attire should look like a power suit or executive business wear.",
+  author:
+    "Change the background to a warm library or bookshelf setting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and intellectual. The attire should look smart casual or academic.",
+  doctor:
+    "Change the background to a clean clinical white or light blue background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add a white lab coat if not already wearing one. The expression should look professional and trustworthy.",
+  lawyer:
+    "Change the background to a dark wood-paneled office or law library background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look like a formal suit, appropriate for a legal professional.",
+  teacher:
+    "Change the background to a bright classroom or educational setting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and encouraging. The attire should look smart casual.",
+  student:
+    "Change the background to a university campus, library, or bright classroom setting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be bright and youthful. The attire should look casual student wear.",
 
   // Special Purpose
-  passport:         "passport photo, pure white background, neutral front-facing pose, no shadows, formal attire, official document photo",
-  "corporate-team": "corporate team headshot, uniform neutral background, professional business attire, team photo aesthetic",
-  farmer:           "farmer portrait, outdoor natural setting, practical work attire, warm natural lighting, approachable expression",
-  "office-support": "office support staff headshot, bright clean office background, smart casual business attire, friendly approachable expression",
-  "tea-boy":        "service staff portrait, casual warm background, neat uniform, warm approachable expression",
-  foreman:          "foreman supervisor portrait, industrial office background, professional work attire, authoritative approachable expression",
+  passport:
+    "Change the background to a plain white background with absolutely no shadows, patterns, or textures. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting must be flat, even, and shadowless with the face centered and front-facing. This should look exactly like an official passport or ID photo.",
+  "corporate-team":
+    "Change the background to a uniform neutral grey or white studio background suitable for a corporate team photo set. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be clean and professional. The attire should look like formal business wear.",
+  farmer:
+    "Change the background to an outdoor natural farm or open field setting with natural sunlight. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should feel like warm natural daylight. The attire can be practical outdoor or farming clothing.",
+  "office-support":
+    "Change the background to a bright modern office environment. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be clean office lighting. The attire should look like smart casual business wear.",
+  "tea-boy":
+    "Change the background to a warm, welcoming hospitality or service environment. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The look should be neat and approachable, with clean professional service attire.",
+  foreman:
+    "Change the background to an industrial workshop or construction site office environment. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be practical and realistic. The attire should look like professional supervisor or foreman work wear.",
 };
-
-const IDENTITY_CLAUSE = "same person, preserve facial features and identity, professional portrait photography, high quality";
 
 function promptForStyle(style: string): string {
   const key = style.trim().toLowerCase();
-  const base = HEADSHOT_STYLE_PROMPTS[key] ?? HEADSHOT_STYLE_PROMPTS.linkedin;
-  return `${base}, ${IDENTITY_CLAUSE}`;
+  return HEADSHOT_STYLE_PROMPTS[key] ?? HEADSHOT_STYLE_PROMPTS.linkedin;
 }
 
 function unavailable() {
@@ -230,26 +243,20 @@ export async function POST(request: Request) {
     }
   }
 
-  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
-  const apiToken = process.env.CLOUDFLARE_API_TOKEN;
-  if (!accountId || !apiToken) return unavailable();
+  if (!process.env.FAL_AI_API_KEY) return unavailable();
 
   const cfg = userId ? PAID_TIER_CONFIG : FREE_TIER_CONFIG;
 
   const prompt = promptForStyle(style);
 
   if (DEBUG_GENERATION) {
-    console.log("[headshot] style:", style, "steps:", cfg.steps, "strength:", HEADSHOT_STRENGTH);
+    console.log("[headshot] style:", style, "steps:", cfg.steps, "provider: fal-kontext");
     console.log("[headshot] prompt:", prompt);
   }
 
-  const result = await generateHeadshotFlux({
-    accountId,
-    apiToken,
-    prompt,
-    negativePrompt: HEADSHOT_NEGATIVE_PROMPT,
+  const result = await generateHeadshotKontext({
     imageDataUrl,
-    strength: HEADSHOT_STRENGTH,
+    prompt,
     steps: cfg.steps,
   });
 
