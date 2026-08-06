@@ -114,31 +114,6 @@ model HeadshotDailyUsage {
   @@id([userId, usageDate])
 }
 
-// IP + fingerprint based free-generation tracking — layered on top of the
-// cookie-based AnonymousUsage cap so browser-storage clearing can't reset
-// the counter. fingerprintHash is a lightweight client-side UA+screen hash.
-model FreeGenerationLog {
-  id              String   @id @default(cuid())
-  ipAddress       String
-  fingerprintHash String
-  count           Int      @default(0)
-  firstSeen       DateTime @default(now())
-  lastSeen        DateTime @updatedAt
-
-  @@unique([ipAddress, fingerprintHash])
-  @@index([ipAddress])
-}
-
-// Secondary IP-only rate limit (ignores fingerprint) to catch spoofing.
-// Resets daily at 00:00 UTC, same convention as HeadshotDailyUsage.
-model IpDailyUsage {
-  ipAddress String
-  usageDate String  // "YYYY-MM-DD" UTC
-  count     Int     @default(0)
-
-  @@id([ipAddress, usageDate])
-}
-
 // Cloudflare Neuron budget safety counter — prevents runaway free-tier cost.
 // One row per UTC day; incremented after each successful free generation.
 model DailyNeuronUsage {

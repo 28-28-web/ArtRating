@@ -56,68 +56,6 @@ async function recordNeuronUsage(neurons: number): Promise<void> {
   if (DEBUG_GENERATION) console.log(`[headshot] recorded ${neurons} Neurons for ${usageDate}`);
 }
 
-// ── IP rate limiting ─────────────────────────────────────────────────────────
-const IP_DAILY_FREE_CAP = 10; // max free generations per IP per day
-
-function getClientIp(request: Request): string {
-  const cf = request.headers.get("cf-connecting-ip");
-  if (cf) return cf;
-  const fwd = request.headers.get("x-forwarded-for");
-  if (fwd) return fwd.split(",")[0].trim();
-  return "unknown";
-}
-
-async function checkIpDailyLimit(ip: string): Promise<{ allowed: boolean }> {
-  if (ip === "unknown") return { allowed: true }; // can't identify, don't block
-  const usageDate = todayUtc();
-  const row = await prisma.ipDailyUsage.findUnique({ where: { ipAddress_usageDate: { ipAddress: ip, usageDate } } });
-  if (!row || row.count < IP_DAILY_FREE_CAP) return { allowed: true };
-  return { allowed: false };
-}
-
-async function incrementIpDailyUsage(ip: string): Promise<void> {
-  if (ip === "unknown") return;
-  const usageDate = todayUtc();
-  await prisma.ipDailyUsage.upsert({
-    where: { ipAddress_usageDate: { ipAddress: ip, usageDate } },
-    create: { ipAddress: ip, usageDate, count: 1 },
-    update: { count: { increment: 1 } },
-  });
-}
-
-// ── Three-layer anonymous gating ─────────────────────────────────────────────
-//
-// Layer 1 — AnonymousUsage (cookie, checked FIRST above): user-facing free cap
-//   at FREE_GENERATION_CAP=6. This is the only place "6 free generations" is
-//   enforced. Cleared by clearing cookies — intentional, low-friction.
-//
-// Layer 2 — FreeGenerationLog (IP + fingerprint): abuse-only gate. Only fires
-//   when someone clears cookies repeatedly. Threshold is 2× the free cap so
-//   normal users never hit it — only serial cookie-clearers do.
-//
-// Layer 3 — IpDailyUsage (IP only): hard per-IP daily cap. Catches VPN/proxy
-//   abuse where fingerprint changes. Cap=10 per day, resets at UTC midnight.
-//
-const FINGERPRINT_ABUSE_CAP = FREE_GENERATION_CAP * 2; // 12 — abuse-only, not user-facing
-
-async function checkFingerprintCap(ip: string, fingerprintHash: string): Promise<{ allowed: boolean }> {
-  if (!fingerprintHash) return { allowed: true };
-  const row = await prisma.freeGenerationLog.findUnique({
-    where: { ipAddress_fingerprintHash: { ipAddress: ip, fingerprintHash } },
-  });
-  if (!row || row.count < FINGERPRINT_ABUSE_CAP) return { allowed: true };
-  return { allowed: false };
-}
-
-async function incrementFingerprintCount(ip: string, fingerprintHash: string): Promise<void> {
-  if (!fingerprintHash) return;
-  await prisma.freeGenerationLog.upsert({
-    where: { ipAddress_fingerprintHash: { ipAddress: ip, fingerprintHash } },
-    create: { ipAddress: ip, fingerprintHash, count: 1 },
-    update: { count: { increment: 1 }, lastSeen: new Date() },
-  });
-}
-
 // ── Style prompts — SD1.5 (anonymous free tier) ──────────────────────────────
 // SD1.5 img2img uses keyword-rich descriptive prompts. Identity clause is
 // appended automatically in cloudflareSD15.ts — don't add it here.
@@ -225,7 +163,6 @@ export async function POST(request: Request) {
   const session = await auth();
   const userId = session?.user?.id ?? null;
   const anonId = await verifyAnonId(readCookie(request.headers.get("cookie"), ANON_ID_COOKIE));
-  const ip = getClientIp(request);
 
   // ── Cookie-based cap (primary gate) ────────────────────────────────────────
   const gate = await checkGenerationEligibility({ anonId, userId });
@@ -239,8 +176,6 @@ export async function POST(request: Request) {
     if (!dailyGate.allowed) return headshotDailyCapResponse();
   }
 
-  // ── Anonymous users: layered abuse checks ──────────────────────────────────
-  let fingerprintHash = "";
   let style = "linkedin";
   let imageDataUrl = "";
 
@@ -248,32 +183,11 @@ export async function POST(request: Request) {
     const body = await request.json();
     style = typeof body?.style === "string" && body.style.trim() ? body.style : "linkedin";
     imageDataUrl = typeof body?.image === "string" ? body.image : "";
-    fingerprintHash = typeof body?.fp === "string" ? body.fp.slice(0, 64) : "";
   } catch {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
   if (!userId) {
-    // IP daily limit — catches fingerprint-spoofing at the network level
-    const ipGate = await checkIpDailyLimit(ip);
-    if (!ipGate.allowed) {
-      return NextResponse.json(
-        { error: "cap-reached", message: `Too many free previews from this network today. Sign in to continue.` },
-        { status: 429 }
-      );
-    }
-
-    // Fingerprint + IP combined cap
-    if (fingerprintHash) {
-      const fpGate = await checkFingerprintCap(ip, fingerprintHash);
-      if (!fpGate.allowed) {
-        return NextResponse.json(
-          { error: "cap-reached", message: `You've used all ${FREE_GENERATION_CAP} free previews — sign in to continue.` },
-          { status: 429 }
-        );
-      }
-    }
-
     // Neuron budget safety — free tier only
     const budget = await checkNeuronBudget();
     if (!budget.ok) {
@@ -336,12 +250,7 @@ export async function POST(request: Request) {
   if (userId) {
     await recordHeadshotDailyUsage(userId);
   } else {
-    // Increment IP and fingerprint counters for anonymous user
-    await Promise.all([
-      incrementIpDailyUsage(ip),
-      fingerprintHash ? incrementFingerprintCount(ip, fingerprintHash) : Promise.resolve(),
-      recordNeuronUsage(ANON_TIER_CONFIG.estimatedNeurons),
-    ]);
+    await recordNeuronUsage(ANON_TIER_CONFIG.estimatedNeurons);
   }
 
   return NextResponse.json({ image: output.previewUrl ?? output.previewDataUrl, generationId });
