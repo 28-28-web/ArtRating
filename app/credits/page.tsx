@@ -43,7 +43,7 @@ export default async function CreditsPage({
           Try free — 2 headshots with watermark, no signup. Remove watermark — from $5.
         </p>
         <p className="text-ink-soft">
-          Each credit lets you download one full-quality, watermark-free result. Checkout is
+          Every 2 credits let you download one full-quality, watermark-free result. Checkout is
           handled securely by Paddle — credits are added automatically once your payment goes
           through.
         </p>

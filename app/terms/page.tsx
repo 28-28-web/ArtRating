@@ -82,7 +82,7 @@ export default function TermsPage() {
         <p className="text-ink">
           Generating a preview is free and doesn&apos;t require an account, up to the generation
           limit described on the site. Downloading the full-quality, watermark-free file requires
-          an account and 1 credit per download. Because downloads are a digital product delivered
+          an account and 2 credits per download. Because downloads are a digital product delivered
           immediately, all sales are final — we do not offer refunds once a file has been
           downloaded.
         </p>

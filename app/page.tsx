@@ -86,7 +86,7 @@ const FAQS = [
   },
   {
     question: "Is HeadshotMaker AI free?",
-    answer: `Try free — ${FREE_GENERATION_CAP} headshots with watermark, no signup. Remove watermark — from ${cheapestPack.priceLabel}. Downloading the full-quality, watermark-free file needs an account and costs 1 credit; packs start at ${cheapestPack.priceLabel} for ${cheapestPack.credits} credits.`,
+    answer: `Try free — ${FREE_GENERATION_CAP} headshots with watermark, no signup. Remove watermark — from ${cheapestPack.priceLabel}. Downloading the full-quality, watermark-free file needs an account and costs 2 credits; packs start at ${cheapestPack.priceLabel} for ${cheapestPack.credits} credits.`,
   },
   {
     question: "How long does it take to generate a headshot?",

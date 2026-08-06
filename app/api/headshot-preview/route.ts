@@ -85,15 +85,27 @@ async function incrementIpDailyUsage(ip: string): Promise<void> {
   });
 }
 
-// ── Fingerprint + IP combined tracking ──────────────────────────────────────
-const FINGERPRINT_FREE_CAP = FREE_GENERATION_CAP; // same 6-generation limit
+// ── Three-layer anonymous gating ─────────────────────────────────────────────
+//
+// Layer 1 — AnonymousUsage (cookie, checked FIRST above): user-facing free cap
+//   at FREE_GENERATION_CAP=6. This is the only place "6 free generations" is
+//   enforced. Cleared by clearing cookies — intentional, low-friction.
+//
+// Layer 2 — FreeGenerationLog (IP + fingerprint): abuse-only gate. Only fires
+//   when someone clears cookies repeatedly. Threshold is 2× the free cap so
+//   normal users never hit it — only serial cookie-clearers do.
+//
+// Layer 3 — IpDailyUsage (IP only): hard per-IP daily cap. Catches VPN/proxy
+//   abuse where fingerprint changes. Cap=10 per day, resets at UTC midnight.
+//
+const FINGERPRINT_ABUSE_CAP = FREE_GENERATION_CAP * 2; // 12 — abuse-only, not user-facing
 
 async function checkFingerprintCap(ip: string, fingerprintHash: string): Promise<{ allowed: boolean }> {
   if (!fingerprintHash) return { allowed: true };
   const row = await prisma.freeGenerationLog.findUnique({
     where: { ipAddress_fingerprintHash: { ipAddress: ip, fingerprintHash } },
   });
-  if (!row || row.count < FINGERPRINT_FREE_CAP) return { allowed: true };
+  if (!row || row.count < FINGERPRINT_ABUSE_CAP) return { allowed: true };
   return { allowed: false };
 }
 

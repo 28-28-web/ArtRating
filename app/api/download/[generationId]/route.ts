@@ -52,15 +52,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ gen
   }
 
   const credit = await prisma.userCredit.findUnique({ where: { userId } });
-  if (!credit || credit.balance < 1) {
+  if (!credit || credit.balance < 2) {
     return NextResponse.json(
-      { error: "You need a credit to download this. Purchase credits to continue." },
+      { error: "You need 2 credits to download this. Purchase credits to continue." },
       { status: 402 }
     );
   }
 
   const [updatedCredit] = await prisma.$transaction([
-    prisma.userCredit.update({ where: { userId }, data: { balance: { decrement: 1 } } }),
+    prisma.userCredit.update({ where: { userId }, data: { balance: { decrement: 2 } } }),
     prisma.generation.update({
       where: { id: generationId },
       data: { usedCredit: true, downloadedAt: new Date() },

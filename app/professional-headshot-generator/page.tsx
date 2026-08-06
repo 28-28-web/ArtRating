@@ -29,7 +29,7 @@ const faqs = [
   },
   {
     question: "How much does an AI headshot cost?",
-    answer: `Generating a preview is free — you get ${FREE_GENERATION_CAP} free generations with a watermark, no signup needed. Downloading the full-quality, watermark-free file requires an account and costs 1 credit, with packs starting at ${cheapestPack.priceLabel} for ${cheapestPack.credits} credits.`,
+    answer: `Generating a preview is free — you get ${FREE_GENERATION_CAP} free generations with a watermark, no signup needed. Downloading the full-quality, watermark-free file requires an account and costs 2 credits, with packs starting at ${cheapestPack.priceLabel} for ${cheapestPack.credits} credits.`,
   },
   {
     question: "How long does it take to generate an AI headshot?",
@@ -89,7 +89,7 @@ export default function ProfessionalHeadshotGeneratorPage() {
         </p>
         <p className="text-ink">
           Your first {FREE_GENERATION_CAP} generations are free, watermarked previews — no account,
-          no credit card. When you&apos;re happy with a result, log in and use one credit to
+          no credit card. When you&apos;re happy with a result, log in and use 2 credits to
           download the full-resolution, watermark-free file.
         </p>
       </section>

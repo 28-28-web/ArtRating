@@ -26,7 +26,7 @@ export default function GenerationGateNotice({
       <div className="gate-notice flex flex-col items-center gap-2 p-4 text-center">
         <PaintDab size={14} />
         <p className="font-display text-sm font-semibold text-ink">
-          {message ?? "You need a credit to download this."}
+          {message ?? "You need 2 credits to download this."}
         </p>
         {!message && <p className="text-sm text-ink-soft">Remove watermark — from $5.</p>}
         <Link
