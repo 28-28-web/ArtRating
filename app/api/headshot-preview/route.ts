@@ -110,62 +110,69 @@ async function incrementFingerprintCount(ip: string, fingerprintHash: string): P
 // gender, and features exactly the same — do not change who they are. [attire/lighting]"
 const HEADSHOT_STYLE_PROMPTS: Record<string, string> = {
   // legacy ids kept for backward compat
-  corporate: "Change the background to a neutral grey studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add professional studio lighting and business suit attire if not already wearing one.",
-  creative:  "Change the background to a modern colorful artistic backdrop. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be artistic and flattering.",
-  executive: "Change the background to a dark premium executive office background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add dramatic studio lighting and make the attire look like a formal power suit.",
-  casual:    "Change the background to a natural, warm lifestyle setting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look smart casual and the expression friendly.",
+  corporate: "Completely replace the existing background with a neutral grey professional studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add professional studio lighting and business suit attire if not already wearing one.",
+  creative:  "Completely replace the existing background with a modern colorful artistic backdrop. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be artistic and flattering.",
+  executive: "Completely replace the existing background with a dark premium executive office interior. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add dramatic studio lighting and make the attire look like a formal power suit.",
+  casual:    "Replace the existing background with a warm natural park or garden setting with soft greenery. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look smart casual and the expression friendly.",
 
   // Social & Platform
   linkedin:
-    "Change the background to a clean neutral grey studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add professional studio lighting and make the clothing look like business casual attire if not already.",
+    "Completely replace the existing background with a clean neutral grey professional studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add professional studio lighting and make the clothing look like business casual attire if not already.",
   cv:
-    "Change the background to a plain white or light grey background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be sharp and professional. Make the attire look formal business if not already.",
+    // White target — needs explicit removal instruction or model may not replace bright sky/water
+    "Completely replace the existing background — remove any outdoor scenery, sky, water, or natural elements entirely — with a plain white or light grey studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be sharp and professional. Make the attire look formal business if not already.",
   freelancer:
-    "Change the background to a tasteful blurred home office or modern workspace. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look smart casual and relaxed.",
+    "Completely replace the existing background with a tasteful blurred home office or modern workspace interior. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look smart casual and relaxed.",
   fiverr:
-    "Change the background to a bright, colorful, energetic backdrop. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The overall look should feel approachable and energetic, suitable for a freelance gig profile.",
+    "Completely replace the existing background with a bright bold solid-color or gradient backdrop — vivid and energetic. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The overall look should feel approachable and energetic, suitable for a freelance gig profile.",
   upwork:
-    "Change the background to a clean white or light neutral background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and approachable. The attire should look professional casual.",
+    // White target — needs explicit removal instruction
+    "Completely replace the existing background — remove any outdoor scenery, sky, water, or natural elements entirely — with a clean white studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and approachable. The attire should look professional casual.",
   github:
-    "Change the background to a dark, muted, tech-friendly background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The look should be relaxed and confident, suitable for a developer profile.",
+    "Completely replace the existing background with a dark muted tech-style studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The look should be relaxed and confident, suitable for a developer profile.",
   youtube:
-    "Change the background to a vibrant, bright, creator-style backdrop. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The styling should feel casual and energetic, suitable for a YouTube channel profile.",
+    "Completely replace the existing background with a vibrant creator-style colored backdrop. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The styling should feel casual and energetic, suitable for a YouTube channel profile.",
   facebook:
-    "Change the background to a warm natural outdoor or lifestyle setting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and natural. The attire should look casual and friendly.",
+    // Intentionally outdoor — frame as a DIFFERENT outdoor scene to force replacement
+    "Replace the existing background with a different warm natural outdoor park or garden setting with trees and soft sunlight. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and natural. The attire should look casual and friendly.",
   instagram:
-    "Change the background to an aesthetic lifestyle backdrop with soft bokeh and warm tones. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The look should feel stylish and confident.",
+    "Completely replace the existing background with an aesthetic soft-bokeh studio backdrop with warm blurred tones. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The look should feel stylish and confident.",
   twitter:
-    "Change the background to a minimal clean white or light grey background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be clean and modern. The attire should look smart casual.",
+    // White target — needs explicit removal instruction
+    "Completely replace the existing background — remove any outdoor scenery, sky, water, or natural elements entirely — with a minimal clean white or light grey studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be clean and modern. The attire should look smart casual.",
 
   // By Profession
   speaker:
-    "Change the background to a dark stage or auditorium background with dramatic rim lighting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look professional and commanding.",
+    "Completely replace the existing background with a dark stage or auditorium background with dramatic rim lighting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look professional and commanding.",
   ceo:
-    "Change the background to a dark premium studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add dramatic studio lighting to convey authority. The attire should look like a power suit or executive business wear.",
+    "Completely replace the existing background with a dark premium studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add dramatic studio lighting to convey authority. The attire should look like a power suit or executive business wear.",
   author:
-    "Change the background to a warm library or bookshelf setting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and intellectual. The attire should look smart casual or academic.",
+    "Completely replace the existing background with a warm bookshelf or library interior. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and intellectual. The attire should look smart casual or academic.",
   doctor:
-    "Change the background to a clean clinical white or light blue background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add a white lab coat if not already wearing one. The expression should look professional and trustworthy.",
+    // Confirmed broken — white/light blue target matched bright sky. Explicit removal required.
+    "Completely replace the existing background — remove any outdoor scenery, sky, water, boats, or natural elements entirely — with a solid clean white clinical hospital background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. Add a white medical coat over their clothing. The expression should look professional and trustworthy.",
   lawyer:
-    "Change the background to a dark wood-paneled office or law library background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look like a formal suit, appropriate for a legal professional.",
+    "Completely replace the existing background with a dark wood-paneled law office interior. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look like a formal suit, appropriate for a legal professional.",
   teacher:
-    "Change the background to a bright classroom or educational setting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and encouraging. The attire should look smart casual.",
+    "Completely replace the existing background with a bright classroom interior with a chalkboard or whiteboard visible. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and encouraging. The attire should look smart casual.",
   student:
-    "Change the background to a university campus, library, or bright classroom setting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be bright and youthful. The attire should look casual student wear.",
+    "Completely replace the existing background with a university library interior or bright classroom setting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be bright and youthful. The attire should look casual student wear.",
 
   // Special Purpose
   passport:
-    "Change the background to a plain white background with absolutely no shadows, patterns, or textures. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting must be flat, even, and shadowless with the face centered and front-facing. This should look exactly like an official passport or ID photo.",
+    // White target — needs explicit removal instruction
+    "Completely replace the existing background — remove any outdoor scenery, sky, water, boats, or natural elements entirely — with a perfectly flat plain white background with no shadows, patterns, or textures whatsoever. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting must be flat, even, and shadowless with the face centered and front-facing. This should look exactly like an official passport or ID photo.",
   "corporate-team":
-    "Change the background to a uniform neutral grey or white studio background suitable for a corporate team photo set. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be clean and professional. The attire should look like formal business wear.",
+    "Completely replace the existing background with a uniform neutral grey studio background suitable for a corporate team photo set. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be clean and professional. The attire should look like formal business wear.",
   farmer:
-    "Change the background to an outdoor natural farm or open field setting with natural sunlight. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should feel like warm natural daylight. The attire can be practical outdoor or farming clothing.",
+    // Intentionally outdoor — frame as a DIFFERENT outdoor scene (farm/field vs whatever original is)
+    "Replace the existing background with an outdoor farm or agricultural field setting — crops, soil, or farmland visible — with warm natural sunlight. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should feel like warm natural daylight. The attire can be practical outdoor or farming clothing.",
   "office-support":
-    "Change the background to a bright modern office environment. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be clean office lighting. The attire should look like smart casual business wear.",
+    "Completely replace the existing background with a bright modern office interior with desks or equipment visible. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be clean office lighting. The attire should look like smart casual business wear.",
   "tea-boy":
-    "Change the background to a warm, welcoming hospitality or service environment. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The look should be neat and approachable, with clean professional service attire.",
+    "Completely replace the existing background with a warm café or hospitality service interior. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The look should be neat and approachable, with clean professional service attire.",
   foreman:
-    "Change the background to an industrial workshop or construction site office environment. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be practical and realistic. The attire should look like professional supervisor or foreman work wear.",
+    "Completely replace the existing background with an industrial workshop interior or construction site office. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be practical and realistic. The attire should look like professional supervisor or foreman work wear.",
 };
 
 function promptForStyle(style: string): string {
