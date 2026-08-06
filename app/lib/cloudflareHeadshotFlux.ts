@@ -1,62 +1,36 @@
-import sharp from "sharp";
+// SD 1.5 img2img — identity-preserving headshot style transfer.
+//
+// flux-2-dev was tried but is text-to-image with loose style reference only:
+// it produces an entirely different person instead of restyling the uploaded
+// selfie. SD 1.5 img2img with strength=0.45 is the correct tool here — the
+// `strength` parameter controls how much the input photo is retained
+// (1.0 = ignore input entirely, 0.0 = return input unchanged). 0.45 was
+// calibrated to preserve identity while still allowing meaningful style
+// change; see the commit history on headshot-preview/route.ts for why
+// values above ~0.5 cause identity loss on SD 1.5.
+const CLOUDFLARE_MODEL = "@cf/runwayml/stable-diffusion-v1-5-img2img";
+const REQUEST_TIMEOUT_MS = 30000;
 
-// Headshot-only — do NOT reuse this for other tools, and do NOT merge this
-// into cloudflareImg2Img.ts. That file is shared by pet-to-human,
-// toy-ification, and art-style (app/api/pet-human-preview,
-// app/api/toy-preview, app/api/preview), all still on SD 1.5 img2img.
-// Migrating headshot to flux-2-dev needs a different request shape
-// (multipart, no "strength") that isn't compatible with those callers'
-// existing signature — a prior attempt at editing cloudflareImg2Img.ts in
-// place broke all three (tsc caught it immediately). Same model + same
-// request shape as cloudflareFluxMix.ts (photo-mix), just one reference
-// image instead of two.
-const CLOUDFLARE_MODEL = "@cf/black-forest-labs/flux-2-dev";
-// flux-2-dev is slow — 30s and 60s were both measured too short in
-// production for cloudflareFluxMix.ts's identical request shape. Reusing
-// that hard-won value rather than re-guessing.
-const REQUEST_TIMEOUT_MS = 120000;
-// input_image_0 must be smaller than 512x512 per Cloudflare's docs.
-const MAX_DIMENSION = 512;
-
-async function resizeToMax512(buffer: Buffer): Promise<Buffer> {
-  return sharp(buffer)
-    .resize({ width: MAX_DIMENSION, height: MAX_DIMENSION, fit: "inside", withoutEnlargement: true })
-    .toBuffer();
-}
-
-async function requestHeadshotFlux({
+async function requestHeadshotImg2Img({
   accountId,
   apiToken,
-  imageBuffer,
+  imageDataUrl,
   prompt,
-  width,
-  height,
+  negativePrompt,
+  strength,
   steps,
 }: {
   accountId: string;
   apiToken: string;
-  imageBuffer: Buffer;
+  imageDataUrl: string;
   prompt: string;
-  width: number;
-  height: number;
+  negativePrompt: string;
+  strength: number;
   steps: number;
 }): Promise<{ image?: string; error?: string; timedOut?: boolean }> {
-  const formData = new FormData();
-  formData.append("input_image_0", new Blob([new Uint8Array(imageBuffer)]));
-  formData.append("prompt", prompt);
-  // Explicit sizing is mandatory, not cosmetic — cloudflareFluxMix.ts omits
-  // these and, per HeadshotDailyUsage/PhotoMixDailyUsage's schema comments,
-  // ends up costing ~8,000-9,000 Neurons/call from whatever Cloudflare's
-  // undocumented defaults resolve to. Pinning width/height/steps keeps the
-  // cost predictable: at 512x512 + 15 steps, ~844 Neurons/generation.
-  formData.append("width", String(width));
-  formData.append("height", String(height));
-  formData.append("steps", String(steps));
-  // No "strength" param — flux-2-dev has none; identity preservation comes
-  // from the prompt's own instruction language instead (see
-  // HEADSHOT_STYLE_PROMPTS in headshot-preview/route.ts). No
-  // "negative_prompt" either — undocumented for this model, dropped rather
-  // than sent on spec.
+  const inputBytes = Array.from(
+    Buffer.from(imageDataUrl.slice(imageDataUrl.indexOf(",") + 1), "base64")
+  );
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -66,28 +40,34 @@ async function requestHeadshotFlux({
       `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${CLOUDFLARE_MODEL}`,
       {
         method: "POST",
-        headers: { Authorization: `Bearer ${apiToken}` },
-        body: formData,
+        headers: {
+          Authorization: `Bearer ${apiToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt,
+          negative_prompt: negativePrompt,
+          image: inputBytes,
+          strength,
+          num_steps: steps,
+        }),
         signal: controller.signal,
       }
     );
 
     if (!res.ok) {
       const errText = await res.text();
-      console.error("Cloudflare Workers AI (flux-2-dev headshot) error:", res.status, errText);
+      console.error("[headshot] SD1.5 img2img error:", res.status, errText);
       return { error: "unavailable" };
     }
 
     const contentType = res.headers.get("content-type") ?? "";
 
-    // Same defensive dual-shape handling as cloudflareFluxMix.ts — Cloudflare
-    // has varied response shape (raw binary vs JSON-wrapped base64) across
-    // model versions elsewhere in this codebase, so don't assume either.
     if (contentType.includes("application/json")) {
       const data = await res.json();
       const base64Out: string | undefined = data?.result?.image;
       if (!data?.success || !base64Out) {
-        console.error("Cloudflare Workers AI (flux-2-dev headshot): unexpected JSON response", data);
+        console.error("[headshot] SD1.5 img2img unexpected JSON response:", data);
         return { error: "unavailable" };
       }
       return { image: `data:image/png;base64,${base64Out}` };
@@ -95,17 +75,17 @@ async function requestHeadshotFlux({
 
     const arrayBuffer = await res.arrayBuffer();
     if (arrayBuffer.byteLength === 0) {
-      console.error("Cloudflare Workers AI (flux-2-dev headshot): empty binary response");
+      console.error("[headshot] SD1.5 img2img empty binary response");
       return { error: "unavailable" };
     }
     const outBase64 = Buffer.from(arrayBuffer).toString("base64");
     return { image: `data:image/png;base64,${outBase64}` };
   } catch (error) {
     if (error instanceof Error && error.name === "AbortError") {
-      console.error("Cloudflare Workers AI (flux-2-dev headshot): request timed out");
+      console.error("[headshot] SD1.5 img2img request timed out");
       return { error: "unavailable", timedOut: true };
     }
-    console.error(error);
+    console.error("[headshot] SD1.5 img2img error:", error);
     return { error: "unavailable" };
   } finally {
     clearTimeout(timeout);
@@ -116,32 +96,35 @@ export async function generateHeadshotFlux({
   accountId,
   apiToken,
   prompt,
+  negativePrompt = "",
   imageDataUrl,
-  width,
-  height,
+  strength = 0.45,
   steps,
 }: {
   accountId: string;
   apiToken: string;
   prompt: string;
+  negativePrompt?: string;
   imageDataUrl: string;
-  width: number;
-  height: number;
+  strength?: number;
   steps: number;
+  // width and height unused — SD1.5 img2img uses input image dimensions
+  width?: number;
+  height?: number;
 }): Promise<{ image?: string; error?: string }> {
   if (!imageDataUrl.startsWith("data:image/")) {
     return { error: "Invalid image" };
   }
 
-  const rawBuffer = Buffer.from(imageDataUrl.slice(imageDataUrl.indexOf(",") + 1), "base64");
-  const resized = await resizeToMax512(rawBuffer);
-
-  const first = await requestHeadshotFlux({ accountId, apiToken, imageBuffer: resized, prompt, width, height, steps });
+  const first = await requestHeadshotImg2Img({
+    accountId, apiToken, imageDataUrl, prompt, negativePrompt, strength, steps,
+  });
   if (first.image || !first.timedOut) {
     return { image: first.image, error: first.error };
   }
 
-  console.error("Cloudflare Workers AI (flux-2-dev headshot): retrying once after timeout");
-  const retry = await requestHeadshotFlux({ accountId, apiToken, imageBuffer: resized, prompt, width, height, steps });
-  return { image: retry.image, error: retry.error };
+  console.error("[headshot] SD1.5 img2img retrying once after timeout");
+  return requestHeadshotImg2Img({
+    accountId, apiToken, imageDataUrl, prompt, negativePrompt, strength, steps,
+  });
 }

@@ -11,27 +11,29 @@ import { prisma } from "@/app/lib/prisma";
 const TOOL_ID = "headshot";
 const DEBUG_GENERATION = process.env.DEBUG_GENERATION === "true";
 
+// ── Identity preservation ────────────────────────────────────────────────────
+// SD 1.5 img2img strength=0.45: preserves identity while allowing style
+// transformation. Above ~0.5 causes identity loss; see cloudflareHeadshotFlux.ts.
+const HEADSHOT_STRENGTH = 0.45;
+const HEADSHOT_NEGATIVE_PROMPT =
+  "blur, distortion, cartoon, anime, low quality, watermark, text, different person, different face, face swap, wrong gender, altered identity, extra limbs, bad anatomy";
+
 // ── Tier configurations ──────────────────────────────────────────────────────
-// flux-2-dev input_image_0 must be < 512x512 (per Cloudflare docs) — that
-// constrains the practical max output too. Free tier uses fewer steps to
-// keep Neuron cost predictable; paid/HD uses more steps for better quality.
+// SD 1.5 img2img: max num_steps is 20. Free tier uses fewer steps for speed;
+// paid/HD uses max for quality. No Neuron billing — SD 1.5 is fixed-cost.
 const FREE_TIER_CONFIG = {
-  width: 512,
-  height: 512,
   steps: 15,
-  estimatedNeurons: 844, // ~844 Neurons at 512x512 + 15 steps
+  estimatedNeurons: 0, // SD1.5 img2img is not Neuron-billed
 } as const;
 
 const PAID_TIER_CONFIG = {
-  width: 512,
-  height: 512,
-  steps: 28,
-  estimatedNeurons: 1600, // higher step count, same resolution limit
+  steps: 20, // SD1.5 img2img max
+  estimatedNeurons: 0,
 } as const;
 
 // ── Neuron budget safety ─────────────────────────────────────────────────────
-// If today's free-tier Neuron spend exceeds this threshold, stop serving free
-// generations for the rest of the UTC day. Paid generations are never blocked.
+// SD1.5 doesn't use Neurons, so this threshold will never be reached.
+// Keeping the infrastructure in place in case the model changes back.
 const DAILY_NEURON_THRESHOLD = 8_000;
 
 function todayUtc(): string {
@@ -109,49 +111,51 @@ async function incrementFingerprintCount(ip: string, fingerprintHash: string): P
 }
 
 // ── Style prompts ────────────────────────────────────────────────────────────
-const BASE = "Take the person in the reference image and restyle them as";
-const PRESERVE = "Preserve their exact face, identity, and gender.";
-
+// SD 1.5 img2img prompt format: keyword-rich positive prompt.
+// Identity clause is appended by promptForStyle — don't add PRESERVE here.
 const HEADSHOT_STYLE_PROMPTS: Record<string, string> = {
   // legacy ids kept for backward compat
-  corporate: `${BASE} a professional corporate headshot: business suit, neutral grey studio background, professional studio lighting, LinkedIn profile photo. ${PRESERVE}`,
-  creative:  `${BASE} a creative professional headshot: modern colorful background, artistic lighting, portfolio photo. ${PRESERVE}`,
-  executive: `${BASE} an executive portrait: formal dark suit, dramatic lighting, prestigious background, CEO photo. ${PRESERVE}`,
-  casual:    `${BASE} a casual professional headshot: smart casual attire, natural background, friendly expression. ${PRESERVE}`,
+  corporate: "professional corporate headshot, business suit, neutral grey studio background, professional studio lighting, LinkedIn profile photo",
+  creative:  "creative professional headshot, modern colorful background, artistic lighting, portfolio photo",
+  executive: "executive portrait, formal dark suit, dramatic lighting, prestigious office background, CEO portrait",
+  casual:    "casual professional headshot, smart casual attire, natural background, friendly expression",
 
   // Social & Platform
-  linkedin:   `${BASE} a LinkedIn profile headshot: business casual attire, clean neutral background, confident approachable smile, professional studio lighting. ${PRESERVE}`,
-  cv:         `${BASE} a formal CV / resume headshot: formal business suit, plain white or light grey background, front-facing, sharp studio lighting. ${PRESERVE}`,
-  freelancer: `${BASE} a freelancer profile photo: smart casual attire, gradient or home-office background, relaxed confident expression. ${PRESERVE}`,
-  fiverr:     `${BASE} a Fiverr gig profile photo: bright colorful background, casual professional, energetic and approachable expression. ${PRESERVE}`,
-  upwork:     `${BASE} an Upwork profile headshot: clean white background, professional casual attire, warm approachable smile. ${PRESERVE}`,
-  github:     `${BASE} a GitHub developer profile photo: casual tech-style attire, dark or muted tech-toned background, relaxed confident look. ${PRESERVE}`,
-  youtube:    `${BASE} a YouTube channel profile photo: vibrant bright background, expressive content-creator energy, casual stylish attire. ${PRESERVE}`,
-  facebook:   `${BASE} a Facebook profile photo: warm natural background, casual friendly attire, genuine warm smile. ${PRESERVE}`,
-  instagram:  `${BASE} an Instagram profile photo: aesthetic lifestyle background, fashion-forward casual attire, confident stylish look. ${PRESERVE}`,
-  twitter:    `${BASE} an X / Twitter profile photo: minimal clean background, smart casual attire, confident thought-leader expression. ${PRESERVE}`,
+  linkedin:   "LinkedIn profile headshot, business casual attire, clean neutral background, confident approachable smile, professional studio lighting",
+  cv:         "CV resume headshot, formal business suit, plain white background, front-facing portrait, sharp studio lighting",
+  freelancer: "freelancer profile photo, smart casual attire, home office background, relaxed confident expression",
+  fiverr:     "Fiverr gig profile photo, bright colorful background, casual professional, energetic approachable expression",
+  upwork:     "Upwork profile headshot, clean white background, professional casual attire, warm approachable smile",
+  github:     "GitHub developer profile photo, casual tech attire, dark muted background, relaxed confident look",
+  youtube:    "YouTube channel profile photo, vibrant bright background, content-creator energy, casual stylish attire",
+  facebook:   "Facebook profile photo, warm natural background, casual friendly attire, genuine warm smile",
+  instagram:  "Instagram profile photo, aesthetic lifestyle background, fashion-forward casual attire, confident stylish look",
+  twitter:    "Twitter X profile photo, minimal clean background, smart casual attire, confident thought-leader expression",
 
   // By Profession
-  speaker:    `${BASE} a keynote speaker portrait: dark stage-like background, professional attire, commanding confident pose. ${PRESERVE}`,
-  ceo:        `${BASE} a CEO executive portrait: dark premium background, power suit or formal attire, commanding authoritative expression, dramatic lighting. ${PRESERVE}`,
-  author:     `${BASE} an author portrait: warm library or bookshelf background, smart casual attire, intellectual thoughtful expression. ${PRESERVE}`,
-  doctor:     `${BASE} a doctor portrait: clinical white background, white coat, professional and trustworthy expression. ${PRESERVE}`,
-  lawyer:     `${BASE} a lawyer portrait: dark wood-paneled office background, formal suit and tie, serious authoritative expression. ${PRESERVE}`,
-  teacher:    `${BASE} a teacher portrait: bright classroom-style background, smart casual attire, warm encouraging expression. ${PRESERVE}`,
-  student:    `${BASE} a student portrait: campus-style background, smart casual youthful attire, bright approachable expression. ${PRESERVE}`,
+  speaker:    "keynote speaker portrait, dark stage background, professional attire, commanding confident pose",
+  ceo:        "CEO executive portrait, dark premium background, power suit, commanding authoritative expression, dramatic studio lighting",
+  author:     "author portrait, warm library bookshelf background, smart casual attire, intellectual thoughtful expression",
+  doctor:     "doctor portrait, clinical white background, white coat, professional trustworthy expression",
+  lawyer:     "lawyer portrait, dark wood-paneled office background, formal suit and tie, serious authoritative expression",
+  teacher:    "teacher portrait, bright classroom background, smart casual attire, warm encouraging expression",
+  student:    "student portrait, campus background, smart casual attire, bright approachable expression",
 
   // Special Purpose
-  passport:          `${BASE} a passport-style portrait: pure white background, neutral front-facing pose, no harsh shadows, formal attire. ${PRESERVE}`,
-  "corporate-team":  `${BASE} a corporate team headshot: uniform neutral background, professional business attire, consistent team-photo aesthetic. ${PRESERVE}`,
-  farmer:            `${BASE} a farmer portrait: outdoor natural setting, practical work attire, warm natural lighting, approachable expression. ${PRESERVE}`,
-  "office-support":  `${BASE} an office support staff headshot: bright clean office background, smart casual or business attire, friendly approachable expression. ${PRESERVE}`,
-  "tea-boy":         `${BASE} a service staff portrait: casual warm service-setting background, neat uniform or smart casual, warm approachable expression. ${PRESERVE}`,
-  foreman:           `${BASE} a foreman or supervisor portrait: industrial or office background, safety-conscious professional attire, authoritative yet approachable expression. ${PRESERVE}`,
+  passport:         "passport photo, pure white background, neutral front-facing pose, no shadows, formal attire, official document photo",
+  "corporate-team": "corporate team headshot, uniform neutral background, professional business attire, team photo aesthetic",
+  farmer:           "farmer portrait, outdoor natural setting, practical work attire, warm natural lighting, approachable expression",
+  "office-support": "office support staff headshot, bright clean office background, smart casual business attire, friendly approachable expression",
+  "tea-boy":        "service staff portrait, casual warm background, neat uniform, warm approachable expression",
+  foreman:          "foreman supervisor portrait, industrial office background, professional work attire, authoritative approachable expression",
 };
+
+const IDENTITY_CLAUSE = "same person, preserve facial features and identity, professional portrait photography, high quality";
 
 function promptForStyle(style: string): string {
   const key = style.trim().toLowerCase();
-  return HEADSHOT_STYLE_PROMPTS[key] ?? HEADSHOT_STYLE_PROMPTS.linkedin;
+  const base = HEADSHOT_STYLE_PROMPTS[key] ?? HEADSHOT_STYLE_PROMPTS.linkedin;
+  return `${base}, ${IDENTITY_CLAUSE}`;
 }
 
 function unavailable() {
@@ -230,17 +234,20 @@ export async function POST(request: Request) {
 
   const cfg = userId ? PAID_TIER_CONFIG : FREE_TIER_CONFIG;
 
+  const prompt = promptForStyle(style);
+
   if (DEBUG_GENERATION) {
-    console.log("[headshot] style:", style, "steps:", cfg.steps, "size:", cfg.width);
+    console.log("[headshot] style:", style, "steps:", cfg.steps, "strength:", HEADSHOT_STRENGTH);
+    console.log("[headshot] prompt:", prompt);
   }
 
   const result = await generateHeadshotFlux({
     accountId,
     apiToken,
-    prompt: promptForStyle(style),
+    prompt,
+    negativePrompt: HEADSHOT_NEGATIVE_PROMPT,
     imageDataUrl,
-    width: cfg.width,
-    height: cfg.height,
+    strength: HEADSHOT_STRENGTH,
     steps: cfg.steps,
   });
 
