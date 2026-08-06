@@ -228,7 +228,7 @@ export async function POST(request: Request) {
   const apiToken = process.env.CLOUDFLARE_API_TOKEN;
   if (!accountId || !apiToken) return unavailable();
 
-  const cfg = FREE_TIER_CONFIG; // paid HD tier wired in download route, not here
+  const cfg = userId ? PAID_TIER_CONFIG : FREE_TIER_CONFIG;
 
   if (DEBUG_GENERATION) {
     console.log("[headshot] style:", style, "steps:", cfg.steps, "size:", cfg.width);
