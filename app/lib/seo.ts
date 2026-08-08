@@ -28,6 +28,12 @@ type BuildMetadataArgs = {
   path: string;
   /** og:type — "article" for the guides and comparison posts, "website" otherwise. */
   type?: "website" | "article";
+  /**
+   * Keep the page out of the index. For utility routes with no ranking value —
+   * login, admin. Overrides the root layout's `robots: { index: true }`, which
+   * every page otherwise inherits.
+   */
+  noindex?: boolean;
 };
 
 export function buildMetadata({
@@ -35,6 +41,7 @@ export function buildMetadata({
   description,
   path,
   type = "website",
+  noindex = false,
 }: BuildMetadataArgs): Metadata {
   const url = path === "/" ? SITE_URL : `${SITE_URL}${path}`;
 
@@ -42,6 +49,7 @@ export function buildMetadata({
     title,
     description,
     alternates: { canonical: path },
+    ...(noindex ? { robots: { index: false, follow: false } } : {}),
     openGraph: {
       title,
       description,

@@ -7,6 +7,7 @@ export const metadata = buildMetadata({
   description:
     "Log in to HeadshotMaker AI to download your full-quality, watermark-free headshots.",
   path: "/login",
+  noindex: true,
 });
 
 export default function LoginPage() {

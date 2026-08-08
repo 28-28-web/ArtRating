@@ -3,7 +3,18 @@ import { auth } from "@/auth";
 import { prisma } from "@/app/lib/prisma";
 import AdminCreditRequestRow from "@/app/components/AdminCreditRequestRow";
 import BrushDivider from "@/app/components/BrushDivider";
+import { buildMetadata } from "@/app/lib/seo";
 import type { CreditPurchaseRequest, User } from "@prisma/client";
+
+// This route had no metadata export at all, so it inherited the root layout's
+// `alternates: { canonical: "/" }` and declared itself a duplicate of the
+// homepage. It now carries its own canonical and a noindex.
+export const metadata = buildMetadata({
+  title: "Credit Requests | HeadshotMaker AI",
+  description: "Internal admin view for reviewing pending credit purchase requests.",
+  path: "/admin/credit-requests",
+  noindex: true,
+});
 
 export default async function AdminCreditRequestsPage() {
   const session = await auth();
