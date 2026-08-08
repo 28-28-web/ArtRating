@@ -87,6 +87,14 @@ const nextConfig: NextConfig = {
       { source: "/deep-art-effects-vs-photoai", destination: "/", permanent: true },
       { source: "/van-gogh-style-ai-filter-top-tools/:path*", destination: "/", permanent: true },
       { source: "/van-gogh-style-ai-filter-top-tools", destination: "/", permanent: true },
+      // Cannibalization merge: this page and /guides/ai-headshot-vs-photographer
+      // targeted the same intent with the same table, the same $150-$500 and
+      // 1-3 week figures, and the same unsourced "90% of professionals" line.
+      // GSC over 3 months: the guide had 1 click / 8 impressions, this had 0/0,
+      // so the guide survives and its unique sections were merged in first.
+      // Redirects to the survivor, not the homepage — the intent still matches.
+      { source: "/professional-headshots-vs-ai-headshots/:path*", destination: "/guides/ai-headshot-vs-photographer", permanent: true },
+      { source: "/professional-headshots-vs-ai-headshots", destination: "/guides/ai-headshot-vs-photographer", permanent: true },
     ];
   },
 };

@@ -20,7 +20,7 @@ const articleJsonLd = {
   description:
     "AI headshots cost $5-39 and take 30 seconds. Photographers cost $200-500 and take 2 weeks. Here's when to use each — and when AI is good enough.",
   datePublished: "2026-07-28",
-  dateModified: "2026-07-28",
+  dateModified: "2026-08-08",
   author: { "@type": "Organization", name: SITE_NAME },
   publisher: { "@type": "Organization", name: SITE_NAME },
   mainEntityOfPage: `${SITE_URL}/guides/ai-headshot-vs-photographer`,
@@ -28,6 +28,37 @@ const articleJsonLd = {
 
 const cheapestPack = CREDIT_PACKS[0];
 const priciestPack = CREDIT_PACKS[CREDIT_PACKS.length - 1];
+
+const PROS_AI = [
+  "Ready in under 60 seconds",
+  "No booking, no commute, no awkward posing",
+  "Unlimited retries — change the style, regenerate",
+  `Free preview, watermark-free download from ${cheapestPack.priceLabel}`,
+  "22+ styles: LinkedIn, CEO, Doctor, Author, and more",
+  "Works from any decent selfie",
+];
+
+const CONS_AI = [
+  "Starts from the photo you have — bad lighting limits results",
+  "No artistic direction or posing feedback",
+  "Not suitable for large print, press kits, or campaigns",
+  "Identity must be clear in the source photo",
+];
+
+const PROS_PHOTOGRAPHER = [
+  "Photographer controls lighting, composition, and posing",
+  "Results are unique and fully customisable",
+  "Multiple outfit changes in one session",
+  "Print-quality output at any size",
+  "Great for book covers, press kits, campaigns",
+];
+
+const CONS_PHOTOGRAPHER = [
+  "$150–$500+ per session, often more in major cities",
+  "1–3 week wait: booking + editing turnaround",
+  "Reshoots cost another full session fee",
+  "Scheduling around photographer availability",
+];
 
 export default function AiHeadshotVsPhotographerPage() {
   return (
@@ -42,7 +73,7 @@ export default function AiHeadshotVsPhotographerPage() {
           AI Headshot vs Professional Photographer: 2026 Comparison
         </h1>
         <BrushDivider className="mt-2" />
-        <p className="mt-3 text-xs text-ink-soft">5 min read · Last updated July 28, 2026</p>
+        <p className="mt-3 text-xs text-ink-soft">7 min read · Last updated August 8, 2026</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -117,8 +148,18 @@ export default function AiHeadshotVsPhotographerPage() {
               </tr>
               <tr className="border-b border-border-soft">
                 <td className="py-2 pr-4">Styles</td>
-                <td className="py-2 pr-4">3–4 presets</td>
+                <td className="py-2 pr-4">22+ presets</td>
                 <td className="py-2">Fully custom</td>
+              </tr>
+              <tr className="border-b border-border-soft">
+                <td className="py-2 pr-4">Location</td>
+                <td className="py-2 pr-4">Any device, anywhere</td>
+                <td className="py-2">Studio or your location</td>
+              </tr>
+              <tr className="border-b border-border-soft">
+                <td className="py-2 pr-4">Print quality</td>
+                <td className="py-2 pr-4">Screen / web use</td>
+                <td className="py-2">Any resolution</td>
               </tr>
               <tr>
                 <td className="py-2 pr-4">Best for</td>
@@ -128,6 +169,62 @@ export default function AiHeadshotVsPhotographerPage() {
             </tbody>
           </table>
         </div>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="font-display text-2xl font-semibold text-ink">AI Headshots — Pros &amp; Cons</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="rounded-2xl border border-border-soft p-4">
+            <p className="mb-2 text-sm font-semibold text-ink">Pros</p>
+            <ul className="space-y-1 text-sm text-ink-soft">
+              {PROS_AI.map((p) => <li key={p}>✓ {p}</li>)}
+            </ul>
+          </div>
+          <div className="rounded-2xl border border-border-soft p-4">
+            <p className="mb-2 text-sm font-semibold text-ink">Cons</p>
+            <ul className="space-y-1 text-sm text-ink-soft">
+              {CONS_AI.map((c) => <li key={c}>✗ {c}</li>)}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="font-display text-2xl font-semibold text-ink">
+          Photographer Headshots — Pros &amp; Cons
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="rounded-2xl border border-border-soft p-4">
+            <p className="mb-2 text-sm font-semibold text-ink">Pros</p>
+            <ul className="space-y-1 text-sm text-ink-soft">
+              {PROS_PHOTOGRAPHER.map((p) => <li key={p}>✓ {p}</li>)}
+            </ul>
+          </div>
+          <div className="rounded-2xl border border-border-soft p-4">
+            <p className="mb-2 text-sm font-semibold text-ink">Cons</p>
+            <ul className="space-y-1 text-sm text-ink-soft">
+              {CONS_PHOTOGRAPHER.map((c) => <li key={c}>✗ {c}</li>)}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="font-display text-2xl font-semibold text-ink">What a Session Actually Costs</h2>
+        <p className="text-ink">
+          That $350 quote wasn&apos;t unusual. A headshot session in a mid-size city typically runs
+          $200–$350 for an hour, 2–3 outfit changes, and 5–10 edited photos. In New York or London,
+          expect $400–$600. You also pay in time: finding a photographer, waiting for a slot in
+          their schedule, showing up, then waiting another 1–2 weeks for the edited files.
+        </p>
+        <p className="text-ink">
+          AI headshots start free — HeadshotMaker AI gives you{" "}
+          <Link href="/professional-headshot-generator" className="underline hover:text-accent-text">
+            6 free previews with no signup
+          </Link>
+          . Removing the watermark costs {cheapestPack.priceLabel}, and that&apos;s the whole cost
+          for most people.
+        </p>
       </section>
 
       <section className="flex flex-col gap-3">
@@ -160,6 +257,9 @@ export default function AiHeadshotVsPhotographerPage() {
           <li>Portfolio site</li>
           <li>Dating app profile</li>
           <li>Email signature</li>
+          <li>Trying multiple styles before committing to a look</li>
+          <li>Different background styles for different platforms</li>
+          <li>Any situation where budget is the binding constraint</li>
         </ul>
       </section>
 
@@ -177,10 +277,15 @@ export default function AiHeadshotVsPhotographerPage() {
       <section className="flex flex-col gap-3">
         <h2 className="font-display text-2xl font-semibold text-ink">The Verdict</h2>
         <p className="text-ink">
-          For 90% of professionals who just need a clean LinkedIn photo, an AI headshot generator
-          is good enough — and dramatically cheaper. Save the photographer budget for the
-          situations that genuinely call for it: a press kit, a book jacket, a campaign where the
-          photo itself is the deliverable.
+          For most professionals who just need a clean LinkedIn photo, an AI headshot generator is
+          good enough — and dramatically cheaper. Save the photographer budget for the situations
+          that genuinely call for it: a press kit, a book jacket, a campaign where the photo itself
+          is the deliverable.
+        </p>
+        <p className="text-ink">
+          If you&apos;re unsure, try the AI version first — it&apos;s free. If the result clears
+          your bar, you&apos;ve saved a few hundred dollars and a couple of weeks. If it
+          doesn&apos;t, you&apos;ll know exactly what to ask a photographer for.
         </p>
         <p className="text-ink">
           Building out the rest of your job-search kit too? Check our{" "}
@@ -201,7 +306,8 @@ export default function AiHeadshotVsPhotographerPage() {
         </h2>
         <div className="rounded-2xl border border-border-soft p-6 text-center">
           <p className="text-ink">
-            Try HeadshotMaker AI free — 2 headshots with no signup, no credit card.
+            Try HeadshotMaker AI free — 6 watermarked previews with no signup, no credit card.
+            Styles include LinkedIn, CEO, Doctor, Author, Passport, and 18 more.
           </p>
           <Link
             href="/professional-headshot-generator"
