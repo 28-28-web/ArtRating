@@ -90,7 +90,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
     label: "Speaker",
     badgeColor: "#D97706",
     group: "profession",
-    exampleImage: U("photo-1542744173-8e7e53415bb0"),
+    exampleImage: "/examples/speaker.jpg",
   },
   {
     id: "ceo",
@@ -104,7 +104,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
     label: "Author",
     badgeColor: "#92400E",
     group: "profession",
-    exampleImage: U("photo-1541963463532-d68292c34b19"),
+    exampleImage: "/examples/writer.jpg",
   },
   {
     id: "doctor",
@@ -118,7 +118,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
     label: "Lawyer",
     badgeColor: "#1F2937",
     group: "profession",
-    exampleImage: U("photo-1568602471122-7832951cc4c5"),
+    exampleImage: "/examples/lawyer.jpg",
   },
   {
     id: "teacher",
@@ -132,7 +132,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
     label: "Student",
     badgeColor: "#6D28D9",
     group: "profession",
-    exampleImage: U("photo-1523240795612-9a054b0db644"),
+    exampleImage: "/examples/student.jpg",
   },
 
   // ── Special Purpose ────────────────────────────────────────────────────────
@@ -155,14 +155,14 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
     label: "Farmer",
     badgeColor: "#4D7C0F",
     group: "special",
-    exampleImage: U("photo-1608876537010-ac56d8731614"),
+    exampleImage: "/examples/farmer.jpg",
   },
   {
     id: "office-support",
     label: "Office Support",
     badgeColor: "#0891B2",
     group: "special",
-    exampleImage: U("photo-1590650153855-d9e808231d41"),
+    exampleImage: "/examples/receptionist.jpg",
   },
   {
     id: "tea-boy",
@@ -176,7 +176,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
     label: "Foreman",
     badgeColor: "#B91C1C",
     group: "special",
-    exampleImage: U("photo-1543357644-160b53c087e8"),
+    exampleImage: "/examples/foreman.jpg",
   },
 ];
 
