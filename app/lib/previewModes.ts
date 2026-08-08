@@ -1,18 +1,6 @@
 import type { AccentName } from "@/app/lib/accent";
 import { HEADSHOT_STYLES } from "@/app/lib/headshotStyles";
 
-// Inlined from the deleted app/lib/affiliate.ts (Paintify leftover). Nothing
-// populates these fields any more — HEADSHOT_MODE sets ctaTool: null and never
-// sets bottomTools — but UploadBox still renders both branches, so the shape
-// has to stay until that dead UI is removed.
-type AffiliateTool = {
-  id: string;
-  name: string;
-  tagline: string;
-  url: string;
-  bestFor: string;
-};
-
 export type PreviewMode = {
   id?: string;
   accent: AccentName;
@@ -20,9 +8,6 @@ export type PreviewMode = {
   fallbackStyle: string;
   disclaimer?: string;
   resultCaption: string;
-  ctaTool: AffiliateTool | null;
-  bottomToolsCaption?: string;
-  bottomTools?: AffiliateTool[];
   bottomActions?: Array<"download" | "share">;
   styleKeywords: string[];
   negativePrompt?: string;
@@ -40,7 +25,6 @@ export const HEADSHOT_MODE: PreviewMode = {
     "AI preview — may not perfectly match a real photoshoot. Best for casual profile use.",
   resultCaption:
     "AI-generated preview — watermarked. Unlock HD (no watermark) with 2 credits →",
-  ctaTool: null,
   negativePrompt: "blur, distortion, cartoon, anime, low quality, watermark, text",
   styleTabs: HEADSHOT_STYLES.map(({ id, label }) => ({ id, label })),
   styleKeywords: ["corporate", "linkedin", "studio portrait", "creative professional"],

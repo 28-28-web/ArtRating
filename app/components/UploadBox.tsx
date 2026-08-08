@@ -217,17 +217,6 @@ export default function UploadBox({
 
                 <DownloadButton generationId={generationId} />
 
-                {mode.ctaTool && (
-                  <a
-                    href={mode.ctaTool.url}
-                    target="_blank"
-                    rel="noopener noreferrer sponsored"
-                    className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-canvas hover:opacity-90"
-                  >
-                    Try {mode.ctaTool.name} →
-                  </a>
-                )}
-
                 {mode.bottomActions?.includes("share") && (
                   <div className="flex flex-col items-center gap-2">
                     <button
@@ -265,24 +254,6 @@ export default function UploadBox({
               </div>
             )}
 
-            {mode.bottomToolsCaption && mode.bottomTools && mode.bottomTools.length > 0 && (
-              <>
-                <p className="text-sm text-ink-soft">{mode.bottomToolsCaption}</p>
-                <div className="flex flex-wrap gap-2">
-                  {mode.bottomTools.map((tool) => (
-                    <a
-                      key={tool.id}
-                      href={tool.url}
-                      target="_blank"
-                      rel="noopener noreferrer sponsored"
-                      className="rounded-full border border-border-soft px-4 py-2 text-sm font-medium text-ink hover:border-accent hover:text-accent-text"
-                    >
-                      {tool.name} →
-                    </a>
-                  ))}
-                </div>
-              </>
-            )}
           </div>
         )}
       </div>
