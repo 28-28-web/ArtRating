@@ -142,7 +142,7 @@ const STYLE_PROMPTS_KONTEXT: Record<string, string> = {
   "tea-boy":
     "Completely replace the existing background with a warm café or hospitality service interior. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The look should be neat and approachable, with clean professional service attire.",
   foreman:
-    "Completely replace the existing background — remove whatever environment is currently shown, whether an indoor office, classroom, home, or any outdoor setting — with an active outdoor construction site: scaffolding, steel beams, hard hats, and safety equipment visible in the background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should feel like natural daylight on a working building site. The attire should look like professional foreman workwear including a high-visibility vest or hard hat.",
+    "Completely replace the existing background — remove whatever environment is currently shown, whether an indoor office, classroom, home, or any outdoor setting — with an active outdoor construction site: scaffolding and safety equipment visible in the background. Keep the person's exact facial structure, hairline, eyebrows, eyes, nose, and mouth completely unchanged — do not reshape or redraw the face. Place a bright yellow hard hat ON TOP of their existing head without altering the face or head shape underneath it. The lighting should feel like natural daylight on a working building site. The attire should look like professional foreman workwear with a high-visibility vest.",
 };
 
 function promptSD15(style: string): string {
