@@ -98,6 +98,11 @@ const FAQS = [
     answer:
       "No. Uploaded photos are deleted within 24 hours and are never used to train AI models.",
   },
+  {
+    question: "Is Paintify the same as HeadshotMaker AI?",
+    answer:
+      "Yes — HeadshotMaker AI was previously called Paintify. Same product, same team, rebranded to better reflect the focus on professional headshots. All existing accounts and credits carry over.",
+  },
 ];
 
 const faqJsonLd = {
