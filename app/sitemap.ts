@@ -8,6 +8,7 @@ const routes: { path: string; priority: number; changeFrequency: MetadataRoute.S
   { path: "/author-headshot", priority: 0.8, changeFrequency: "monthly" },
   { path: "/credits", priority: 0.8, changeFrequency: "monthly" },
   { path: "/professional-headshots-vs-ai-headshots", priority: 0.8, changeFrequency: "monthly" },
+  { path: "/guides", priority: 0.7, changeFrequency: "monthly" },
   { path: "/guides/best-ai-inpainting-tools-2026", priority: 0.7, changeFrequency: "monthly" },
   { path: "/guides/ai-headshot-vs-photographer", priority: 0.7, changeFrequency: "monthly" },
   { path: "/guides/linkedin-premium-review", priority: 0.7, changeFrequency: "monthly" },
