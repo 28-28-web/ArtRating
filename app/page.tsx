@@ -35,6 +35,62 @@ const jsonLd = {
 
 const cheapestPack = CREDIT_PACKS[0];
 
+const HOW_IT_WORKS = [
+  { n: "1", title: "Upload your photo", body: "Any clear face photo works. A forward-facing selfie in natural light gives the best result — no studio setup needed." },
+  { n: "2", title: "Pick your style", body: "Choose from 22+ professional styles: LinkedIn, CEO, Doctor, Author, Passport, and more. Each style sets a new background and lighting automatically." },
+  { n: "3", title: "Get your AI headshot", body: "A professional-quality preview generates in under 60 seconds. Regenerate as many times as you like — previews are always free." },
+  { n: "4", title: "Download in HD", body: `Happy with the result? Log in and spend 2 credits to download the full-resolution, watermark-free file. Packs start from ${CREDIT_PACKS[0].priceLabel}.` },
+];
+
+const PROFESSION_GROUPS = [
+  {
+    title: "Corporate & Professional",
+    styles: "LinkedIn · CV · CEO · Corporate Team · Executive",
+    body: "Your LinkedIn profile photo is the first impression in every job search and cold outreach. Corporate AI headshots deliver a studio-quality result in the time it takes to make a coffee.",
+  },
+  {
+    title: "Freelancers & Creators",
+    styles: "Freelancer · Fiverr · Upwork · YouTube · Instagram · Twitter · GitHub",
+    body: "Profile photos on freelance platforms directly affect trust and conversion rates. A clean, professional photo signals credibility before a client reads a single word of your pitch.",
+  },
+  {
+    title: "Specialists & Professionals",
+    styles: "Doctor · Lawyer · Teacher · Speaker · Author",
+    body: "Professional roles demand a headshot that signals authority and trust. AI headshots for doctors, lawyers, and educators deliver a formal look without a studio booking.",
+  },
+  {
+    title: "Everyday & Field Workers",
+    styles: "Farmer · Foreman · Office Support · Tea Boy · Student",
+    body: "Professional photos aren't just for office roles. Whether it's a student portfolio, a receptionist profile, or a field supervisor's ID badge, every role deserves a decent headshot.",
+  },
+  {
+    title: "Documents & ID",
+    styles: "Passport Style",
+    body: "Document headshots require a plain, formal look with precise framing. The Passport style follows standard guidelines: neutral background, front-facing, formal attire.",
+  },
+];
+
+const AI_VS_PHOTO = [
+  {
+    label: "Cost",
+    ai: `Free previews · from ${CREDIT_PACKS[0].priceLabel} to download`,
+    pro: "$150–$500+ per session",
+    body: `AI headshots start free — previews cost nothing. Clean downloads start from ${CREDIT_PACKS[0].priceLabel}, compared to $150–$500+ for a professional photography session.`,
+  },
+  {
+    label: "Time",
+    ai: "Ready in under 60 seconds",
+    pro: "1–3 weeks (booking + editing)",
+    body: "An AI headshot is ready before you'd finish booking a photographer's calendar link. No waiting for edited files.",
+  },
+  {
+    label: "Convenience",
+    ai: "Any device · any time · no appointment",
+    pro: "Studio visit · limited slots · travel required",
+    body: "Generate from any device, at any time, from anywhere in the world. No appointment, no commute, no posing sessions.",
+  },
+];
+
 // No aggregateRating field here — the site has no real review/rating system
 // behind it yet, and Google's structured-data guidelines treat a fabricated
 // rating as a policy violation (can trigger a manual action on rich
@@ -96,7 +152,26 @@ const FAQS = [
   {
     question: "Are my photos stored?",
     answer:
-      "No. Uploaded photos are deleted within 24 hours and are never used to train AI models.",
+      "Your original uploaded photo is never stored by us — it is processed in memory and discarded when the request ends. Generated headshots are stored on Cloudinary so you can download them later; you can request deletion at hello@artrating.art. The AI inference providers (fal.ai and Cloudflare Workers AI) process your image under their own privacy policies.",
+  },
+  {
+    question: "What resolution is the downloaded headshot?",
+    answer:
+      "Downloaded files are full-quality JPEG at the AI model's native resolution — typically 1024×1024px or higher, suitable for LinkedIn, resumes, and web use. For large-format print, a professional photographer still provides higher resolution.",
+  },
+  {
+    question: "Can I use an AI headshot on LinkedIn or official documents?",
+    answer:
+      "Yes for LinkedIn, resumes, email signatures, and most professional profiles — AI headshots are widely accepted for digital use. For government ID, passports, or visa applications, use a photo taken by a human photographer that meets that authority's specific requirements.",
+  },
+  {
+    question: "How does the AI actually generate the headshot?",
+    answer:
+      "HeadshotMaker AI uses FLUX.1 Kontext, an instruction-based image editing model, for logged-in users. It receives your photo and a style instruction — \"replace the background, keep the face unchanged\" — and renders a new image. It edits your photo rather than generating a new person, which is why your identity is preserved.",
+  },
+  {
+    question: "What is the difference between free and paid?",
+    answer: `The free tier gives you ${FREE_GENERATION_CAP} AI headshot previews with a watermark — no signup, no credit card. Paid means removing the watermark: log in, spend 2 credits, and download the full-quality file. Credits start from ${cheapestPack.priceLabel}. Generation is always free; you only pay to download.`,
   },
   {
     question: "Is Paintify the same as HeadshotMaker AI?",
@@ -138,6 +213,80 @@ export default function Home() {
             AI Headshot Styles
           </h2>
           <HeadshotShowcase />
+        </section>
+
+        <section className="flex w-full flex-col gap-4">
+          <div>
+            <h2 className="font-display text-xl font-semibold text-ink">How It Works</h2>
+            <BrushDivider className="mt-1" />
+          </div>
+          <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {HOW_IT_WORKS.map((step) => (
+              <li key={step.n} className="rounded-xl border border-border-soft p-4">
+                <span className="font-display text-3xl font-bold text-accent-text">{step.n}</span>
+                <p className="mt-2 font-medium text-ink">{step.title}</p>
+                <p className="mt-1 text-sm text-ink-soft">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="flex w-full flex-col gap-4">
+          <div>
+            <h2 className="font-display text-xl font-semibold text-ink">Built For Every Profession</h2>
+            <BrushDivider className="mt-1" />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {PROFESSION_GROUPS.map((group) => (
+              <div key={group.title} className="rounded-xl border border-border-soft p-4">
+                <p className="font-medium text-ink">{group.title}</p>
+                <p className="mt-1 text-xs font-medium text-accent-text">{group.styles}</p>
+                <p className="mt-2 text-sm text-ink-soft">{group.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="flex w-full flex-col gap-4">
+          <div>
+            <h2 className="font-display text-xl font-semibold text-ink">AI Headshot vs Traditional Photography</h2>
+            <BrushDivider className="mt-1" />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {AI_VS_PHOTO.map((row) => (
+              <div key={row.label} className="rounded-xl border border-border-soft p-4">
+                <p className="text-xs font-medium uppercase tracking-wide text-ink-soft">{row.label}</p>
+                <p className="mt-2 font-medium text-ink">{row.ai}</p>
+                <p className="mt-1 text-sm text-ink-soft line-through">{row.pro}</p>
+                <p className="mt-2 text-sm text-ink-soft">{row.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="flex w-full flex-col gap-4">
+          <div>
+            <h2 className="font-display text-xl font-semibold text-ink">How It&apos;s Built</h2>
+            <BrushDivider className="mt-1" />
+          </div>
+          <div className="rounded-xl border border-border-soft p-5">
+            <p className="text-sm text-ink-soft">
+              HeadshotMaker AI runs on <strong className="text-ink">FLUX.1 Kontext</strong> — an
+              instruction-based image editing model from Black Forest Labs. It receives your photo
+              and a text instruction, then edits the background and lighting while preserving your
+              face. It does not generate a new person; it edits the one in your photo.
+            </p>
+            <p className="mt-3 text-sm text-ink-soft">
+              Logged-in users get FLUX.1 Kontext via fal.ai&apos;s inference infrastructure.
+              Anonymous free previews run on Cloudflare Workers AI using Stable Diffusion 1.5 —
+              same concept, lighter compute, enough to show you what a style looks like before you
+              decide to download.
+            </p>
+            <p className="mt-3 text-sm text-ink-soft">
+              Your uploaded photo is processed in memory and discarded immediately after generation.
+              We never store your source image or use it to train models.
+            </p>
+          </div>
         </section>
 
         <section className="flex w-full flex-col gap-4">

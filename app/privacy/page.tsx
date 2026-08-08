@@ -30,7 +30,8 @@ export default function PrivacyPage() {
           </li>
           <li>
             <strong>Photos you upload</strong> — used only to generate your requested headshot.
-            Photos are not stored permanently and are deleted within 24 hours of processing.
+            Your original photo is processed in memory and never stored by us. Generated headshots
+            are stored on Cloudinary so you can download them later; email us to request deletion.
           </li>
           <li>
             <strong>Payment information</strong> — handled directly by our payment processor,
@@ -42,9 +43,14 @@ export default function PrivacyPage() {
       <section className="flex flex-col gap-3">
         <h2 className="font-display text-xl font-semibold text-ink">Photo retention</h2>
         <p className="text-ink">
-          Uploaded photos and the headshots we generate from them are deleted within 24 hours of
-          processing. We do not keep a permanent copy, and we do not use your photos to train AI
-          models.
+          Your original uploaded photo is never stored by us — it is processed in memory and
+          discarded when the request ends. Generated headshots are stored on Cloudinary so you can
+          download them. We do not use your photos to train AI models. To request deletion of your
+          generated headshots, email{" "}
+          <a href={`mailto:${CONTACT_EMAIL}`} className="underline hover:text-accent-text">
+            {CONTACT_EMAIL}
+          </a>
+          .
         </p>
       </section>
 
@@ -62,8 +68,14 @@ export default function PrivacyPage() {
         <h2 className="font-display text-xl font-semibold text-ink">Third-party processors</h2>
         <ul className="list-disc space-y-2 pl-5 text-ink">
           <li>
-            <strong>Cloudflare Workers AI</strong> — processes uploaded photos to generate your
-            headshot.
+            <strong>fal.ai</strong> — runs FLUX.1 Kontext inference for logged-in users.
+          </li>
+          <li>
+            <strong>Cloudflare Workers AI</strong> — runs Stable Diffusion inference for anonymous
+            free previews.
+          </li>
+          <li>
+            <strong>Cloudinary</strong> — stores generated headshots so you can download them.
           </li>
           <li>
             <strong>Paddle</strong> — handles payment collection and processing on our behalf; we
