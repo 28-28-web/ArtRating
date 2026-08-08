@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
+import { buildMetadata } from "@/app/lib/seo";
 import Link from "next/link";
 import BrushDivider from "@/app/components/BrushDivider";
 import { SITE_URL } from "@/app/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Guides — AI Headshots, LinkedIn, and Career Tools | HeadshotMaker AI",
   description:
     "Honest, tested guides on AI headshots, LinkedIn profiles, and the tools job seekers actually pay for — including what's worth the money and what isn't.",
-  alternates: { canonical: "/guides" },
-};
+  path: "/guides",
+});
 
 type Guide = {
   href: string;

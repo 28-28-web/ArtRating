@@ -1,15 +1,16 @@
-import type { Metadata } from "next";
+import { buildMetadata } from "@/app/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
 import BrushDivider from "@/app/components/BrushDivider";
 import { SITE_NAME, SITE_URL } from "@/app/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "7 Best Resume Builders 2026 — Ranked After Testing Each One",
   description:
     "I tested 7 resume builders over 2 weeks. Here are the best ones for getting more interviews, ranked by value, templates, and ease of use.",
-  alternates: { canonical: "/guides/best-resume-builders" },
-};
+  path: "/guides/best-resume-builders",
+  type: "article",
+});
 
 const articleJsonLd = {
   "@context": "https://schema.org",

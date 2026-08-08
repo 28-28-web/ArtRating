@@ -1,14 +1,15 @@
-import type { Metadata } from "next";
+import { buildMetadata } from "@/app/lib/seo";
 import ContactForm from "@/app/components/ContactForm";
 import BrushDivider from "@/app/components/BrushDivider";
 
 const CONTACT_EMAIL = "hello@artrating.art";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Contact | HeadshotMaker AI",
-  description: "Get in touch with the team behind HeadshotMaker AI.",
-  alternates: { canonical: "/contact" },
-};
+  description:
+    "Get in touch with the team behind HeadshotMaker AI.",
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (

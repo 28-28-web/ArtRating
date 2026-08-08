@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import { buildMetadata } from "@/app/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Refund Policy | HeadshotMaker AI",
-  description: "HeadshotMaker AI's refund policy for AI-generated headshot downloads.",
-  alternates: { canonical: "/refund" },
-};
+  description:
+    "HeadshotMaker AI's refund policy for AI-generated headshot downloads.",
+  path: "/refund",
+});
 
 const CONTACT_EMAIL = "hello@artrating.art";
 

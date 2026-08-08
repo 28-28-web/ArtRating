@@ -1,23 +1,23 @@
-import type { Metadata } from "next";
+import { buildMetadata } from "@/app/lib/seo";
 import Link from "next/link";
 import BrushDivider from "@/app/components/BrushDivider";
 import { FREE_GENERATION_CAP } from "@/app/lib/generationGate";
 import { CREDIT_PACKS } from "@/app/lib/creditPacks";
 import { SITE_NAME, SITE_URL } from "@/app/lib/site";
 
-export const metadata: Metadata = {
-  title: "AI Author Headshot Generator — Professional Photos for Your Book Cover & Amazon Page",
+export const metadata = buildMetadata({
+  title: "AI Author Headshot Generator — Book Covers & Amazon Pages",
   description:
     "Generate a professional author headshot from any selfie using AI. Perfect for your Amazon author page, book back cover, and press kit. Free to try, from $5.",
-  alternates: { canonical: "/author-headshot" },
-};
+  path: "/author-headshot",
+});
 
 const cheapestPack = CREDIT_PACKS[0];
 
 const articleJsonLd = {
   "@context": "https://schema.org",
   "@type": "Article",
-  headline: "AI Author Headshot Generator — Professional Photos for Your Book Cover & Amazon Page",
+  headline: "AI Author Headshot Generator — Book Covers & Amazon Pages",
   description:
     "Generate a professional author headshot from any selfie using AI. Perfect for your Amazon author page, book back cover, and press kit.",
   datePublished: "2026-07-29",

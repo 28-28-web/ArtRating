@@ -1,16 +1,17 @@
-import type { Metadata } from "next";
+import { buildMetadata } from "@/app/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
 import BrushDivider from "@/app/components/BrushDivider";
 import { SITE_NAME, SITE_URL } from "@/app/lib/site";
 import { CREDIT_PACKS } from "@/app/lib/creditPacks";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "AI Headshot vs Professional Photographer: Honest 2026 Comparison",
   description:
     "AI headshots cost $5-39 and take 30 seconds. Photographers cost $200-500 and take 2 weeks. Here's when to use each — and when AI is good enough.",
-  alternates: { canonical: "/guides/ai-headshot-vs-photographer" },
-};
+  path: "/guides/ai-headshot-vs-photographer",
+  type: "article",
+});
 
 const articleJsonLd = {
   "@context": "https://schema.org",

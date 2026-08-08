@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import { buildMetadata } from "@/app/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Terms of Service | HeadshotMaker AI",
-  description: "The terms that apply when you use HeadshotMaker AI.",
-  alternates: { canonical: "/terms" },
-};
+  description:
+    "The terms that apply when you use HeadshotMaker AI.",
+  path: "/terms",
+});
 
 const CONTACT_EMAIL = "hello@artrating.art";
 

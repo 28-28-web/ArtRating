@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { buildMetadata } from "@/app/lib/seo";
 import Link from "next/link";
 import { auth } from "@/auth";
 import { prisma } from "@/app/lib/prisma";
@@ -6,11 +6,12 @@ import CreditsForm from "@/app/components/CreditsForm";
 import BrushDivider from "@/app/components/BrushDivider";
 import { CREDIT_PACKS } from "@/app/lib/creditPacks";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Get Credits | HeadshotMaker AI",
-  description: "Buy credits to download your full-quality, watermark-free AI photo results.",
-  alternates: { canonical: "/credits" },
-};
+  description:
+    "Buy credits to download your full-quality, watermark-free AI photo results.",
+  path: "/credits",
+});
 
 export default async function CreditsPage({
   searchParams,

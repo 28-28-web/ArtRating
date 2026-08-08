@@ -1,15 +1,16 @@
-import type { Metadata } from "next";
+import { buildMetadata } from "@/app/lib/seo";
 import Link from "next/link";
 import BrushDivider from "@/app/components/BrushDivider";
 import { SITE_NAME, SITE_URL } from "@/app/lib/site";
 import { CREDIT_PACKS } from "@/app/lib/creditPacks";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Professional Headshots vs AI Headshots: Which Is Right for You? (2026)",
   description:
-    "Professional headshots vs AI headshots — honest cost, quality, and speed comparison. When a $5 AI photo is good enough, and when you still need a real photographer.",
-  alternates: { canonical: "/professional-headshots-vs-ai-headshots" },
-};
+    "Professional headshots vs AI headshots — an honest cost, quality, and speed comparison. When a $5 AI photo is enough, and when you need a photographer.",
+  path: "/professional-headshots-vs-ai-headshots",
+  type: "article",
+});
 
 const articleJsonLd = {
   "@context": "https://schema.org",

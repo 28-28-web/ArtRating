@@ -1,14 +1,15 @@
-import type { Metadata } from "next";
+import { buildMetadata } from "@/app/lib/seo";
 import Link from "next/link";
 import BrushDivider from "@/app/components/BrushDivider";
 import { SITE_NAME, SITE_URL } from "@/app/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Best AI Inpainting Tools 2026 — Ranked After Testing Each One",
   description:
-    "The best AI inpainting tools in 2026, ranked by quality, speed, and value. Covers background replacement, object removal, and professional headshot transformation.",
-  alternates: { canonical: "/guides/best-ai-inpainting-tools-2026" },
-};
+    "The best AI inpainting tools in 2026, ranked by quality, speed, and value. Covers background replacement, object removal, and headshot transformation.",
+  path: "/guides/best-ai-inpainting-tools-2026",
+  type: "article",
+});
 
 const articleJsonLd = {
   "@context": "https://schema.org",

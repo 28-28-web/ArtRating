@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { buildMetadata } from "@/app/lib/seo";
 import Link from "next/link";
 import Image from "next/image";
 import BrushDivider from "@/app/components/BrushDivider";
@@ -6,12 +6,12 @@ import { FREE_GENERATION_CAP } from "@/app/lib/generationGate";
 import { CREDIT_PACKS } from "@/app/lib/creditPacks";
 import { SITE_NAME, SITE_URL } from "@/app/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "AI LinkedIn Headshot Generator — Professional Profile Photos in 30 Seconds",
   description:
-    "Generate a professional LinkedIn headshot from any selfie using AI. Free to try, no signup needed — perfect for job seekers and professionals updating their profile photo.",
-  alternates: { canonical: "/linkedin-headshot" },
-};
+    "Generate a professional LinkedIn headshot from any selfie using AI. Free to try, no signup needed — ideal for job seekers updating their profile photo.",
+  path: "/linkedin-headshot",
+});
 
 const cheapestPack = CREDIT_PACKS[0];
 

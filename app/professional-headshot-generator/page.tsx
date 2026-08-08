@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { buildMetadata } from "@/app/lib/seo";
 import Link from "next/link";
 import ToolInteractive from "@/app/components/ToolInteractive";
 import BrushDivider from "@/app/components/BrushDivider";
@@ -7,12 +7,12 @@ import { accentVars } from "@/app/lib/accent";
 import { FREE_GENERATION_CAP } from "@/app/lib/generationGate";
 import { CREDIT_PACKS } from "@/app/lib/creditPacks";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Professional AI Headshot Generator — Studio Quality from Your Selfie",
   description:
     "Upload any selfie and get a professional headshot in 30 seconds. Used by LinkedIn professionals, indie authors, and job seekers. From $5.",
-  alternates: { canonical: "/professional-headshot-generator" },
-};
+  path: "/professional-headshot-generator",
+});
 
 const cheapestPack = CREDIT_PACKS[0];
 

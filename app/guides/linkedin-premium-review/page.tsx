@@ -1,15 +1,16 @@
-import type { Metadata } from "next";
+import { buildMetadata } from "@/app/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
 import BrushDivider from "@/app/components/BrushDivider";
 import { SITE_NAME, SITE_URL } from "@/app/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "LinkedIn Premium Review 2026: Is It Worth $39/Month?",
   description:
     "I paid for LinkedIn Premium for 3 months. Honest breakdown of features, pricing, and whether job seekers actually need it in 2026.",
-  alternates: { canonical: "/guides/linkedin-premium-review" },
-};
+  path: "/guides/linkedin-premium-review",
+  type: "article",
+});
 
 const articleJsonLd = {
   "@context": "https://schema.org",
