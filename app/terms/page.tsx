@@ -13,7 +13,7 @@ export default function TermsPage() {
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-6 py-16">
       <div>
         <h1 className="font-display text-3xl font-semibold text-ink">Terms of service</h1>
-        <p className="mt-2 text-sm text-ink-soft">Last updated: July 27, 2026</p>
+        <p className="mt-2 text-sm text-ink-soft">Last updated: August 8, 2026</p>
       </div>
 
       <p className="text-ink">
@@ -58,22 +58,21 @@ export default function TermsPage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="font-display text-xl font-semibold text-ink">Coloring pages you generate</h2>
+        <h2 className="font-display text-xl font-semibold text-ink">Previews and downloads</h2>
         <p className="text-ink">
-          Coloring pages you download after paying with a credit are yours to use for personal or
-          commercial purposes, including printing and selling physical or digital coloring books —
-          for example through Amazon KDP or another print-on-demand service.
+          Free generations are watermarked previews, provided so you can evaluate the service
+          before paying. Professional or commercial use — including a LinkedIn profile, resume,
+          author page, press kit, or company website — requires the paid, watermark-free download.
         </p>
         <p className="text-ink">
-          Your first 3 free, watermarked generations are for personal use only (previewing the
-          tool, printing at home, classroom use). Commercial use, including anything you plan to
-          sell, requires the paid, watermark-free download.
+          You are responsible for having the right to use any photo you upload. You may not
+          resell, redistribute, or rebrand HeadshotMaker AI itself.
         </p>
         <p className="text-ink">
-          You may not resell, redistribute, or rebrand the coloring page generator itself. If a
-          platform you publish to (such as Amazon KDP) requires you to disclose that content is
-          AI-generated, you&apos;re responsible for making that disclosure — we don&apos;t
-          represent coloring page output as wholly human-authored.
+          Generated headshots are AI-created images, not unedited photographs. If a platform you
+          upload one to requires you to disclose that an image is AI-generated, you&apos;re
+          responsible for making that disclosure — we don&apos;t represent generated output as an
+          unaltered photograph of you.
         </p>
       </section>
 
@@ -83,8 +82,13 @@ export default function TermsPage() {
           Generating a preview is free and doesn&apos;t require an account, up to the generation
           limit described on the site. Downloading the full-quality, watermark-free file requires
           an account and 2 credits per download. Because downloads are a digital product delivered
-          immediately, all sales are final — we do not offer refunds once a file has been
-          downloaded.
+          immediately, sales are final once a file has been downloaded. The exception is a
+          technical problem that prevents you from downloading a file you paid for — contact us
+          within 48 hours and we will resolve it, as described in our{" "}
+          <a href="/refund" className="underline hover:text-accent-text">
+            refund policy
+          </a>
+          .
         </p>
       </section>
 
