@@ -102,7 +102,7 @@ const STYLE_PROMPTS_KONTEXT: Record<string, string> = {
   cv:
     "Completely replace the existing background — remove any outdoor scenery, sky, water, or natural elements entirely — with a plain white or light grey studio background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be sharp and professional. Make the attire look formal business if not already.",
   freelancer:
-    "Completely replace the existing background with a tasteful blurred home office or modern workspace interior. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look smart casual and relaxed.",
+    "Completely replace the existing background — remove any existing home, office, or other indoor environment entirely — with a stylish modern workspace interior: a clean wooden desk with a laptop and soft warm lamp visible in the blurred background, green plant accents, and minimalist wall decor. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The overall aesthetic should feel like a tasteful creator home office. The attire should look smart casual and relaxed.",
   fiverr:
     "Completely replace the existing background with a bright bold solid-color or gradient backdrop — vivid and energetic. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The overall look should feel approachable and energetic, suitable for a freelance gig profile.",
   upwork:
@@ -128,9 +128,9 @@ const STYLE_PROMPTS_KONTEXT: Record<string, string> = {
   lawyer:
     "Completely replace the existing background with a dark wood-paneled law office interior. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The attire should look like a formal suit, appropriate for a legal professional.",
   teacher:
-    "Completely replace the existing background with a bright classroom interior with a chalkboard or whiteboard visible. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be warm and encouraging. The attire should look smart casual.",
+    "Completely replace the existing background — remove any existing environment entirely, including any current classroom, office, or outdoor setting — with a professionally staged classroom scene: a clean whiteboard with neat colourful writing visible, bright warm overhead lighting, and a tidy bookshelf with colourful books in the background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The result should look like a polished educator portrait, not a casual classroom photo. The attire should look smart casual.",
   student:
-    "Completely replace the existing background with a university library interior or bright classroom setting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be bright and youthful. The attire should look casual student wear.",
+    "Completely replace the existing background — remove any existing library, classroom, home, or outdoor environment entirely — with a vibrant modern university campus interior: tall bookshelves filled with colourful books, large windows with soft natural light flooding in, and warm bright ambient lighting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The result should look like a fresh, youthful student portrait with a polished campus feel. The attire should look casual student wear.",
   passport:
     "Completely replace the existing background — remove any outdoor scenery, sky, water, boats, or natural elements entirely — with a perfectly flat plain white background with no shadows, patterns, or textures whatsoever. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting must be flat, even, and shadowless with the face centered and front-facing. This should look exactly like an official passport or ID photo.",
   "corporate-team":
@@ -138,11 +138,11 @@ const STYLE_PROMPTS_KONTEXT: Record<string, string> = {
   farmer:
     "Replace the existing background with an outdoor farm or agricultural field setting — crops, soil, or farmland visible — with warm natural sunlight. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should feel like warm natural daylight. The attire can be practical outdoor or farming clothing.",
   "office-support":
-    "Completely replace the existing background with a bright modern office interior with desks or equipment visible. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be clean office lighting. The attire should look like smart casual business wear.",
+    "Completely replace the existing background — remove any existing room, home, outdoor scenery, or other environment entirely — with a modern corporate reception area: a laminate reception counter in the foreground, a company logo feature wall behind, and soft diffused overhead lighting. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be bright and professional. The attire should look like smart casual business wear.",
   "tea-boy":
     "Completely replace the existing background with a warm café or hospitality service interior. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The look should be neat and approachable, with clean professional service attire.",
   foreman:
-    "Completely replace the existing background with an industrial workshop interior or construction site office. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should be practical and realistic. The attire should look like professional supervisor or foreman work wear.",
+    "Completely replace the existing background — remove whatever environment is currently shown, whether an indoor office, classroom, home, or any outdoor setting — with an active outdoor construction site: scaffolding, steel beams, hard hats, and safety equipment visible in the background. Keep the person's face, identity, gender, and features exactly the same — do not change who they are. The lighting should feel like natural daylight on a working building site. The attire should look like professional foreman workwear including a high-visibility vest or hard hat.",
 };
 
 function promptSD15(style: string): string {
