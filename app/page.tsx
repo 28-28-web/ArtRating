@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import HeroSection from "@/app/components/HeroSection";
 import HeadshotShowcase from "@/app/components/HeadshotShowcase";
@@ -88,6 +89,18 @@ const AI_VS_PHOTO = [
     ai: "Any device · any time · no appointment",
     pro: "Studio visit · limited slots · travel required",
     body: "Generate from any device, at any time, from anywhere in the world. No appointment, no commute, no posing sessions.",
+  },
+];
+
+const TESTIMONIALS = [
+  {
+    name: "মোহাম্মদ রফিকুল ইসলাম",
+    nameRoman: "Mohammad Rafiqul Islam",
+    avatar: "/testimonials/rafiqul-islam.jpg",
+    rating: 5,
+    style: "Passport",
+    quote:
+      "স্টুডিওতে গিয়ে লাইনে দাঁড়ানোর দরকারই হলো না। মোবাইলের একটা ছবি থেকেই পাসপোর্ট সাইজের ফরম্যাটে রেডি হয়ে গেল।",
   },
 ];
 
@@ -286,6 +299,46 @@ export default function Home() {
               Your uploaded photo is processed in memory and discarded immediately after generation.
               We never store your source image or use it to train models.
             </p>
+          </div>
+        </section>
+
+        <section className="flex w-full flex-col gap-4">
+          <div>
+            <h2 className="font-display text-xl font-semibold text-ink">What Users Say</h2>
+            <BrushDivider className="mt-1" />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {TESTIMONIALS.map((t) => (
+              <div
+                key={t.nameRoman}
+                className="flex flex-col gap-3 rounded-xl border border-border-soft p-5"
+              >
+                <div className="flex items-center gap-3">
+                  <Image
+                    src={t.avatar}
+                    alt={`${t.nameRoman} profile photo`}
+                    width={64}
+                    height={64}
+                    className="rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-medium text-ink">{t.name}</p>
+                    <p className="text-xs text-ink-soft">{t.nameRoman}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-0.5" aria-label={`${t.rating} out of 5 stars`}>
+                  {Array.from({ length: t.rating }).map((_, i) => (
+                    <span key={i} className="text-saffron" aria-hidden="true">
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <p className="text-sm text-ink-soft">{t.quote}</p>
+                <span className="self-start rounded-full border border-border-soft px-2 py-0.5 text-xs font-medium text-accent-text">
+                  {t.style}
+                </span>
+              </div>
+            ))}
           </div>
         </section>
 
