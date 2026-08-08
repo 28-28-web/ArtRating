@@ -23,7 +23,7 @@ const HERO_STYLES = [
   {
     id: "author",
     label: "Author",
-    src: "https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=400&h=500&fit=crop&auto=format&q=80",
+    src: "/examples/writer.jpg",
   },
 ] as const;
 
