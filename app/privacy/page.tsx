@@ -14,7 +14,7 @@ export default function PrivacyPage() {
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-6 py-16">
       <div>
         <h1 className="font-display text-3xl font-semibold text-ink">Privacy policy</h1>
-        <p className="mt-2 text-sm text-ink-soft">Last updated: July 27, 2026</p>
+        <p className="mt-2 text-sm text-ink-soft">Last updated: August 8, 2026</p>
       </div>
 
       <p className="text-ink">
