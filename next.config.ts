@@ -8,10 +8,19 @@ import type { NextConfig } from "next";
 // cannot be removed in application code — control it in CF Transform Rules.
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms",
+  // Microsoft Clarity spans four hosts, and every one of them needs a grant or
+  // the whole thing silently records nothing:
+  //   www.clarity.ms/tag/<id>       script-src   bootstrap loader
+  //   scripts.clarity.ms/<v>/...    script-src   the actual library
+  //   r.clarity.ms/collect          connect-src  session data upload (XHR)
+  //   c.clarity.ms/c.gif            img-src      tracking pixel
+  // Only www.clarity.ms was allowed before, so the library never loaded and
+  // the dashboard received zero sessions. r.clarity.ms in particular is
+  // invisible until the library runs, so it cannot be found by reading source.
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://scripts.clarity.ms",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com https://www.google-analytics.com",
-  "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.clarity.ms https://c.clarity.ms",
+  "img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com https://www.google-analytics.com https://c.clarity.ms",
+  "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.clarity.ms https://c.clarity.ms https://r.clarity.ms",
   "font-src 'self'",
   "frame-src https://checkout.paddle.com",
   "frame-ancestors 'none'",
