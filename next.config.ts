@@ -1,10 +1,43 @@
 import type { NextConfig } from "next";
 
+// Content-Security-Policy — deliberately permissive starting point.
+// 'unsafe-inline' in script-src is required: Next.js emits inline <script>
+// blocks for JSON-LD, theme init, and hydration. Tighten to nonce-based CSP
+// once Next.js nonce support is wired into middleware.
+// Cloudflare's `Server: cloudflare` header is set by Cloudflare itself and
+// cannot be removed in application code — control it in CF Transform Rules.
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com https://www.google-analytics.com",
+  "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.clarity.ms https://c.clarity.ms",
+  "font-src 'self'",
+  "frame-src https://checkout.paddle.com",
+  "frame-ancestors 'none'",
+  "object-src 'none'",
+  "base-uri 'self'",
+].join("; ");
+
+const SECURITY_HEADERS = [
+  { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+  { key: "Content-Security-Policy", value: CSP },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "X-Frame-Options", value: "DENY" },
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+];
+
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "res.cloudinary.com" },
     ],
+  },
+  async headers() {
+    return [{ source: "/(.*)", headers: SECURITY_HEADERS }];
   },
   // Hidden-tool routes (see SiteNav.tsx/HeroGallery.tsx/page.tsx) — page code
   // is untouched and still works if these are visited, but redirect them so
@@ -21,6 +54,8 @@ const nextConfig: NextConfig = {
       // Catch-all for old tool URLs — 308 so backlinks/bookmarks land on homepage
       // rather than 404. /coloring-page-generator, /pet-to-human, etc. all redirect
       // here. :path* prevents redirecting *headshot* routes that start with these prefixes.
+      // Legacy /art/* rating URLs from old platform — no pages exist, redirect home
+      { source: "/art/:path*", destination: "/", permanent: true },
       { source: "/pet-to-human/:path*", destination: "/", permanent: true },
       { source: "/toy-ification/:path*", destination: "/", permanent: true },
       { source: "/photo-mix/:path*", destination: "/", permanent: true },

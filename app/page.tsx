@@ -8,7 +8,7 @@ import { FREE_GENERATION_CAP } from "@/app/lib/generationGate";
 import { CREDIT_PACKS } from "@/app/lib/creditPacks";
 
 export const metadata: Metadata = {
-  title: "HeadshotMaker AI — Free AI Headshot Generator | Professional Results in 30s",
+  title: "HeadshotMaker AI — Free AI Headshot Generator",
   description:
     "Generate studio-quality professional headshots from any selfie using AI. Perfect for LinkedIn, Amazon author pages, and resumes. Free to try — no signup needed.",
   alternates: { canonical: "/" },
