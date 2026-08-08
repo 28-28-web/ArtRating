@@ -67,6 +67,17 @@ const nextConfig: NextConfig = {
       { source: "/photo-to-coloring-page", destination: "/", permanent: true },
       { source: "/ai-coloring-book-generator/:path*", destination: "/", permanent: true },
       { source: "/ai-coloring-book-generator", destination: "/", permanent: true },
+      // Paintify affiliate pages (added in dcdb860, missed by the headshot-only
+      // cleanup in 8244d81). Off-topic art-filter content promoting third-party
+      // tools — one of them, PhotoAI, is a direct competitor. Removed rather
+      // than kept: they were absent from the sitemap and had no inbound links,
+      // so they were never indexable anyway.
+      { source: "/best-photo-to-painting-ai-tools-2026/:path*", destination: "/", permanent: true },
+      { source: "/best-photo-to-painting-ai-tools-2026", destination: "/", permanent: true },
+      { source: "/deep-art-effects-vs-photoai/:path*", destination: "/", permanent: true },
+      { source: "/deep-art-effects-vs-photoai", destination: "/", permanent: true },
+      { source: "/van-gogh-style-ai-filter-top-tools/:path*", destination: "/", permanent: true },
+      { source: "/van-gogh-style-ai-filter-top-tools", destination: "/", permanent: true },
     ];
   },
 };

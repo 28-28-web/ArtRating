@@ -1,6 +1,17 @@
-import type { AffiliateTool } from "@/app/lib/affiliate";
 import type { AccentName } from "@/app/lib/accent";
 import { HEADSHOT_STYLES } from "@/app/lib/headshotStyles";
+
+// Inlined from the deleted app/lib/affiliate.ts (Paintify leftover). Nothing
+// populates these fields any more — HEADSHOT_MODE sets ctaTool: null and never
+// sets bottomTools — but UploadBox still renders both branches, so the shape
+// has to stay until that dead UI is removed.
+type AffiliateTool = {
+  id: string;
+  name: string;
+  tagline: string;
+  url: string;
+  bestFor: string;
+};
 
 export type PreviewMode = {
   id?: string;
